@@ -12,14 +12,17 @@ command = ["cargo", "check", "--color", "always"]
 need_stdout = false
 
 [jobs.check-all]
-command = ["cargo", "check", "--all-targets", "--color", "always"]
+command = ["cargo", "check", "--all-features", "--all-targets", "--color", "always"]
 need_stdout = false
 
 [jobs.clippy]
 command = [
-    "cargo", "clippy",
-    "--all-targets",
-    "--color", "always",
+  "cargo",
+  "clippy",
+  "--all-features",
+  "--all-targets",
+  "--color",
+  "always",
 ]
 need_stdout = false
 
@@ -29,8 +32,26 @@ need_stdout = false
 # - the tests of a package: bacon test -- -- -p config
 [jobs.test]
 command = [
-    "cargo", "test", "--color", "always",
-    "--", "--color", "always", # see https://github.com/Canop/bacon/issues/124
+  "cargo",
+  "test",
+  "--color",
+  "always",
+  "--",
+  "--color",
+  "always", # see https://github.com/Canop/bacon/issues/124
+]
+need_stdout = true
+
+[jobs.test-all]
+command = [
+  "cargo",
+  "test",
+  "--all-features",
+  "--color",
+  "always",
+  "--",
+  "--color",
+  "always", # see https://github.com/Canop/bacon/issues/124
 ]
 need_stdout = true
 
@@ -54,9 +75,11 @@ on_success = "back" # so that we don't open the browser at each change
 # of waiting for program's end.
 [jobs.run]
 command = [
-    "cargo", "run",
-    "--color", "always",
-    # put launch parameters for your program behind a `--` separator
+  "cargo",
+  "run",
+  "--color",
+  "always",
+  # put launch parameters for your program behind a `--` separator
 ]
 need_stdout = true
 allow_warnings = true
@@ -76,4 +99,4 @@ allow_warnings = true
 # Shortcuts to internal functions (scrolling, toggling, etc.)
 # should go in your personal global prefs.toml file instead.
 [keybindings]
-# alt-m = "job:my-job"
+alt-T = "job:test-all"
