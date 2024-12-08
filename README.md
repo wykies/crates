@@ -2,6 +2,7 @@
 
 These are creates we decided to share are they were not the differentiating part of applications that we develop.
 They vary in levels of maturity and speed of development is you are interested in a particular one reach and and we can probably publish stable version to crates.io.
+Crate features are documented with comments in their respective `Cargo.toml` files
 
 ## License
 
