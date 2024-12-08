@@ -1,5 +1,5 @@
 [workspace]
 resolver = "2"
-members = []
+members = ["crates/tracked-cancellations"]
 
 [workspace.dependencies]
