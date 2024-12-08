@@ -5,6 +5,6 @@ edition = "2021"
 
 [dependencies]
 tokio = { workspace = true, features = ["time"] }
-tokio-util = { workspace = true }
-tracing = { workspace = true }
-wykies-time = { workspace = true }
+tokio-util.workspace = true
+tracing.workspace = true
+wykies-time.workspace = true

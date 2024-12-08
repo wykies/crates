@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-chrono = { workspace = true }
-serde = { workspace = true }
+chrono.workspace = true
+serde.workspace = true
 sqlx = { workspace = true, optional = true }
-web-time = { workspace = true }
+web-time.workspace = true
 
 [features]
 default = []
