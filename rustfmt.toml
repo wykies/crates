@@ -1,0 +1,5 @@
+# `wrap_comments` is unstable so to use you need to use nightly.
+# Causes an warning on stable rust but no error noticed so far so leaving it uncommented
+# To use run `cargo +nightly fmt`
+
+wrap_comments = true
