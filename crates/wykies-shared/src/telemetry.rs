@@ -13,6 +13,8 @@ use tracing_subscriber::{layer::SubscriberExt, EnvFilter, Registry};
 
 /// Compose multiple layers into a `tracing`'s subscriber.
 ///
+/// For details acceptable Filter Directives see https://docs.rs/tracing-subscriber/0.3.19/tracing_subscriber/filter/struct.EnvFilter.html#directives
+///
 /// # Implementation Notes
 ///
 /// We are using `impl Subscriber` as return type to avoid having to spell out
