@@ -1,4 +1,5 @@
 use secrecy::{ExposeSecret, SecretString};
+use serde::de::DeserializeOwned;
 use serde_aux::field_attributes::deserialize_number_from_string;
 use sqlx::ConnectOptions;
 use std::convert::{TryFrom, TryInto};
@@ -6,16 +7,16 @@ use wykies_time::Seconds;
 
 use crate::db_types::{DbConnectOptions, DbSslMode};
 
-// TODO 1: Make generic for loading additional settings
 // TODO 5: Add comments to any settings that are no longer obvious
 #[derive(serde::Deserialize, Clone)]
-pub struct Configuration {
+pub struct Configuration<T: Clone> {
     pub database: DatabaseSettings,
     pub application: ApplicationSettings,
     pub redis_uri: SecretString,
     pub user_auth: UserAuthSettings,
     pub chat: ChatSettings,
     pub websockets: WebSocketSettings,
+    pub custom: T,
 }
 
 #[derive(serde::Deserialize, Clone)]
@@ -48,7 +49,7 @@ pub struct ChatSettings {
     pub heartbeat_interval_secs: u8,
 }
 
-#[derive(serde::Deserialize, Clone)]
+#[derive(serde::Deserialize, Clone, Debug)]
 pub struct WebSocketSettings {
     pub token_lifetime_secs: Seconds,
     pub heartbeat_times_missed_allowance: u8,
@@ -76,7 +77,8 @@ impl DatabaseSettings {
     }
 }
 
-pub fn get_configuration() -> Result<Configuration, config::ConfigError> {
+pub fn get_configuration<T: Clone + DeserializeOwned>(
+) -> Result<Configuration<T>, config::ConfigError> {
     let base_path = std::env::current_dir().expect("failed to determine the current directory");
 
     // Note do not try to move configuration folder to root because it will make
@@ -106,7 +108,7 @@ pub fn get_configuration() -> Result<Configuration, config::ConfigError> {
         )
         .build()?;
 
-    settings.try_deserialize::<Configuration>()
+    settings.try_deserialize::<Configuration<T>>()
 }
 
 /// The possible runtime environment for our application.
