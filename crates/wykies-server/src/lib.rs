@@ -8,6 +8,7 @@ use tracked_cancellations::{CancellationTracker, TrackedCancellationToken};
 use wykies_shared::telemetry;
 
 mod configuration;
+mod macros;
 
 #[cfg_attr(feature = "mysql", path = "db_types_mysql.rs")]
 pub mod db_types;
