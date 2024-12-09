@@ -12,4 +12,4 @@ web-time.workspace = true
 
 [features]
 default = []
-mysql = ["sqlx/mysql"] # Adds conversion support for MySql DB types in sqlx
+mysql = ["dep:sqlx", "sqlx/mysql"] # Adds conversion support for MySql DB types in sqlx

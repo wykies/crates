@@ -1,7 +1,0 @@
-[package]
-name = "wykies-middle-end"
-version = "0.1.0"
-edition = "2021"
-description = "Code shared between the client and the server (I know there can't be an end in the middle but naming is hard)"
-
-[dependencies]
