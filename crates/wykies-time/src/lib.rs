@@ -1,3 +1,7 @@
+//! Simple wrappers to make many errors hard to make
+
+#![warn(unused_crate_dependencies)]
+
 use std::{fmt::Display, time::Duration};
 
 /// Intended to be similar to Duration but always clear that it is in Seconds

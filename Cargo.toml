@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/tracked-cancellations", "crates/wykies-time", "crates/wykies_server"]
+members = ["crates/tracked-cancellations", "crates/wykies-time", "crates/wykies-server", "crates/wykies-middle-end"]
 
 [workspace.dependencies]
 chrono = "0.4.38"
@@ -11,3 +11,4 @@ tokio-util = "0.7.13"
 tracing = "0.1.41"
 web-time = "1.1.0"
 wykies-time = { version = "*", path = "crates/wykies-time" }
+tracked-cancellations = { version = "*", path = "crates/tracked-cancellations" }

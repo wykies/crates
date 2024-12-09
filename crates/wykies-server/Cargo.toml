@@ -1,7 +1,9 @@
 [package]
-name = "wykies_server"
+name = "wykies-server"
 version = "0.1.0"
 edition = "2021"
 description = "Reusable Server Functionality for an Actix-Web REST server that needs WebSocket Functionality"
 
 [dependencies]
+tracing.workspace = true
+tracked-cancellations.workspace = true

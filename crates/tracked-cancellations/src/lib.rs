@@ -1,3 +1,7 @@
+//! Simple wrapper around cancellation tokens that lets you know if tasks have completed cancellation
+
+#![warn(unused_crate_dependencies)]
+
 use std::time::Duration;
 
 use tokio::sync::mpsc;
