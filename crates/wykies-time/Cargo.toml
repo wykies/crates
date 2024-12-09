@@ -2,6 +2,7 @@
 name = "wykies-time"
 version = "0.1.0"
 edition = "2021"
+description = "Simple time wrappers to make mistakes harder to make"
 
 [dependencies]
 chrono.workspace = true

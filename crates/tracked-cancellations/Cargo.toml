@@ -2,6 +2,7 @@
 name = "tracked-cancellations"
 version = "0.1.0"
 edition = "2021"
+description = "Simple wrapper around cancellation tokens that lets you know if tasks have completed cancellation"
 
 [dependencies]
 tokio = { workspace = true, features = ["time"] }
