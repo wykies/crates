@@ -1,0 +1,11 @@
+# This section is considered when running `cargo deny check advisories`
+# More documentation for the advisories section can be found here:
+# https://embarkstudios.github.io/cargo-deny/checks/advisories/cfg.html
+[advisories]
+ignore = [
+  # "RUSTSEC-0000-0000",
+
+  # Advisory about a vulnerability in rsa, we don't have any public facing usage so disabling the notifications until a fix is available
+  # Advisory includes a link to the work in progress https://github.com/RustCrypto/RSA/pull/394
+  "RUSTSEC-2023-0071",
+]
