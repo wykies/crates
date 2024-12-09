@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/tracked-cancellations", "crates/wykies-time"]
+members = ["crates/tracked-cancellations", "crates/wykies-time", "crates/wykies_server"]
 
 [workspace.dependencies]
 chrono = "0.4.38"
