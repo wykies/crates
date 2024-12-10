@@ -5,6 +5,7 @@ edition = "2021"
 description = "Reusable Server Functionality for an Actix-Web REST server that needs WebSocket Functionality"
 
 [dependencies]
+anyhow.workspace = true
 config.workspace = true
 secrecy.workspace = true
 serde.workspace = true

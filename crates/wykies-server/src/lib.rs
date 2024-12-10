@@ -10,6 +10,7 @@ use wykies_shared::telemetry;
 
 mod configuration;
 mod macros;
+pub mod plugin;
 
 #[cfg_attr(feature = "mysql", path = "db_types_mysql.rs")]
 pub mod db_types;
