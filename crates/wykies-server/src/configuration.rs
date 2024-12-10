@@ -14,7 +14,6 @@ pub struct Configuration<T: Clone> {
     pub application: ApplicationSettings,
     pub redis_uri: SecretString,
     pub user_auth: UserAuthSettings,
-    pub chat: ChatSettings,
     pub websockets: WebSocketSettings,
     pub custom: T,
 }
@@ -42,11 +41,6 @@ pub struct DatabaseSettings {
 #[derive(serde::Deserialize, Clone)]
 pub struct UserAuthSettings {
     pub login_attempt_limit: u8,
-}
-
-#[derive(serde::Deserialize, Clone)]
-pub struct ChatSettings {
-    pub heartbeat_interval_secs: u8,
 }
 
 #[derive(serde::Deserialize, Clone, Debug)]
