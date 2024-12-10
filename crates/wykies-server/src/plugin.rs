@@ -1,20 +1,20 @@
 use serde::de::DeserializeOwned;
-use std::{future::Future, sync::Arc};
+use std::sync::Arc;
 use tracked_cancellations::TrackedCancellationToken;
 
-use crate::{db_types::DbPool, ServerRunBundle};
+use crate::{db_types::DbPool, ServerTask};
 
 pub struct PluginArtifacts<T, H>
 where
-    T: Future<Output = ()> + Send + 'static,
+    T: ServerTask,
 {
-    pub task: ServerRunBundle<T>,
+    pub task: T,
     pub handle: Arc<H>,
 }
 
 pub trait Plugin {
     type ConfigType: DeserializeOwned + Clone;
-    type Task: Future<Output = ()> + Send + 'static;
+    type Task: ServerTask;
     type Handle: Send;
     fn name() -> &'static str;
     fn setup(

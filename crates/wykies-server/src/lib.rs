@@ -45,10 +45,23 @@ where
     }
 }
 
-pub struct ServerRunBundle<T>
-where
-    T: Future<Output = ()> + Send + 'static,
-{
-    pub name: &'static str,
-    pub task: T,
+pub trait ServerTask {
+    fn name() -> &'static str;
+
+    fn run(
+        self,
+        cancellation_token: TrackedCancellationToken,
+    ) -> impl Future<Output = anyhow::Result<()>> + Send
+    where
+        Self: Sized + Send,
+    {
+        async move {
+            // Ensure that exiting causes the rest of the app to shut down
+            let _drop_guard = cancellation_token.clone().drop_guard();
+            self.run_without_cancellation().await
+        }
+    }
+
+    /// Meant to be called from `run` or if you really don't want automatic cancellation support
+    fn run_without_cancellation(self) -> impl Future<Output = anyhow::Result<()>> + Send;
 }
