@@ -4,6 +4,8 @@
 
 #![warn(unused_crate_dependencies)]
 
+use std::future::Future;
+
 use serde::de::DeserializeOwned;
 use tracked_cancellations::{CancellationTracker, TrackedCancellationToken};
 use wykies_shared::telemetry;
@@ -41,4 +43,12 @@ where
         cancellation_tracker,
         configuration,
     }
+}
+
+pub struct ServerRunBundle<T>
+where
+    T: Future<Output = ()> + Send + 'static,
+{
+    pub name: &'static str,
+    pub task: T,
 }
