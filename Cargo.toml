@@ -1,6 +1,12 @@
 [workspace]
 resolver = "2"
-members = ["crates/tracked-cancellations", "crates/wykies-time", "crates/wykies-server", "crates/wykies-shared", "crates/plugin-chat"]
+members = [
+  "crates/tracked-cancellations",
+  "crates/wykies-time",
+  "crates/wykies-server",
+  "crates/wykies-shared",
+  "crates/plugin-chat",
+]
 
 [workspace.dependencies]
 # TODO 4: Write a program to check a workspace to see if all dependencies are needed by removing one and seeing if `cargo check` fails
@@ -24,5 +30,6 @@ tracked-cancellations = { version = "*", path = "crates/tracked-cancellations" }
 web-time = "1.1.0"
 wykies-shared = { version = "*", path = "crates/wykies-shared" }
 wykies-time = { version = "*", path = "crates/wykies-time" }
+wykies-server = { version = "*", path = "crates/wykies-server" }
 secrecy = { version = "0.10.3", features = ["serde"] }
 serde-aux = "4.5.0"
