@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/tracked-cancellations", "crates/wykies-time", "crates/wykies-server", "crates/wykies-shared"]
+members = ["crates/tracked-cancellations", "crates/wykies-time", "crates/wykies-server", "crates/wykies-shared", "crates/plugin-chat"]
 
 [workspace.dependencies]
 # TODO 4: Write a program to check a workspace to see if all dependencies are needed by removing one and seeing if `cargo check` fails
