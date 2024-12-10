@@ -5,7 +5,7 @@ members = [
   "crates/wykies-time",
   "crates/wykies-server",
   "crates/wykies-shared",
-  "crates/plugin-chat",
+  "crates/plugin-chat", "crates/ws-auth",
 ]
 
 [workspace.dependencies]
