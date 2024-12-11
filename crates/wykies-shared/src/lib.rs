@@ -10,6 +10,7 @@ pub mod id;
 mod macros;
 pub mod random;
 pub mod req_args;
+pub mod session;
 pub mod token;
 pub mod uac;
 
