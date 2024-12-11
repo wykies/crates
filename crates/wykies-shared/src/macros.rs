@@ -1,7 +1,7 @@
 #[macro_export]
 macro_rules! debug_panic {
     ($arg: expr) => {
-        if cfg!(debug_assertions) && wic_shared::const_config::PANIC_ON_RARE_ERR {
+        if cfg!(debug_assertions) && wykies_shared::const_config::PANIC_ON_RARE_ERR {
             panic!(
                 "Rare error detected! Panicking to make it more obvious: {:?}",
                 $arg
