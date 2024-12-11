@@ -8,6 +8,7 @@ actix-web.workspace = true
 actix-ws.workspace = true
 anyhow.workspace = true
 futures-util.workspace = true
+rand.workspace = true
 serde.workspace = true
 thiserror.workspace = true
 tokio.workspace = true

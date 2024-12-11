@@ -13,12 +13,14 @@ use wykies_shared::telemetry;
 mod configuration;
 mod macros;
 pub mod plugin;
+pub mod ws;
 
 #[cfg_attr(feature = "mysql", path = "db_types_mysql.rs")]
 pub mod db_types;
 
 pub use configuration::{get_configuration, Configuration, DatabaseSettings, WebSocketSettings};
 
+// TODO 1: Move server init into module
 pub struct ServerInit<T: Clone> {
     pub cancellation_token: TrackedCancellationToken,
     pub cancellation_tracker: CancellationTracker,
