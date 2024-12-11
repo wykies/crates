@@ -5,17 +5,35 @@ edition = "2021"
 description = "Code shared between the client and the server"
 
 [dependencies]
-# For native compilation only
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-actix-web.workspace = true
 anyhow.workspace = true
+argon2.workspace = true
 chrono.workspace = true
+egui.workspace = true
+ewebsock.workspace = true
+once_cell.workspace = true
+rand = { workspace = true, features = ["std_rng"] }
+reqwest.workspace = true
+ron.workspace = true
+secrecy.workspace = true
+serde.workspace = true
+sqlx = { workspace = true, optional = true }
+strum = { workspace = true, features = ["derive"] }
+thiserror.workspace = true
+tracing.workspace = true
 tracing-bunyan-formatter.workspace = true
 tracing-log.workspace = true
 tracing-subscriber = { workspace = true, features = ["registry", "env-filter"] }
-tracing.workspace = true
+wykies-time.workspace = true
+
+# For native compilation only
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+actix-web.workspace = true
+
+[dev-dependencies]
+rstest.workspace = true
+static_assertions.workspace = true
 
 [features]
 default = []
-server_only = [] # Used to control things only the server should create
+server_only = ["dep:sqlx"] # Used to control things only the server should create
 client_only = [] # Used to control things only the client should create
