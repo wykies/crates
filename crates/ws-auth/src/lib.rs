@@ -1,4 +1,8 @@
 //! Provides authentication for web socket handlers
+//!
+//! Based on this article
+//! <https://devcenter.heroku.com/articles/websocket-security> that cites
+//! <https://lucumr.pocoo.org/2012/9/24/websockets-101/> as the original source
 
 mod errors;
 mod id;
