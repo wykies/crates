@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO `roles` \n    (`RoleID`, `Name`, `Description`, `Permissions`, `LockedEditing`)\n    VALUES (NULL, ?, ?, ?, '0');",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "90ec0a8c50e659f1a4f2ea08772a1479e7d5afa08b87549adaa2e73a234440df"
+}

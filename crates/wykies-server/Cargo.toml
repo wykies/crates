@@ -5,17 +5,22 @@ edition = "2021"
 description = "Reusable Server Functionality for an Actix-Web REST server that needs WebSocket Functionality"
 
 [dependencies]
+actix-session.workspace = true
+actix-web.workspace = true
 anyhow.workspace = true
+argon2 = { workspace = true, features = ["std"] }
 config.workspace = true
+rand = { workspace = true, features = ["std_rng"] }
 secrecy.workspace = true
 serde.workspace = true
 serde-aux.workspace = true
-sqlx.workspace = true
-tokio.workspace = true
+sqlx = { workspace = true, features = ["runtime-tokio", "macros", "mysql", "chrono", "migrate"] }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tracing.workspace = true
 tracing-subscriber.workspace = true
 tracked-cancellations.workspace = true
-wykies-shared.workspace = true
+ws-auth.workspace = true
+wykies-shared = { workspace = true, features = ["server_only"] }
 wykies-time.workspace = true
 
 [features]

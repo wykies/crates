@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "UPDATE `user` SET `FailedAttempts`=0 WHERE `UserName`=?; ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "00badf482faf43267fb20607948752361986c25f219d3df98ed076b086de7ca4"
+}

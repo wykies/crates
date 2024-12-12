@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "\n        UPDATE `user` SET \n        `password_hash` = ?, \n        `ForcePassChange` = ?,\n        `PassChangeDate` = CURRENT_DATE()\n        WHERE `user`.`UserName` = ?; \n        ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "dfc939a2cdd371ca5b4c28bfc8ce4a1ba88dc9cab7f51351bb8099babc0ce043"
+}
