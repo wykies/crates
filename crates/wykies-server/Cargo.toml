@@ -5,7 +5,9 @@ edition = "2021"
 description = "Reusable Server Functionality for an Actix-Web REST server that needs WebSocket Functionality"
 
 [dependencies]
-actix-session.workspace = true
+actix-cors = { workspace = true, optional = true }
+actix-files.workspace = true
+actix-session = { workspace = true, features = ["redis-session-native-tls"] }
 actix-web.workspace = true
 anyhow.workspace = true
 argon2 = { workspace = true, features = ["std"] }
@@ -17,6 +19,8 @@ serde-aux.workspace = true
 sqlx = { workspace = true, features = ["runtime-tokio", "macros", "mysql", "chrono", "migrate"] }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tracing.workspace = true
+tracing-actix-web.workspace = true
+
 tracing-subscriber.workspace = true
 tracked-cancellations.workspace = true
 ws-auth.workspace = true
@@ -27,3 +31,4 @@ wykies-time.workspace = true
 # TODO 5: Remove MYSQL as default only there for testing
 default = ["mysql"] # MySQL is there temporarily
 mysql = ["sqlx/mysql"] # Uses MySQL as DB type
+disable-cors = ["dep:actix-cors"]
