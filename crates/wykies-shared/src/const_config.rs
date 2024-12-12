@@ -14,6 +14,7 @@ pub mod server {
     /// This is possibly in addition to the graceful shutdown timeout in the
     /// API Server after the API Server closes
     pub const SERVER_SHUTDOWN_TIMEOUT: Seconds = Seconds::new(20);
+    pub const DB_ACQUIRE_TIMEOUT: Seconds = Seconds::new(2);
 }
 
 pub mod client {
