@@ -55,6 +55,7 @@ pub trait ServerTask {
         }
     }
 
+    #[doc(hidden)]
     /// Meant to be called from `run` or if you really don't want automatic cancellation support
     fn run_without_cancellation(self) -> impl Future<Output = anyhow::Result<()>> + Send;
 }
