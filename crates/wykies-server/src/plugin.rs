@@ -1,5 +1,4 @@
 use crate::{db_types::DbPool, ServerTask, WebSocketSettings};
-use serde::de::DeserializeOwned;
 use std::sync::Arc;
 use tracked_cancellations::TrackedCancellationToken;
 
@@ -12,7 +11,7 @@ where
 }
 
 pub trait ServerPlugin {
-    type Config: DeserializeOwned + Clone;
+    type Config;
     type Task: ServerTask;
     type Handle: Send;
 
