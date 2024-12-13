@@ -10,7 +10,7 @@ use futures_util::StreamExt as _;
 use std::{pin::pin, sync::Arc, time::Instant};
 use tokio::{select, sync::mpsc};
 use tracing::{debug, error, info, instrument, warn, Span};
-use ws_auth::{validate_ws_connection, AuthTokenManager, WsConnId};
+use ws_auth::{validate_ws_connection, AuthTokenManager, WsConnId, WsId};
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE, debug_panic, host_branch::HostId, log_err_as_error,
 };
@@ -23,24 +23,19 @@ pub async fn chat_ws_start_client_handler_loop(
     msg_stream: actix_ws::MessageStream,
     auth_manager: web::Data<AuthTokenManager>,
     client_identifier: HostId,
+    ws_id: WsId,
 ) {
-    let (user_info, msg_stream) = match validate_ws_connection(
-        msg_stream,
-        auth_manager,
-        &client_identifier,
-        chat_server_handle.ws_id(),
-    )
-    .await
-    {
-        Ok(msg_stream) => msg_stream,
-        Err(e) => {
-            // Connection not validated exit
-            error!("Failed to validate web socket connection with error: {e:?}");
-            let _ = session.close(Some(CloseCode::Error.into())).await;
-            debug_panic!(e);
-            return;
-        }
-    };
+    let (user_info, msg_stream) =
+        match validate_ws_connection(msg_stream, auth_manager, &client_identifier, ws_id).await {
+            Ok(msg_stream) => msg_stream,
+            Err(e) => {
+                // Connection not validated exit
+                error!("Failed to validate web socket connection with error: {e:?}");
+                let _ = session.close(Some(CloseCode::Error.into())).await;
+                debug_panic!(e);
+                return;
+            }
+        };
 
     let mut last_heartbeat = Instant::now();
     let mut heartbeat_interval = chat_server_handle.heartbeat_config.interval();

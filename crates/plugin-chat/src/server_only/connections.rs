@@ -16,9 +16,10 @@ pub async fn chat_ws_start_session(
     chat_server_handle: web::Data<ChatServerHandle>,
     auth_manager: web::Data<AuthTokenManager>,
     conn: ConnectionInfo,
+    ws_id: WsId,
 ) -> Result<HttpResponse, WebSocketAuthError> {
     let (session, msg_stream, client_identifier, res) =
-        create_ws_session(req, stream, conn, &auth_manager, chat_server_handle.ws_id())?;
+        create_ws_session(req, stream, conn, &auth_manager, ws_id)?;
 
     // spawn websocket handler (don't await) so response is sent immediately
     spawn_local(chat_ws_start_client_handler_loop(
@@ -27,6 +28,7 @@ pub async fn chat_ws_start_session(
         msg_stream,
         auth_manager,
         client_identifier,
+        ws_id,
     ));
 
     Ok(res)

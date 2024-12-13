@@ -10,7 +10,7 @@ use tokio::{
 };
 use tracing::{error, info, instrument, warn};
 use tracked_cancellations::TrackedCancellationToken;
-use ws_auth::{WsConnId, WsId};
+use ws_auth::WsConnId;
 use wykies_server::{db_types::DbPool, ws::HeartbeatConfig, ServerTask, WebSocketSettings};
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE, debug_panic, log_err_as_error, log_err_as_warn,
@@ -63,14 +63,12 @@ pub struct ChatServer {
 #[derive(Debug, Clone)]
 pub struct ChatServerHandle {
     cmd_tx: mpsc::Sender<Command>,
-    ws_id: WsId,
     pub heartbeat_config: HeartbeatConfig,
 }
 
 impl ChatServer {
     pub fn new(
         config: &ChatSettings,
-        ws_id: WsId,
         ws_config: &WebSocketSettings,
         db_pool: DbPool,
         cancellation_token: TrackedCancellationToken,
@@ -98,7 +96,6 @@ impl ChatServer {
             ChatServerHandle {
                 cmd_tx,
                 heartbeat_config,
-                ws_id,
             },
         )
     }
@@ -350,10 +347,6 @@ impl ChatServerHandle {
         )
         .await
         .expect("failed to send command")
-    }
-
-    pub fn ws_id(&self) -> WsId {
-        self.ws_id
     }
 
     /// Broadcast message to other users

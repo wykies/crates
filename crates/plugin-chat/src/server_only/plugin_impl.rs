@@ -32,13 +32,8 @@ impl ServerPlugin for ChatPlugin {
         ws_config: &wykies_server::WebSocketSettings,
     ) -> anyhow::Result<wykies_server::plugin::ServerPluginArtifacts<Self::Task, Self::Handle>>
     {
-        let (chat_server, chat_server_handle) = ChatServer::new(
-            &config.settings,
-            config.ws_id,
-            ws_config,
-            db_pool,
-            cancellation_token,
-        );
+        let (chat_server, chat_server_handle) =
+            ChatServer::new(&config.settings, ws_config, db_pool, cancellation_token);
         Ok(ServerPluginArtifacts {
             task: chat_server,
             handle: Arc::new(chat_server_handle),
