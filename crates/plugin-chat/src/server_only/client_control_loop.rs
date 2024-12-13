@@ -246,7 +246,6 @@ async fn process_msg_from_client(
     Ok(())
 }
 
-#[expect(dead_code)] // TODO 5: Report this incorrectly being reported as dead code
 fn validate_im_from_client(im: &mut ChatIM, conn_id: &WsConnId) -> anyhow::Result<()> {
     im.timestamp = Timestamp::now(); // Replace timestamp with server time to ensure monotonicity
 
