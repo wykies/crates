@@ -8,7 +8,8 @@ use wykies_shared::host_branch::HostId;
 // TODO 1: Should not need to be public
 pub mod handlers;
 
-pub fn create_ws_session(
+/// Does a prescreening to see if the request is expected and then starts a WS session to be able to check the token
+pub fn pre_screen_incoming_ws_req(
     req: HttpRequest,
     stream: web::Payload,
     conn: ConnectionInfo,
