@@ -8,9 +8,11 @@ mod errors;
 mod id;
 mod manager;
 mod runtime_utils;
+// TODO 1: This shouldn't need to be public
+pub mod handlers;
 
 pub use errors::WebSocketAuthError;
 pub use id::{WsConnId, WsId};
 pub use manager::{validate_ws_connection, AuthTokenManager};
 
-pub use runtime_utils::{handlers, pre_screen_incoming_ws_req};
+pub use runtime_utils::pre_screen_incoming_ws_req;

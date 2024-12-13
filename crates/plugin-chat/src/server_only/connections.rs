@@ -4,6 +4,7 @@ use ws_auth::{pre_screen_incoming_ws_req, AuthTokenManager, WebSocketAuthError, 
 
 use super::{client_control_loop::chat_ws_start_client_handler_loop, server::ChatServerHandle};
 
+// TODO 1: Move out function over to ws-auth
 /// Handshake and start WebSocket handler with heartbeats.
 #[tracing::instrument(skip(stream))]
 pub async fn chat_ws_start_session(
