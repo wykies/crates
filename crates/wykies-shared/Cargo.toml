@@ -10,7 +10,6 @@ argon2.workspace = true
 chrono.workspace = true
 egui.workspace = true
 ewebsock.workspace = true
-once_cell.workspace = true
 rand = { workspace = true, features = ["std_rng"] }
 reqwest.workspace = true
 ron.workspace = true
