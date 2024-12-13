@@ -3,12 +3,13 @@
 #![allow(deprecated)]
 
 use anyhow::bail;
-use once_cell::sync::Lazy;
 use std::{
     collections::{BTreeSet, HashMap},
     fmt::{Debug, Display},
+    sync::OnceLock,
 };
 use strum::{EnumCount, IntoEnumIterator};
+use tracing::instrument;
 
 use crate::const_config::path::*;
 
@@ -75,7 +76,11 @@ pub enum Permission {
     ImportReceiving,
 }
 
-static PERMISSION_MAP: Lazy<HashMap<&'static str, Vec<Permission>>> = Lazy::new(|| {
+pub type PermissionMap = HashMap<&'static str, Vec<Permission>>;
+
+static PERMISSION_MAP: OnceLock<PermissionMap> = OnceLock::new();
+
+pub fn default_permissions() -> PermissionMap {
     use Permission as perm;
     let mut result: HashMap<&str, Vec<Permission>> = HashMap::new();
     result.insert(PATH_API_ADMIN_BRANCH_CREATE.path, vec![perm::ManBranches]);
@@ -99,9 +104,8 @@ static PERMISSION_MAP: Lazy<HashMap<&'static str, Vec<Permission>>> = Lazy::new(
     result.insert(PATH_API_HOSTBRANCH_LOOKUP.path, vec![]);
     result.insert(PATH_API_LOGOUT.path, vec![]);
     result.insert(PATH_WS_TOKEN_CHAT.path, vec![]);
-    // TODO 1: Fix permissions as this does not allow for adding paths
     result
-});
+}
 
 /// Takes a path and returns the permissions required for it if found
 ///
@@ -109,7 +113,11 @@ static PERMISSION_MAP: Lazy<HashMap<&'static str, Vec<Permission>>> = Lazy::new(
 /// accessed even if it is 0 permissions
 #[tracing::instrument(ret)]
 pub fn get_required_permissions(path: &str) -> Option<&'static [Permission]> {
-    PERMISSION_MAP.get(path).map(|x| &x[..])
+    PERMISSION_MAP
+        .get()
+        .expect("permissions were not initialized")
+        .get(path)
+        .map(|x| &x[..])
 }
 
 impl Permissions {
@@ -117,6 +125,7 @@ impl Permissions {
         perms.iter().all(|x| self.0.contains(x))
     }
 
+    #[instrument(ret, err)]
     pub fn is_allowed_access(&self, path: &str) -> anyhow::Result<bool> {
         match get_required_permissions(path) {
             Some(required_permissions) => Ok(self.includes(required_permissions)),
@@ -343,18 +352,23 @@ mod tests {
         }
     }
 
-    /// Just a sanity check that any admin paths require "management permissions"
+    /// Just a sanity check that any admin paths in default require "management permissions"
     #[test]
     fn admin_paths_require_management_permission() {
+        PERMISSION_MAP
+            .set(default_permissions())
+            .expect("failed to set to default permissions");
         assert!(
             PERMISSION_MAP
+                .get()
+                .unwrap()
                 .iter()
                 .any(|(path, _)| { path.contains("admin") }),
             "At least one permission must be a admin permission"
         );
 
         // All permissions are either not admin or they have 'Manage' in at least one of their required permissions
-        for (path, permissions) in PERMISSION_MAP.iter() {
+        for (path, permissions) in PERMISSION_MAP.get().unwrap().iter() {
             if path.contains("admin")
                 && !permissions
                     .iter()
