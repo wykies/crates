@@ -70,6 +70,7 @@ pub struct ChatServerHandle {
 impl ChatServer {
     pub fn new(
         config: &ChatSettings,
+        ws_id: WsId,
         ws_config: &WebSocketSettings,
         db_pool: DbPool,
         cancellation_token: TrackedCancellationToken,
@@ -97,7 +98,7 @@ impl ChatServer {
             ChatServerHandle {
                 cmd_tx,
                 heartbeat_config,
-                ws_id: config.ws_id,
+                ws_id,
             },
         )
     }

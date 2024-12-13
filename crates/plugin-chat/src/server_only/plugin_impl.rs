@@ -9,13 +9,17 @@ use super::server::{ChatServer, ChatServerHandle};
 #[derive(serde::Deserialize, Clone)]
 pub struct ChatSettings {
     pub heartbeat_interval_secs: u8,
+}
+
+pub struct ChatPluginConfig {
     pub ws_id: WsId,
+    pub settings: ChatSettings,
 }
 
 pub struct ChatPlugin;
 
 impl ServerPlugin for ChatPlugin {
-    type Config = ChatSettings;
+    type Config = ChatPluginConfig;
 
     type Task = ChatServer;
 
@@ -28,8 +32,13 @@ impl ServerPlugin for ChatPlugin {
         ws_config: &wykies_server::WebSocketSettings,
     ) -> anyhow::Result<wykies_server::plugin::ServerPluginArtifacts<Self::Task, Self::Handle>>
     {
-        let (chat_server, chat_server_handle) =
-            ChatServer::new(config, ws_config, db_pool, cancellation_token);
+        let (chat_server, chat_server_handle) = ChatServer::new(
+            &config.settings,
+            config.ws_id,
+            ws_config,
+            db_pool,
+            cancellation_token,
+        );
         Ok(ServerPluginArtifacts {
             task: chat_server,
             handle: Arc::new(chat_server_handle),
