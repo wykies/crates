@@ -3,40 +3,25 @@
 use crate::{ChatIM, ChatMsg};
 
 use super::server::ChatServerHandle;
-use actix_web::web;
 use actix_ws::{AggregatedMessage, CloseCode, CloseReason, ProtocolError, Session};
 use anyhow::{bail, Context};
 use futures_util::StreamExt as _;
 use std::{pin::pin, sync::Arc, time::Instant};
 use tokio::{select, sync::mpsc};
 use tracing::{debug, error, info, instrument, warn, Span};
-use ws_auth::{validate_ws_connection, AuthTokenManager, WsConnId, WsId};
+use ws_auth::WsConnId;
 use wykies_shared::{
-    const_config::CHANNEL_BUFFER_SIZE, debug_panic, host_branch::HostId, log_err_as_error,
+    const_config::CHANNEL_BUFFER_SIZE, debug_panic, log_err_as_error, session::UserSessionInfo,
 };
 use wykies_time::Timestamp;
 
-#[instrument(skip(session, msg_stream), fields(ws_conn_id))]
+#[instrument(skip(session, msg_stream, chat_server_handle), fields(ws_conn_id))]
 pub async fn chat_ws_start_client_handler_loop(
     chat_server_handle: ChatServerHandle,
     mut session: actix_ws::Session,
-    msg_stream: actix_ws::MessageStream,
-    auth_manager: web::Data<AuthTokenManager>,
-    client_identifier: HostId,
-    ws_id: WsId,
+    msg_stream: actix_ws::AggregatedMessageStream,
+    user_info: Arc<UserSessionInfo>,
 ) {
-    let (user_info, msg_stream) =
-        match validate_ws_connection(msg_stream, auth_manager, &client_identifier, ws_id).await {
-            Ok(msg_stream) => msg_stream,
-            Err(e) => {
-                // Connection not validated exit
-                error!("Failed to validate web socket connection with error: {e:?}");
-                let _ = session.close(Some(CloseCode::Error.into())).await;
-                debug_panic!(e);
-                return;
-            }
-        };
-
     let mut last_heartbeat = Instant::now();
     let mut heartbeat_interval = chat_server_handle.heartbeat_config.interval();
 
