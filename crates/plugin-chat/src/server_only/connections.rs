@@ -39,6 +39,7 @@ pub async fn chat_get_token(
     auth_manager: web::Data<AuthTokenManager>,
     conn: ConnectionInfo,
     user_info: web::ReqData<UserSessionInfo>,
+    ws_id: WsId,
 ) -> actix_web::Result<web::Json<AuthToken>> {
     let result = AuthToken::new_rand();
     let host_id: HostId = conn
@@ -47,7 +48,7 @@ pub async fn chat_get_token(
         .map_err(e500)?;
     auth_manager.record_token(
         host_id,
-        WsId::new(1), // TODO 1: This needs to be provided by ws-auth
+        ws_id,
         Arc::new(user_info.into_inner()),
         result.clone(),
     );
