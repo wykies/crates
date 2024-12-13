@@ -107,6 +107,10 @@ pub fn default_permissions() -> PermissionMap {
     result
 }
 
+pub fn initialize_permissions(value: PermissionMap) -> Result<(), PermissionMap> {
+    PERMISSION_MAP.set(value)
+}
+
 /// Takes a path and returns the permissions required for it if found
 ///
 /// **Note:** All paths that require login must have permissions set to be

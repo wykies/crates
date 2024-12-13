@@ -8,7 +8,8 @@ mod user;
 
 pub use errors::{AuthError, ChangePasswordError, PermissionsError, ResetPasswordError};
 pub use permissions::{
-    default_permissions, get_required_permissions, Permission, PermissionMap, Permissions,
+    default_permissions, get_required_permissions, initialize_permissions, Permission,
+    PermissionMap, Permissions,
 };
 pub use responses::LoginResponse;
 pub use role::{Role, RoleDescription, RoleDraft, RoleIdAndName, RoleName};
