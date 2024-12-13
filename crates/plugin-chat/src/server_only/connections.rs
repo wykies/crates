@@ -10,7 +10,7 @@ use super::{client_control_loop::chat_ws_start_client_handler_loop, server::Chat
 pub async fn chat_ws_start_session(
     req: HttpRequest,
     stream: web::Payload,
-    chat_server_handle: web::Data<ChatServerHandle>,
+    chat_server_handle: ChatServerHandle,
     auth_manager: web::Data<AuthTokenManager>,
     conn: ConnectionInfo,
     ws_id: WsId,
@@ -20,7 +20,7 @@ pub async fn chat_ws_start_session(
 
     // spawn websocket handler (don't await) so response is sent immediately
     spawn_local(chat_ws_start_client_handler_loop(
-        (**chat_server_handle).clone(),
+        chat_server_handle,
         session,
         msg_stream,
         auth_manager,
