@@ -124,8 +124,8 @@ where
         protected_resource: FProtected,
     ) -> anyhow::Result<RunnableApiServer>
     where
-        FOpen: Fn(&mut ServiceConfig) + Send + Clone + Copy + 'static,
-        FProtected: Fn(&mut ServiceConfig) + Send + Clone + Copy + 'static,
+        FOpen: Fn(&mut ServiceConfig) + Send + Clone + 'static,
+        FProtected: Fn(&mut ServiceConfig) + Send + Clone + 'static,
     {
         let db_pool = web::Data::new(self.db_pool);
 
@@ -174,7 +174,7 @@ where
             .service(
                 web::scope("/api")
                     .wrap(from_fn(validate_user_access))
-                    .configure(protected_resource)
+                    .configure(protected_resource.clone())
                     .route("/change_password", web::post().to(change_password))
                     .route("/logout", web::post().to(log_out))
                     .service(
@@ -208,7 +208,7 @@ where
                         web::get().to(host_branch_pair_lookup),
                     ),
             )
-            .configure(open_resource)
+            .configure(open_resource.clone())
             .route("/login", web::post().to(login))
             .route("/branches", web::get().to(branch_list))
             .route("/health_check", web::get().to(health_check))
