@@ -1,10 +1,6 @@
-use std::sync::Arc;
-
 use actix_web::{dev::ConnectionInfo, web, HttpRequest, HttpResponse};
-use anyhow::Context as _;
 use tokio::task::spawn_local;
 use ws_auth::{create_ws_session, AuthTokenManager, WebSocketAuthError, WsId};
-use wykies_shared::{e500, host_branch::HostId, session::UserSessionInfo, token::AuthToken};
 
 use super::{client_control_loop::chat_ws_start_client_handler_loop, server::ChatServerHandle};
 
@@ -32,25 +28,4 @@ pub async fn chat_ws_start_session(
     ));
 
     Ok(res)
-}
-
-#[tracing::instrument(ret, err(Debug))]
-pub async fn chat_get_token(
-    auth_manager: web::Data<AuthTokenManager>,
-    conn: ConnectionInfo,
-    user_info: web::ReqData<UserSessionInfo>,
-    ws_id: WsId,
-) -> actix_web::Result<web::Json<AuthToken>> {
-    let result = AuthToken::new_rand();
-    let host_id: HostId = conn
-        .try_into()
-        .context("failed to get host_id")
-        .map_err(e500)?;
-    auth_manager.record_token(
-        host_id,
-        ws_id,
-        Arc::new(user_info.into_inner()),
-        result.clone(),
-    );
-    Ok(web::Json(result))
 }

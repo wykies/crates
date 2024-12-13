@@ -5,6 +5,9 @@ use actix_web::{dev::ConnectionInfo, web, HttpRequest, HttpResponse};
 use anyhow::Context as _;
 use wykies_shared::host_branch::HostId;
 
+// TODO 1: Should not need to be public
+pub mod handlers;
+
 pub fn create_ws_session(
     req: HttpRequest,
     stream: web::Payload,

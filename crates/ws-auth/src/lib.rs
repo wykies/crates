@@ -13,4 +13,4 @@ pub use errors::WebSocketAuthError;
 pub use id::{WsConnId, WsId};
 pub use manager::{validate_ws_connection, AuthTokenManager};
 
-pub use runtime_utils::create_ws_session;
+pub use runtime_utils::{create_ws_session, handlers};
