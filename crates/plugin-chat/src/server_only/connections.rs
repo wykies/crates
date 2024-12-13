@@ -4,8 +4,7 @@ use actix_web::{dev::ConnectionInfo, web, HttpRequest, HttpResponse};
 use anyhow::Context as _;
 use tokio::task::spawn_local;
 use ws_auth::{create_ws_session, AuthTokenManager, WebSocketAuthError, WsId};
-use wykies_server::e500;
-use wykies_shared::{host_branch::HostId, session::UserSessionInfo, token::AuthToken};
+use wykies_shared::{e500, host_branch::HostId, session::UserSessionInfo, token::AuthToken};
 
 use super::{client_control_loop::chat_ws_start_client_handler_loop, server::ChatServerHandle};
 

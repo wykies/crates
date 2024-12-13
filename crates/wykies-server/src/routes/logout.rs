@@ -1,5 +1,6 @@
-use crate::{e500, session_state::TypedSession};
+use crate::session_state::TypedSession;
 use actix_web::HttpResponse;
+use wykies_shared::e500;
 
 pub async fn log_out(session: TypedSession) -> actix_web::Result<HttpResponse> {
     if session.get_user_info().map_err(e500)?.is_none() {

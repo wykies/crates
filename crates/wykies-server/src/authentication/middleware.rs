@@ -1,4 +1,3 @@
-use crate::error_wrappers::e500;
 use crate::session_state::TypedSession;
 use actix_web::{
     body::MessageBody,
@@ -8,6 +7,7 @@ use actix_web::{
 };
 use tracing::info;
 use wykies_shared::{
+    e500,
     errors::NotLoggedInError,
     session::UserSessionInfo,
     uac::{get_required_permissions, PermissionsError},

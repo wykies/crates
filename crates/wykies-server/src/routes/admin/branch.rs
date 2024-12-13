@@ -1,8 +1,9 @@
-use crate::{db_types::DbPool, db_utils::validate_one_row_affected, e500};
+use crate::{db_types::DbPool, db_utils::validate_one_row_affected};
 use actix_web::web;
 use anyhow::Context;
 use wykies_shared::{
     branch::{Branch, BranchDraft},
+    e500,
     id::DbId,
 };
 

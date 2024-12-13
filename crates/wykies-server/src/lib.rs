@@ -13,7 +13,6 @@ mod warning_suppress_release {
 pub mod authentication;
 mod configuration;
 pub mod db_utils;
-mod error_wrappers;
 pub mod plugin;
 pub mod routes;
 mod session_state;
@@ -24,5 +23,4 @@ pub mod ws;
 pub mod db_types;
 
 pub use configuration::{get_configuration, Configuration, DatabaseSettings, WebSocketSettings};
-pub use error_wrappers::{e400, e500};
 pub use startup::{get_db_connection_pool, ApiServerBuilder, ApiServerInit, ServerTask};

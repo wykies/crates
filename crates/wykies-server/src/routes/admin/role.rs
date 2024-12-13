@@ -1,7 +1,8 @@
-use crate::{db_types::DbPool, db_utils::validate_one_row_affected, e400, e500};
+use crate::{db_types::DbPool, db_utils::validate_one_row_affected};
 use actix_web::{web, HttpResponse};
 use anyhow::Context;
 use wykies_shared::{
+    e400, e500,
     id::DbId,
     req_args::api::admin::role::{self, AssignReqArgs},
     uac::{Role, RoleDraft, Username},

@@ -4,6 +4,8 @@
 
 pub mod branch;
 pub mod const_config;
+#[cfg(feature = "server_only")]
+mod error_wrappers;
 pub mod errors;
 pub mod host_branch;
 pub mod id;
@@ -18,3 +20,6 @@ pub use random::{random_string, random_string_def_len};
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod telemetry;
+
+#[cfg(feature = "server_only")]
+pub use error_wrappers::{e400, e500};

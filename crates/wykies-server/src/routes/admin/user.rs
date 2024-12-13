@@ -2,7 +2,6 @@ use crate::{
     authentication,
     db_types::DbPool,
     db_utils::{db_int_to_bool, validate_one_row_affected},
-    e400, e500,
 };
 use actix_web::{web, HttpResponse};
 use anyhow::Context;
@@ -10,6 +9,7 @@ use argon2::password_hash::SaltString;
 use argon2::PasswordHasher;
 use secrecy::ExposeSecret;
 use wykies_shared::{
+    e400, e500,
     req_args::{
         api::admin::user::{self, NewUserReqArgs, PasswordResetReqArgs},
         RonWrapper,

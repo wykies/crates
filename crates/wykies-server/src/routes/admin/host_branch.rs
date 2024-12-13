@@ -1,7 +1,9 @@
-use crate::{db_types::DbPool, e500};
+use crate::db_types::DbPool;
 use actix_web::{web, HttpResponse};
 use anyhow::Context as _;
-use wykies_shared::{host_branch::HostBranchPair, id::DbId, req_args::api::admin::host_branch};
+use wykies_shared::{
+    e500, host_branch::HostBranchPair, id::DbId, req_args::api::admin::host_branch,
+};
 
 #[tracing::instrument(ret, err(Debug), skip(pool))]
 pub async fn set_host_branch_pair(
