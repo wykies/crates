@@ -1,13 +1,15 @@
 //! Houses code to make using WebSockets easier and extracts out the boilerplate
 
-use std::{future::Future, sync::Arc};
+use std::future::Future;
 
-use crate::{validate_ws_connection, AuthTokenManager, WebSocketAuthError, WsId};
+use crate::{
+    validate_ws_connection, AuthTokenManager, ClientLoopController, WebSocketAuthError, WsId,
+};
 use actix_web::{dev::ConnectionInfo, web, HttpRequest, HttpResponse};
 use actix_ws::CloseCode;
 use anyhow::Context as _;
 use tracing::{error, instrument};
-use wykies_shared::{debug_panic, host_branch::HostId, session::UserSessionInfo};
+use wykies_shared::{debug_panic, host_branch::HostId};
 
 /// Does a prescreening to see if the request is expected and then starts a WS session to be able to check the token
 #[instrument(err, skip(stream))]
@@ -43,22 +45,16 @@ pub fn pre_screen_incoming_ws_req(
 }
 
 #[instrument(skip(session, msg_stream, ws_server_handle, ws_start_client_handler_loop))]
-pub async fn validate_connection_then_start_client_handler_loop<WsServerHandle, F, Out>(
+pub async fn validate_connection_then_start_client_handler_loop<WsServerHandle, Output>(
     ws_server_handle: WsServerHandle,
     session: actix_ws::Session,
     msg_stream: actix_ws::MessageStream,
     auth_manager: web::Data<AuthTokenManager>,
     client_identifier: HostId,
     ws_id: WsId,
-    ws_start_client_handler_loop: F,
+    ws_start_client_handler_loop: impl ClientLoopController<WsServerHandle, Output>,
 ) where
-    F: FnOnce(
-        WsServerHandle,
-        actix_ws::Session,
-        actix_ws::AggregatedMessageStream,
-        Arc<UserSessionInfo>,
-    ) -> Out,
-    Out: Future<Output = ()>,
+    Output: Future<Output = ()>,
 {
     let (user_info, msg_stream) =
         match validate_ws_connection(msg_stream, auth_manager, &client_identifier, ws_id).await {

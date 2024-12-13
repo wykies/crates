@@ -10,11 +10,12 @@ mod manager;
 mod runtime_utils;
 // TODO 1: This shouldn't need to be public
 pub mod handlers;
+mod traits;
 
 pub use errors::WebSocketAuthError;
 pub use id::{WsConnId, WsId};
 pub use manager::{validate_ws_connection, AuthTokenManager};
-
 pub use runtime_utils::{
     pre_screen_incoming_ws_req, validate_connection_then_start_client_handler_loop,
 };
+pub use traits::ClientLoopController;
