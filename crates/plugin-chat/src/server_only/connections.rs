@@ -18,20 +18,8 @@ pub async fn chat_ws_start_session(
     auth_manager: web::Data<AuthTokenManager>,
     conn: ConnectionInfo,
 ) -> Result<HttpResponse, WebSocketAuthError> {
-    // Validate HostID before attempting to create session
-    let client_identifier: HostId = conn.try_into().context("failed to get host_id")?;
-    let ws_id = chat_server_handle.ws_id();
-    if !auth_manager.is_expected_host(&client_identifier, ws_id) {
-        return Err(WebSocketAuthError::UnexpectedClient {
-            client_identifier,
-            ws_id,
-        });
-    }
-
-    // Create a new websocket session
-    let (res, session, msg_stream) = actix_ws::handle(&req, stream)
-        .map_err(|e| anyhow::anyhow!("{e:?}"))
-        .map_err(WebSocketAuthError::FailedToStartSession)?;
+    let (session, msg_stream, client_identifier, res) =
+        create_ws_session(req, stream, conn, &auth_manager, chat_server_handle.ws_id())?;
 
     // spawn websocket handler (don't await) so response is sent immediately
     spawn_local(chat_ws_start_client_handler_loop(
@@ -43,6 +31,37 @@ pub async fn chat_ws_start_session(
     ));
 
     Ok(res)
+}
+
+fn create_ws_session(
+    req: HttpRequest,
+    stream: web::Payload,
+    conn: ConnectionInfo,
+    auth_manager: &AuthTokenManager,
+    ws_id: WsId,
+) -> Result<
+    (
+        actix_ws::Session,
+        actix_ws::MessageStream,
+        HostId,
+        HttpResponse,
+    ),
+    WebSocketAuthError,
+> {
+    // Validate HostID before attempting to create session
+    let client_identifier: HostId = conn.try_into().context("failed to get host_id")?;
+    if !auth_manager.is_expected_host(&client_identifier, ws_id) {
+        return Err(WebSocketAuthError::UnexpectedClient {
+            client_identifier,
+            ws_id,
+        });
+    }
+
+    // Create a new websocket session
+    let (res, session, msg_stream) = actix_ws::handle(&req, stream)
+        .map_err(|e| anyhow::anyhow!("{e:?}"))
+        .map_err(WebSocketAuthError::FailedToStartSession)?;
+    Ok((session, msg_stream, client_identifier, res))
 }
 
 #[tracing::instrument(ret, err(Debug))]
