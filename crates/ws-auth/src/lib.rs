@@ -7,7 +7,10 @@
 mod errors;
 mod id;
 mod manager;
+mod runtime_utils;
 
 pub use errors::WebSocketAuthError;
 pub use id::{WsConnId, WsId};
 pub use manager::{validate_ws_connection, AuthTokenManager};
+
+pub use runtime_utils::create_ws_session;

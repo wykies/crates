@@ -3,7 +3,7 @@ use std::sync::Arc;
 use actix_web::{dev::ConnectionInfo, web, HttpRequest, HttpResponse};
 use anyhow::Context as _;
 use tokio::task::spawn_local;
-use ws_auth::{AuthTokenManager, WebSocketAuthError, WsId};
+use ws_auth::{create_ws_session, AuthTokenManager, WebSocketAuthError, WsId};
 use wykies_server::e500;
 use wykies_shared::{host_branch::HostId, session::UserSessionInfo, token::AuthToken};
 
@@ -31,37 +31,6 @@ pub async fn chat_ws_start_session(
     ));
 
     Ok(res)
-}
-
-fn create_ws_session(
-    req: HttpRequest,
-    stream: web::Payload,
-    conn: ConnectionInfo,
-    auth_manager: &AuthTokenManager,
-    ws_id: WsId,
-) -> Result<
-    (
-        actix_ws::Session,
-        actix_ws::MessageStream,
-        HostId,
-        HttpResponse,
-    ),
-    WebSocketAuthError,
-> {
-    // Validate HostID before attempting to create session
-    let client_identifier: HostId = conn.try_into().context("failed to get host_id")?;
-    if !auth_manager.is_expected_host(&client_identifier, ws_id) {
-        return Err(WebSocketAuthError::UnexpectedClient {
-            client_identifier,
-            ws_id,
-        });
-    }
-
-    // Create a new websocket session
-    let (res, session, msg_stream) = actix_ws::handle(&req, stream)
-        .map_err(|e| anyhow::anyhow!("{e:?}"))
-        .map_err(WebSocketAuthError::FailedToStartSession)?;
-    Ok((session, msg_stream, client_identifier, res))
 }
 
 #[tracing::instrument(ret, err(Debug))]
