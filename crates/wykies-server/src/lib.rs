@@ -20,4 +20,4 @@ pub mod db_types;
 
 pub use configuration::{get_configuration, Configuration, DatabaseSettings, WebSocketSettings};
 pub use error_wrappers::{e400, e500};
-pub use startup::{get_db_connection_pool, ServerBuilder, ServerInit, ServerTask};
+pub use startup::{get_db_connection_pool, ApiServerBuilder, ApiServerInit, ServerTask};

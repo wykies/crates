@@ -50,13 +50,13 @@ pub trait ServerTask {
 }
 
 /// Bundles the information used to start a server
-pub struct ServerInit<T: Clone> {
+pub struct ApiServerInit<T: Clone> {
     pub cancellation_token: TrackedCancellationToken,
     pub cancellation_tracker: CancellationTracker,
     pub configuration: Configuration<T>,
 }
 
-pub struct ServerBuilder<'a, T>
+pub struct ApiServerBuilder<'a, T>
 where
     T: Clone,
 {
@@ -65,9 +65,9 @@ where
     listener: TcpListener,
 }
 
-pub struct RunnableServer(actix_web::dev::Server);
+pub struct RunnableApiServer(actix_web::dev::Server);
 
-impl<T> ServerInit<T>
+impl<T> ApiServerInit<T>
 where
     T: Clone + DeserializeOwned,
 {
@@ -76,7 +76,7 @@ where
         subscriber_name: N,
         default_env_filter_directive: D,
         sink: Sink,
-    ) -> ServerInit<T>
+    ) -> ApiServerInit<T>
     where
         Sink: for<'b> tracing_subscriber::fmt::MakeWriter<'b> + Send + Sync + 'static,
         D: AsRef<str>,
@@ -88,7 +88,7 @@ where
         let (cancellation_token, cancellation_tracker) = TrackedCancellationToken::new();
         let configuration = get_configuration::<T>().expect("failed to read configuration.");
 
-        ServerInit {
+        ApiServerInit {
             cancellation_token,
             cancellation_tracker,
             configuration,
@@ -96,7 +96,7 @@ where
     }
 }
 
-impl<'a, T> ServerBuilder<'a, T>
+impl<'a, T> ApiServerBuilder<'a, T>
 where
     T: Clone + DeserializeOwned,
 {
@@ -122,7 +122,7 @@ where
         self,
         open_resource: FOpen,
         protected_resource: FProtected,
-    ) -> anyhow::Result<RunnableServer>
+    ) -> anyhow::Result<RunnableApiServer>
     where
         FOpen: Fn(&mut ServiceConfig) + Send + Clone + Copy + 'static,
         FProtected: Fn(&mut ServiceConfig) + Send + Clone + Copy + 'static,
@@ -222,11 +222,11 @@ where
         .listen(self.listener)
         .context("Failed to bind HTTP Server to listener")?
         .run();
-        Ok(RunnableServer(server))
+        Ok(RunnableApiServer(server))
     }
 }
 
-impl ServerTask for RunnableServer {
+impl ServerTask for RunnableApiServer {
     fn name(&self) -> &'static str {
         "API Server"
     }
