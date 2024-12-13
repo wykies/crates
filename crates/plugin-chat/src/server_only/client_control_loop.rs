@@ -11,10 +11,8 @@ use std::{pin::pin, sync::Arc, time::Instant};
 use tokio::{select, sync::mpsc};
 use tracing::{debug, error, info, instrument, warn, Span};
 use ws_auth::{validate_ws_connection, AuthTokenManager, WsConnId};
-use wykies_server::log_err_as_error;
 use wykies_shared::{
-    debug_panic,
-    {const_config::CHANNEL_BUFFER_SIZE, host_branch::HostId},
+    const_config::CHANNEL_BUFFER_SIZE, debug_panic, host_branch::HostId, log_err_as_error,
 };
 use wykies_time::Timestamp;
 

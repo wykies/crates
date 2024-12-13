@@ -14,7 +14,6 @@ pub mod authentication;
 mod configuration;
 pub mod db_utils;
 mod error_wrappers;
-mod macros;
 pub mod plugin;
 pub mod routes;
 mod session_state;

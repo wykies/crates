@@ -11,11 +11,11 @@ use tokio::{
 use tracing::{error, info, instrument, warn};
 use tracked_cancellations::TrackedCancellationToken;
 use ws_auth::{WsConnId, WsId};
-use wykies_server::{
-    db_types::DbPool, log_err_as_error, log_err_as_warn, ws::HeartbeatConfig, ServerTask,
-    WebSocketSettings,
+use wykies_server::{db_types::DbPool, ws::HeartbeatConfig, ServerTask, WebSocketSettings};
+use wykies_shared::{
+    const_config::CHANNEL_BUFFER_SIZE, debug_panic, log_err_as_error, log_err_as_warn,
+    session::UserSessionInfo,
 };
-use wykies_shared::{const_config::CHANNEL_BUFFER_SIZE, debug_panic, session::UserSessionInfo};
 
 use super::{history::ChatHistory, ChatSettings};
 
