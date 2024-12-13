@@ -174,6 +174,7 @@ where
             .service(
                 web::scope("/api")
                     .wrap(from_fn(validate_user_access))
+                    .configure(protected_resource)
                     .route("/change_password", web::post().to(change_password))
                     .route("/logout", web::post().to(log_out))
                     .service(
@@ -200,15 +201,14 @@ where
                                     .route("/new", web::post().to(user_new))
                                     .route("/password_reset", web::post().to(password_reset))
                                     .route("/update", web::post().to(user_update)),
-                            )
-                            .configure(protected_resource),
+                            ),
                     )
                     .route(
                         "/host_branch/lookup",
                         web::get().to(host_branch_pair_lookup),
-                    )
-                    .configure(open_resource),
+                    ),
             )
+            .configure(open_resource)
             .route("/login", web::post().to(login))
             .route("/branches", web::get().to(branch_list))
             .route("/health_check", web::get().to(health_check))
