@@ -3,7 +3,7 @@ var filesToCache = [
   './',
   './index.html',
   './chat-app-client.js',
-  './chat_app_client_bg.wasm',
+  './chat-app-client_bg.wasm',
 ];
 
 /* Start the service worker and cache all of the app's content */
