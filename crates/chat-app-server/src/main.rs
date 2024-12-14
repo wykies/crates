@@ -1,11 +1,8 @@
 use anyhow::Context;
-use chat_app_server::{
-    cancel_remaining_tasks,
-    startup::{start_servers, CustomConfiguration},
-};
+use chat_app_server::startup::{start_servers, CustomConfiguration};
 use tokio::task::JoinError;
 use tracing::{error, info};
-use wykies_server::{ApiServerBuilder, ApiServerInit};
+use wykies_server::{cancel_remaining_tasks, ApiServerBuilder, ApiServerInit};
 use wykies_shared::telemetry;
 
 #[tokio::main]

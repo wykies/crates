@@ -24,3 +24,12 @@ pub mod db_types;
 
 pub use configuration::{get_configuration, Configuration, DatabaseSettings, WebSocketSettings};
 pub use startup::{get_db_connection_pool, ApiServerBuilder, ApiServerInit, ServerTask};
+use tracked_cancellations::CancellationTracker;
+use wykies_shared::const_config::server::SERVER_SHUTDOWN_TIMEOUT;
+
+pub async fn cancel_remaining_tasks(mut cancellation_tracker: CancellationTracker) {
+    cancellation_tracker.cancel();
+    cancellation_tracker
+        .await_cancellations(SERVER_SHUTDOWN_TIMEOUT.into())
+        .await;
+}

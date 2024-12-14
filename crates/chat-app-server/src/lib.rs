@@ -34,9 +34,6 @@
 
 #![warn(unused_crate_dependencies)]
 
-use tracked_cancellations::CancellationTracker;
-use wykies_shared::const_config::server::SERVER_SHUTDOWN_TIMEOUT;
-
 mod warning_suppress {
     use sqlx as _; // Needed to enable TLS
 }
@@ -59,14 +56,6 @@ mod warning_suppress_test {
 mod permissions;
 pub mod startup;
 mod websocket;
-
-// TODO 2: Move this into the shared server lib
-pub async fn cancel_remaining_tasks(mut cancellation_tracker: CancellationTracker) {
-    cancellation_tracker.cancel();
-    cancellation_tracker
-        .await_cancellations(SERVER_SHUTDOWN_TIMEOUT.into())
-        .await;
-}
 
 // TODO 3: Ensure we have a way to access the logs... Maybe we have to switch back to stdout but see what options the hosting provider supports
 // TODO 3: Enable HTTPS https://actix.rs/docs/server/#tls--https https://github.com/actix/examples/tree/master/https-tls/rustls
