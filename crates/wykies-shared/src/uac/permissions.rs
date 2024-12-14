@@ -103,7 +103,7 @@ pub fn default_permissions() -> PermissionMap {
     result.insert(PATH_API_CHANGE_PASSWORD.path, vec![]);
     result.insert(PATH_API_HOSTBRANCH_LOOKUP.path, vec![]);
     result.insert(PATH_API_LOGOUT.path, vec![]);
-    result.insert(PATH_WS_TOKEN_CHAT.path, vec![]);
+    result.insert(PATH_WS_TOKEN_CHAT.path, vec![]); // Included here because it's shared by all current applications and will give 404 if path is not there because uses no permissions
     result
 }
 
