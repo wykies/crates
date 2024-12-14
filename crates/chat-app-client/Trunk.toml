@@ -1,0 +1,9 @@
+[build]
+# The output dir for all final assets.
+dist = "../chat-app-server/app"
+# The public URL from which assets are to be served.
+public_url = "/"
+# Whether to include hash values in the output file names.
+filehash = true
+
+# Full example at https://github.com/thedodd/trunk/blob/master/Trunk.toml

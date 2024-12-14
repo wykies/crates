@@ -98,16 +98,16 @@ jobs:
           components: clippy
       - name: Linting
         run: cargo clippy -- -D warnings
-  # wasm:
-  #   name: Clippy WASM
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: wykies/checkout@main
-  #       with:
-  #           submodules: recursive
-  #     - uses: wykies/setup-rust-toolchain@main
-  #       with:
-  #         target: wasm32-unknown-unknown
-  #         components: clippy
-  #     - name: Linting
-  #       run: cargo clippy --target="wasm32-unknown-unknown" --package chat-app-client -- -D warnings
+  wasm:
+    name: Clippy WASM
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wykies/checkout@main
+        with:
+            submodules: recursive
+      - uses: wykies/setup-rust-toolchain@main
+        with:
+          target: wasm32-unknown-unknown
+          components: clippy
+      - name: Linting
+        run: cargo clippy --target="wasm32-unknown-unknown" --package chat-app-client -- -D warnings
