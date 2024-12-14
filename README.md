@@ -33,7 +33,7 @@ be dual licensed as above, without any additional terms or conditions.
 
 ## Credits
 
-- Chat App Icon: Designed by Freepik <http://www.freepik.com/>
+- Icon by juicy_fish <https://www.freepik.com/search>
 - WebSocket security based on a reading a [heroku](https://devcenter.heroku.com/articles/websocket-security) article that that cites the original source as [Armin Ronacher](https://lucumr.pocoo.org/2012/9/24/websockets-101/).
 - egui chat client borrowed inspiration from <egui.rs> and the [WebSockets](https://github.com/rerun-io/ewebsock) example app.
 - Server design in based on the Book and accompanying code for [Zero To Production In Rust](https://www.zero2prod.com/)
