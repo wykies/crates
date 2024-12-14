@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = [
+members = [ "crates/chat-app-client",
   "crates/chat-app-server",
   "crates/chat-app-shared",
   "crates/plugin-chat",
