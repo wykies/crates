@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = [
+members = [ "crates/chat-app-server",
   "crates/plugin-chat",
   "crates/tracked-cancellations",
   "crates/ws-auth",
