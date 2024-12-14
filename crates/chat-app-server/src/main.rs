@@ -11,8 +11,8 @@ use wykies_shared::telemetry;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // Prep to start building server
-    let (file, path) =
-        telemetry::create_trace_file("chat-app-server").context("failed to create file for traces")?;
+    let (file, path) = telemetry::create_trace_file("chat-app-server")
+        .context("failed to create file for traces")?;
     println!("Traces being written to: {path:?}");
     let ApiServerInit::<CustomConfiguration> {
         cancellation_token,
