@@ -38,4 +38,5 @@ server_only = [
   "dep:tracked-cancellations",
   "dep:ws-auth",
   "dep:wykies-server",
+  "wykies-time/mysql",
 ]
