@@ -11,7 +11,7 @@ use crate::pages::{
     UiLogin, UiPage,
 };
 use crate::shortcuts::Shortcuts;
-use crate::{CustomVisuals, DisplayablePage};
+use crate::DisplayablePage;
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 // TODO 2: Make chat page to show by default
@@ -21,7 +21,6 @@ pub struct ChatApp {
     #[serde(skip)]
     login_page: Option<UiLogin>,
     data_shared: DataShared,
-    visuals: CustomVisuals,
     active_pages: Vec<UiPage>,
     shortcuts: Shortcuts,
 }
@@ -102,7 +101,6 @@ impl eframe::App for ChatApp {
     /// second. Put your widgets into a `SidePanel`, `TopPanel`,
     /// `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        self.update_style(ctx);
         self.data_shared.screen_lock_info.tick();
         self.top_panel(ctx);
         self.bottom_panel(ctx);
@@ -228,10 +226,6 @@ impl ChatApp {
                 page.display_page(ctx, &mut self.data_shared);
             }
         }
-    }
-
-    fn update_style(&mut self, ctx: &egui::Context) {
-        self.visuals.update_style(ctx);
     }
 
     fn current_time(&self) -> String {

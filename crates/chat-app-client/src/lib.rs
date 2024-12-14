@@ -17,12 +17,10 @@ mod pages;
 mod shortcuts;
 pub mod tracing;
 mod ui_helpers;
-mod visuals;
 
 pub use app::{ChatApp, DataShared};
 pub use pages::DisplayablePage;
 pub use pages::UiPage;
-pub use visuals::CustomVisuals;
 
 /// Function is here to ensure lib also uses the log create to prevent the warning that it is not used
 #[cfg(target_arch = "wasm32")]
