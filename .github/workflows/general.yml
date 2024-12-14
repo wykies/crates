@@ -56,7 +56,7 @@ jobs:
           cd crates/chat-app-server && SKIP_DOCKER=true ./scripts/init_db.sh
       - name: Check sqlx prepared queries are is up-to-date
         run: |
-          cargo sqlx prepare --check
+          cargo sqlx prepare --check --workspace -- --bins --tests --all-features
       - name: Run tests
         run: cargo test
 
