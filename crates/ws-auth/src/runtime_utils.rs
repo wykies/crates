@@ -1,6 +1,6 @@
 //! Houses code to make using WebSockets easier and extracts out the boilerplate
 
-use std::future::Future;
+use std::{future::Future, sync::Arc};
 
 use crate::{
     validate_ws_connection, AuthTokenManager, ClientLoopController, WebSocketAuthError, WsId,
@@ -46,7 +46,7 @@ pub fn pre_screen_incoming_ws_req(
 
 #[instrument(skip(session, msg_stream, ws_server_handle, ws_start_client_handler_loop))]
 pub async fn validate_connection_then_start_client_handler_loop<WsServerHandle, Output>(
-    ws_server_handle: WsServerHandle,
+    ws_server_handle: Arc<WsServerHandle>,
     session: actix_ws::Session,
     msg_stream: actix_ws::MessageStream,
     auth_manager: web::Data<AuthTokenManager>,

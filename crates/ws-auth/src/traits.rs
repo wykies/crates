@@ -4,7 +4,7 @@ use wykies_shared::session::UserSessionInfo;
 
 pub trait ClientLoopController<WsServerHandle, Output>:
     FnOnce(
-    WsServerHandle,
+    Arc<WsServerHandle>,
     actix_ws::Session,
     actix_ws::AggregatedMessageStream,
     Arc<UserSessionInfo>,
@@ -16,7 +16,7 @@ where
 impl<T, WsServerHandle, Output> ClientLoopController<WsServerHandle, Output> for T
 where
     T: FnOnce(
-        WsServerHandle,
+        Arc<WsServerHandle>,
         actix_ws::Session,
         actix_ws::AggregatedMessageStream,
         Arc<UserSessionInfo>,

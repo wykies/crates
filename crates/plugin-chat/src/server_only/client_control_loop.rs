@@ -17,7 +17,7 @@ use wykies_time::Timestamp;
 
 #[instrument(skip(session, msg_stream, chat_server_handle), fields(ws_conn_id))]
 pub async fn chat_ws_start_client_handler_loop(
-    chat_server_handle: ChatServerHandle,
+    chat_server_handle: Arc<ChatServerHandle>,
     mut session: actix_ws::Session,
     msg_stream: actix_ws::AggregatedMessageStream,
     user_info: Arc<UserSessionInfo>,

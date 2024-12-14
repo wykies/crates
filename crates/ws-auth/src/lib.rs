@@ -5,14 +5,14 @@
 //! <https://lucumr.pocoo.org/2012/9/24/websockets-101/> as the original source
 
 mod errors;
+mod handlers;
 mod id;
 mod manager;
 mod runtime_utils;
-// TODO 1: This shouldn't need to be public
-pub mod handlers;
 mod traits;
 
 pub use errors::WebSocketAuthError;
+pub use handlers::ws_get_route_add_closures;
 pub use id::{WsConnId, WsId};
 pub use manager::{validate_ws_connection, AuthTokenManager};
 pub use traits::ClientLoopController;
