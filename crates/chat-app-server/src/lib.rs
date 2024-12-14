@@ -73,6 +73,3 @@ pub async fn cancel_remaining_tasks(mut cancellation_tracker: CancellationTracke
 // TODO 4: Some performance was left on the table by using `text` for the
 //         websockets instead of `binary`
 // TODO 4: Purge history
-
-#[cfg(all(not(debug_assertions), feature = "disable-cors"))]
-compile_error!("CORS is not allowed to be disabled for release builds");
