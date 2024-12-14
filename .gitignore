@@ -2,3 +2,6 @@
 
 # Built version of front end deployment
 crates/chat-app-server/app/
+
+# Ignore folders with traces
+traces/
