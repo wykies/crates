@@ -9,38 +9,105 @@ on:
     branches:
       - main
       - develop
-      
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches:
+      - main
+      - develop
 env:
   CARGO_TERM_COLOR: always
+  SQLX_VERSION: 0.7.4 # When changing ensure the cache is invalidated
+  SQLX_FEATURES: "rustls,mysql"
 
 jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_USER: db_user
+          MYSQL_PASSWORD: password
+          MYSQL_DATABASE: parts
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_ROOT_HOST: "%"
+        ports:
+          - 3306:3306
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
     steps:
       - uses: wykies/checkout@main
+        with:
+          submodules: recursive
       - uses: wykies/setup-rust-toolchain@main
+      - name: Install sqlx-cli
+        run:
+          cargo install sqlx-cli
+            --version=${{ env.SQLX_VERSION }}
+            --features ${{ env.SQLX_FEATURES }}
+            --no-default-features
+            --locked
+      - name: Migrate database
+        run: |
+          sudo apt-get install mysql-client -y
+          SKIP_DOCKER=true ./crates/chat-app-server/scripts/init_db.sh
+      - name: Check sqlx prepared queries are is up-to-date
+        run: |
+          cargo sqlx prepare --check
       - name: Run tests
-        run: cargo test --all-features
+        run: cargo test
 
   fmt:
     name: Rustfmt
     runs-on: ubuntu-latest
     steps:
       - uses: wykies/checkout@main
+        with:
+          submodules: recursive
       - uses: wykies/setup-rust-toolchain@main
         with:
           components: rustfmt
+          cache: false
       - name: Enforce formatting
         run: cargo fmt --check
 
   clippy:
     name: Clippy
+    
     runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:latest
+        env:
+          MYSQL_USER: db_user
+          MYSQL_PASSWORD: password
+          MYSQL_DATABASE: parts
+          MYSQL_ROOT_PASSWORD: password
+          MYSQL_ROOT_HOST: "%"
+        ports:
+          - 3306:3306
     steps:
       - uses: wykies/checkout@main
+        with:
+          submodules: recursive
       - uses: wykies/setup-rust-toolchain@main
         with:
           components: clippy
       - name: Linting
         run: cargo clippy -- -D warnings
+  # wasm:
+  #   name: Clippy WASM
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: wykies/checkout@main
+  #       with:
+  #           submodules: recursive
+  #     - uses: wykies/setup-rust-toolchain@main
+  #       with:
+  #         target: wasm32-unknown-unknown
+  #         components: clippy
+  #     - name: Linting
+  #       run: cargo clippy --target="wasm32-unknown-unknown" --package chat-app-client -- -D warnings
