@@ -1,9 +1,12 @@
 [workspace]
 resolver = "2"
-members = [ "crates/chat-app-server",
+members = [
+  "crates/chat-app-server",
+  "crates/chat-app-shared",
   "crates/plugin-chat",
   "crates/tracked-cancellations",
   "crates/ws-auth",
+  "crates/wykies-client-core",
   "crates/wykies-server",
   "crates/wykies-shared",
   "crates/wykies-time",
@@ -22,7 +25,10 @@ chrono = { version = "0.4.34", default-features = false, features = ["clock", "s
 config = { version = "0.14", default-features = false, features = ["toml"] }
 egui = { version = "0.29.1", default-features = false }
 ewebsock = "0.8.0"
+futures = "0.3.28"
 futures-util = "0.3.30"
+insta = "1.40.0"
+plugin-chat = { version = "*", path = "crates/plugin-chat" }
 rand = "0.8"
 reqwest = { version = "*", default-features = false, features = ["json", "rustls-tls", "cookies"] } # Only to set features, version set by reqwest-cross
 reqwest-cross = "0.4.1"
@@ -45,8 +51,11 @@ tracing-bunyan-formatter = "0.3.10"
 tracing-log = "0.2.0"
 tracing-subscriber = { version = "0.3", features = ["fmt", "json"] }
 tracked-cancellations = { version = "*", path = "crates/tracked-cancellations" }
+uuid = "1"
+wasm-bindgen-test = "0.3.42"
 web-time = "1.1.0"
 ws-auth = { version = "*", path = "crates/ws-auth" }
 wykies-server = { version = "*", path = "crates/wykies-server" }
 wykies-shared = { version = "*", path = "crates/wykies-shared" }
+wykies-client-core = { version = "*", path = "crates/wykies-client-core" }
 wykies-time = { version = "*", path = "crates/wykies-time" }

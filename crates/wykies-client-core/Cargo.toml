@@ -1,0 +1,32 @@
+[package]
+name = "wykies-client-core"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Stores the functionality common between Clients"
+
+[dependencies]
+anyhow.workspace = true
+futures.workspace = true
+reqwest.workspace = true
+reqwest-cross = { workspace = true, features = ["yield_now"] }
+secrecy.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+tracing.workspace = true
+wykies-shared = { workspace = true, features = ["client_only"] }
+
+# native:
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+ewebsock = { workspace = true, features = ["tls", "tokio"] }
+
+# web:
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+ewebsock = { workspace = true, features = ["tls"] }
+
+[dev-dependencies]
+wasm-bindgen-test.workspace = true
+
+[features]
+default = []
+expose_test = [] # Makes some private functions public for testing (Using modules and "expose_test_" as a prefix for associated functions)

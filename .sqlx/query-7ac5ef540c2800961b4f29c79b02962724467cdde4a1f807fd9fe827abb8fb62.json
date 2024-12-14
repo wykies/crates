@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO `hostbranch` \n            (`hostname`, `AssignedBranch`)\n            VALUES (?, ?);",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "7ac5ef540c2800961b4f29c79b02962724467cdde4a1f807fd9fe827abb8fb62"
+}

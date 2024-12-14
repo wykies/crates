@@ -1,0 +1,20 @@
+redis_uri = "redis://127.0.0.1:6379"
+[application]
+port = "8789" # W = 87, Y = 89
+host = "0.0.0.0"
+hmac_secret = "super-long-and-secret-random-key-needed-to-verify-message-integrity"
+[database]
+host = "127.0.0.1"
+port = 3306
+username = "db_user"
+password = "password"
+database_name = "chat_demo"
+require_ssl = true
+[user_auth]
+login_attempt_limit = 5
+[websockets]
+token_lifetime_secs = 20
+heartbeat_times_missed_allowance = 2
+heartbeat_additional_buffer_time_secs = 2
+[custom.chat]
+heartbeat_interval_secs = 30

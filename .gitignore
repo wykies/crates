@@ -1,1 +1,4 @@
 /target
+
+# Built version of front end deployment
+crates/chat-app-server/app/

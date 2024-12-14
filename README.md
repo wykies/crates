@@ -8,8 +8,8 @@ They vary in levels of maturity and speed of development is you are interested i
 Brief points to be aware of when looking into any creates in this repo:
 
 - Feature flags on crates are documented with comments in their respective `Cargo.toml` files.
-- Servers built using this framework need to enable the desired encryption options for the sqlx crate.
-- The plugins are treated as first party code. There is not security separation. If that is needed do NOT give them access to the same database you use for the rest of your application. It was more designed for them to be able to be reused not to be sandboxed.
+- Servers built using this framework need to enable the desired encryption options for the sqlx crate (See [sqlx readme](https://github.com/launchbadge/sqlx?tab=readme-ov-file#install) and [Demo chat server](crates/chat-app-server/Cargo.toml) for an example).
+- The plugins are treated as first party code. There is not security separation. If that is needed do NOT give them access to the same database you use for the rest of your application. It was more designed for them to be able to be reused not to be sandboxed. Also pay attention to what routes they are adding to your application.
 
 <!-- TODO 5 Document what tables each plugin uses (probably in their lib.rs, bonus points if it's automated so it stays updated) -->
 

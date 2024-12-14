@@ -1,0 +1,14 @@
+---
+source: crates/chat-app-server/tests/api/users.rs
+expression: actual
+---
+{
+  "username": "[value varies]",
+  "display_name": "Admin User",
+  "force_pass_change": true,
+  "assigned_role": 2,
+  "enabled": true,
+  "locked_out": false,
+  "failed_attempts": 0,
+  "pass_change_date": "[date]"
+}
