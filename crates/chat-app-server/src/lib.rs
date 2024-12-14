@@ -53,7 +53,6 @@ mod warning_suppress_test {
     use wykies_time as _;
 }
 
-mod permissions;
 pub mod startup;
 mod websocket;
 

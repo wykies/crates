@@ -1,4 +1,4 @@
-use crate::{permissions::init_permissions, websocket::WsIds};
+use crate::websocket::WsIds;
 use actix_web::web::{self, ServiceConfig};
 use plugin_chat::server_only::{
     chat_ws_start_client_handler_loop, ChatPlugin, ChatPluginConfig, ChatSettings,
@@ -12,6 +12,7 @@ use wykies_server::{
     plugin::{ServerPlugin, ServerPluginArtifacts},
     ApiServerBuilder, Configuration, ServerTask as _,
 };
+use wykies_shared::uac::init_permissions_to_defaults;
 
 #[derive(Clone, serde::Deserialize)]
 pub struct CustomConfiguration {
@@ -26,7 +27,7 @@ pub async fn start_servers<T>(
 where
     T: Clone + DeserializeOwned,
 {
-    init_permissions();
+    init_permissions_to_defaults();
 
     // Chat Server
     let ServerPluginArtifacts {

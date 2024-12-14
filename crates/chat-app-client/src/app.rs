@@ -2,7 +2,7 @@ use egui::ScrollArea;
 use tracing::{debug, error, instrument};
 use tracing::{info, warn};
 use wykies_client_core::WakeFn;
-use wykies_shared::uac::DisplayName;
+use wykies_shared::uac::{init_permissions_to_defaults, DisplayName};
 use wykies_time::Timestamp;
 
 use crate::lockout::ScreenLockInfo;
@@ -116,6 +116,7 @@ impl eframe::App for ChatApp {
 impl ChatApp {
     /// Called once before the first frame.
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
+        init_permissions_to_defaults();
         // This is also where you can customize the look and feel of egui using
         // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
 

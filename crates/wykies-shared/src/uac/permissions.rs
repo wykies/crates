@@ -107,8 +107,15 @@ pub fn default_permissions() -> PermissionMap {
     result
 }
 
-pub fn initialize_permissions(value: PermissionMap) -> Result<(), PermissionMap> {
+/// Only sets the permissions if they haven't already been set
+pub fn try_set_permissions(value: PermissionMap) -> Result<(), PermissionMap> {
     PERMISSION_MAP.set(value)
+}
+
+/// Initializes the permissions may be run more than once without issue (will only have an effect the first time)
+pub fn init_permissions_to_defaults() {
+    // Set permissions and ignore if they were already set
+    let _ = try_set_permissions(default_permissions());
 }
 
 /// Takes a path and returns the permissions required for it if found
