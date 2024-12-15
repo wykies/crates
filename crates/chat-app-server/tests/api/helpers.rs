@@ -30,20 +30,20 @@ use wykies_time::Seconds;
 const MSG_WAIT_TIMEOUT: Seconds = Seconds::new(2);
 
 // Ensure that the `tracing` stack is only initialised once
-static TRACING: LazyLock<()> = LazyLock::new(|| {
+pub static TRACING: LazyLock<String> = LazyLock::new(|| {
     let default_filter_level = "info".to_string();
     let subscriber_name = "test".to_string();
     if std::env::var("TEST_LOG").is_ok() {
         let log_file_name = format!("server_tests{}", Uuid::new_v4());
         let (file, path) = telemetry::create_trace_file(&log_file_name).unwrap();
-        println!("Traces for tests being written to: {path:?}");
         let subscriber = get_subscriber(subscriber_name, default_filter_level, file);
         init_subscriber(subscriber).unwrap();
+        format!("Traces for tests being written to: {path:?}")
     } else {
         let subscriber = get_subscriber(subscriber_name, default_filter_level, std::io::sink);
         init_subscriber(subscriber).unwrap();
-        println!("Traces set to std::io::sink");
-    };
+        "Traces set to std::io::sink".to_string()
+    }
 });
 
 pub struct TestApp {
@@ -149,8 +149,9 @@ pub async fn spawn_app() -> TestApp {
 }
 
 pub async fn spawn_app_without_host_branch_stored() -> TestApp {
-    // Deref TRACING to force the LazyLock to initialize
-    let _ = TRACING.deref();
+    // Accessing TRACING also forces the LazyLock to initialize
+    let logging_msg = TRACING.deref();
+    println!("{logging_msg}");
 
     // Randomise configuration to ensure test isolation
     let configuration = {
