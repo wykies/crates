@@ -149,49 +149,37 @@ pub async fn spawn_app() -> TestApp {
 }
 
 pub async fn spawn_app_without_host_branch_stored() -> TestApp {
-    // Accessing TRACING also forces the LazyLock to initialize
-    let logging_msg = TRACING.deref();
-    println!("{logging_msg}");
+    let (configuration, connection_pool) =
+        spawn_app_without_host_branch_stored_before_migration().await;
+    do_migrations(&connection_pool).await;
+    spawn_app_without_host_branch_stored_after_migration(configuration).await
+}
 
-    // Randomise configuration to ensure test isolation
-    let configuration = {
-        let mut c =
-            get_configuration::<CustomConfiguration>().expect("failed to read configuration");
-        // Use a different database for each test case
-        c.database.database_name = Uuid::new_v4().to_string();
-        // Use a random OS port
-        c.application.port = 0;
-        // Use root user to be able to create a new database
-        c.database.username = "root".to_string();
+async fn spawn_app_without_host_branch_stored_after_migration(
+    configuration: wykies_server::Configuration<CustomConfiguration>,
+) -> TestApp {
+    let application_port = start_server_in_background(&configuration).await;
+    build_test_app(configuration, application_port).await
+}
 
-        c
-    };
+async fn spawn_app_without_host_branch_stored_before_migration(
+) -> (wykies_server::Configuration<CustomConfiguration>, DbPool) {
+    start_tracing();
+    let configuration = get_randomized_configuration();
+    let connection_pool = create_database(&configuration.database).await;
+    (configuration, connection_pool)
+}
 
-    // Create and migrate the database
-    configure_database(&configuration.database).await;
-
-    // Create tokens to be able to start server
-    let (cancellation_token, _) = TrackedCancellationToken::new();
-
-    // Launch the application as a background task
-    let server_builder = ApiServerBuilder::new(&configuration)
-        .await
-        .expect("Failed to build application.");
-    let application_port = server_builder
-        .port()
-        .expect("failed to get application port");
-    let join_set = start_servers(server_builder, &configuration, cancellation_token).await;
-    forget(join_set); // Leak the JoinSet so the server doesn't get shutdown
-
+async fn build_test_app(
+    configuration: wykies_server::Configuration<CustomConfiguration>,
+    application_port: u16,
+) -> TestApp {
     let login_attempt_limit = configuration.user_auth.login_attempt_limit;
-
     let db_pool = get_db_connection_pool(&configuration.database);
-
     let host_branch_pair = HostBranchPair {
         host_id: "127.0.0.1".to_string().try_into().unwrap(),
         branch_id: get_seed_branch_from_db(&db_pool).await,
     };
-
     let address = format!("http://localhost:{}", application_port);
     let core_client = build_core_client(address.clone());
 
@@ -206,8 +194,44 @@ pub async fn spawn_app_without_host_branch_stored() -> TestApp {
     };
 
     test_app.test_user.store(&test_app.db_pool, false).await;
-
     test_app
+}
+
+async fn start_server_in_background(
+    configuration: &wykies_server::Configuration<CustomConfiguration>,
+) -> u16 {
+    // Create tokens to be able to start server
+    let (cancellation_token, _) = TrackedCancellationToken::new();
+
+    // Launch the application as a background task
+    let server_builder = ApiServerBuilder::new(configuration)
+        .await
+        .expect("Failed to build application.");
+    let application_port = server_builder
+        .port()
+        .expect("failed to get application port");
+    let join_set = start_servers(server_builder, configuration, cancellation_token).await;
+    forget(join_set);
+    // Leak the JoinSet so the server doesn't get shutdown
+    application_port
+}
+
+/// Randomise configuration to ensure test isolation
+fn get_randomized_configuration() -> wykies_server::Configuration<CustomConfiguration> {
+    let mut c = get_configuration::<CustomConfiguration>().expect("failed to read configuration");
+    // Use a different database for each test case
+    c.database.database_name = Uuid::new_v4().to_string();
+    // Use a random OS port
+    c.application.port = 0;
+    // Use root user to be able to create a new database
+    c.database.username = "root".to_string();
+    c
+}
+
+fn start_tracing() {
+    // Accessing TRACING also forces the LazyLock to initialize
+    let logging_msg = TRACING.deref();
+    println!("{logging_msg}");
 }
 
 #[allow(non_snake_case)]
@@ -221,8 +245,7 @@ async fn get_seed_branch_from_db(pool: &DbPool) -> DbId {
     branch_id.try_into().unwrap()
 }
 
-async fn configure_database(config: &DatabaseSettings) -> DbPool {
-    // Create database
+async fn create_database(config: &DatabaseSettings) -> DbPool {
     let mut connection = DbConnection::connect_with(&config.without_db())
         .await
         .expect("Failed to connect to Database");
@@ -231,16 +254,16 @@ async fn configure_database(config: &DatabaseSettings) -> DbPool {
         .await
         .expect("Failed to create database");
 
-    // Migrate database
-    let connection_pool = DbPool::connect_with(config.with_db())
+    DbPool::connect_with(config.with_db())
         .await
-        .expect("Failed to connect to Database.");
+        .expect("Failed to connect to Database.")
+}
+
+async fn do_migrations(connection_pool: &DbPool) {
     sqlx::migrate!("./migrations")
-        .run(&connection_pool)
+        .run(connection_pool)
         .await
         .expect("Failed to migrate the database");
-
-    connection_pool
 }
 
 #[derive(Debug)]
