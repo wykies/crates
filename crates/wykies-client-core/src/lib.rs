@@ -13,8 +13,8 @@ mod client;
 
 pub use client::{
     websocket::{WakeFn, WebSocketConnection},
-    Client, LoginOutcome, UiCallBack,
+    Client, LoginOutcome, UiCallBack, DUMMY_ARGUMENT,
 };
 
-#[cfg(feature = "expose_test")]
-pub use client::websocket::expose_test as ws_expose_test;
+#[cfg(feature = "expose_internal")]
+pub use client::websocket::expose_internal as ws_expose_internal;

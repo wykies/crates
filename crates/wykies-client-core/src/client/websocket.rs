@@ -60,8 +60,8 @@ impl Client {
         result
     }
 
-    #[cfg(feature = "expose_test")]
-    pub fn expose_test_ws_url_from(&self, path_spec: &PathSpec) -> String {
+    #[cfg(feature = "expose_internal")]
+    pub fn expose_internal_ws_url_from(&self, path_spec: &PathSpec) -> String {
         self.ws_url_from(path_spec)
     }
 }
@@ -122,12 +122,10 @@ impl Debug for WebSocketConnection {
     }
 }
 
-#[cfg(feature = "expose_test")]
-pub mod expose_test {
+#[cfg(feature = "expose_internal")]
+pub mod expose_internal {
 
     use super::{WakeFn, WebSocketConnection};
-
-    pub const EXPOSE_TEST_DUMMY_ARGUMENT: &[(&str, &str)] = crate::client::DUMMY_ARGUMENT;
 
     pub fn initiate_ws_connection<F>(
         ws_url: String,

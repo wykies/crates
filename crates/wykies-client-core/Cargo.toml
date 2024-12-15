@@ -29,4 +29,4 @@ wasm-bindgen-test.workspace = true
 
 [features]
 default = []
-expose_test = [] # Makes some private functions public for testing (Using modules and "expose_test_" as a prefix for associated functions)
+expose_internal = [] # Makes some private functions public for testing or type extension (Using modules and "expose_internal_" as a prefix for associated functions)

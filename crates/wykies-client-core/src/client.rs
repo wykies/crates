@@ -17,7 +17,7 @@ use wykies_shared::{
 pub mod api;
 pub mod websocket;
 
-const DUMMY_ARGUMENT: &[(&str, &str)] = &[("", "")];
+pub const DUMMY_ARGUMENT: &[(&str, &str)] = &[("", "")];
 
 #[derive(Debug, Clone)]
 pub struct Client {
@@ -165,8 +165,8 @@ impl Client {
         rx
     }
 
-    #[cfg(feature = "expose_test")]
-    pub fn expose_test_send_request_expect_json<F, T, U>(
+    #[cfg(feature = "expose_internal")]
+    pub fn expose_internal_send_request_expect_json<F, T, U>(
         &self,
         path_spec: PathSpec,
         args: &T,
