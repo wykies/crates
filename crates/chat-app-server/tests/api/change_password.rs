@@ -40,7 +40,7 @@ async fn new_password_fields_must_match() {
         .core_client
         .change_password(
             &ChangePasswordReqArgs {
-                current_password: app.test_user.password.into(),
+                current_password: app.test_user.password.clone().into(),
                 new_password: new_password.clone().into(),
                 new_password_check: another_new_password.into(),
             },

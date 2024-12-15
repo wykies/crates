@@ -10,7 +10,6 @@ use std::ops::Deref;
 use std::sync::LazyLock;
 use std::time::{Duration, Instant};
 use uuid::Uuid;
-use wykies_client_core::LoginOutcome;
 use wykies_server::Configuration;
 use wykies_server::{
     db_types::{DbConnection, DbPool},
@@ -18,7 +17,6 @@ use wykies_server::{
     get_configuration, get_db_connection_pool, DatabaseSettings,
 };
 use wykies_shared::{
-    const_config::path::PATH_WS_TOKEN_CHAT,
     host_branch::HostBranchPair,
     id::DbId,
     req_args::LoginReqArgs,
@@ -46,87 +44,26 @@ pub static TRACING: LazyLock<String> = LazyLock::new(|| {
     }
 });
 
-pub struct TestApp {
+pub struct TestApp<C> {
     pub address: String,
-    pub port: u16,
     pub db_pool: DbPool,
     pub test_user: TestUser,
-    pub core_client: wykies_client_core::Client,
+    pub core_client: C,
     pub login_attempt_limit: u8,
     pub host_branch_pair: HostBranchPair,
 }
 
-impl Debug for TestApp {
+impl<C> Debug for TestApp<C> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("TestApp")
             .field("address", &self.address)
-            .field("port", &self.port)
             .field("test_user", &self.test_user)
             .finish()
     }
 }
 
-impl TestApp {
-    /// Creates a clone of [`Self`] with an admin user and separate api_client
-    #[tracing::instrument]
-    pub async fn create_admin_user(&self) -> Self {
-        let admin_user = TestUser::generate("admin");
-        admin_user.store(&self.db_pool, true).await;
-        Self {
-            address: self.address.clone(),
-            port: self.port,
-            db_pool: self.db_pool.clone(),
-            test_user: admin_user,
-            core_client: build_core_client(self.address.clone()),
-            login_attempt_limit: self.login_attempt_limit,
-            host_branch_pair: self.host_branch_pair.clone(),
-        }
-    }
-
-    #[tracing::instrument]
-    pub async fn is_logged_in(&self) -> bool {
-        // Also tests if able to establish a websocket connection but this was the simplest alternative that didn't need any permissions
-        self.core_client
-            .ws_connect(PATH_WS_TOKEN_CHAT, no_cb)
-            .await
-            .expect("failed to receive on rx")
-            .is_ok()
-    }
-
-    pub async fn login(&self) -> anyhow::Result<LoginOutcome> {
-        self.core_client
-            .login(self.test_user.login_args(), no_cb)
-            .await
-            .unwrap()
-    }
-
-    /// Logs in the user and panics if the login is not successful
-    pub async fn login_assert(&self) {
-        assert!(self
-            .core_client
-            .login(self.test_user.login_args(), no_cb)
-            .await
-            .expect("failed to receive on rx")
-            .expect("failed to extract login outcome")
-            .is_any_success());
-    }
-
-    /// Logs out the user and panics on errors
-    pub async fn logout_assert(&self) {
-        self.core_client
-            .logout(no_cb)
-            .await
-            .expect("failed to receive on rx")
-            .expect("login result was not ok");
-    }
-}
-
 /// Empty function for use when a call back isn't needed
 pub fn no_cb() {}
-
-fn build_core_client(server_address: String) -> wykies_client_core::Client {
-    wykies_client_core::Client::new(server_address)
-}
 
 pub async fn spawn_app_without_host_branch_stored_before_migration<T>() -> (Configuration<T>, DbPool)
 where
@@ -138,9 +75,18 @@ where
     (configuration, connection_pool)
 }
 
-pub async fn build_test_app<T>(configuration: Configuration<T>, application_port: u16) -> TestApp
+pub fn port_to_test_address(application_port: u16) -> String {
+    format!("http://localhost:{application_port}")
+}
+
+pub async fn build_test_app<T, C, F>(
+    configuration: Configuration<T>,
+    address: String,
+    build_client: F,
+) -> TestApp<C>
 where
     T: Clone + DeserializeOwned,
+    F: FnOnce(String) -> C,
 {
     let login_attempt_limit = configuration.user_auth.login_attempt_limit;
     let db_pool = get_db_connection_pool(&configuration.database);
@@ -148,12 +94,10 @@ where
         host_id: "127.0.0.1".to_string().try_into().unwrap(),
         branch_id: get_seed_branch_from_db(&db_pool).await,
     };
-    let address = format!("http://localhost:{}", application_port);
-    let core_client = build_core_client(address.clone());
+    let core_client = build_client(address.clone());
 
     let test_app = TestApp {
         address,
-        port: application_port,
         db_pool,
         test_user: TestUser::generate("normal"),
         core_client,
@@ -234,7 +178,7 @@ impl TestUser {
         LoginReqArgs::new(self.username.clone(), self.password.clone().into())
     }
 
-    pub async fn disable_in_db(&self, app: &TestApp) {
+    pub async fn disable_in_db<C>(&self, app: &TestApp<C>) {
         let sql_result = sqlx::query!(
             "UPDATE `user` SET `Enabled` = '0' WHERE `user`.`UserName` = ?;",
             self.username,
@@ -245,7 +189,7 @@ impl TestUser {
         validate_one_row_affected(&sql_result).expect("failed to set user to disabled");
     }
 
-    pub async fn set_locked_out_in_db(&self, app: &TestApp, value: bool) {
+    pub async fn set_locked_out_in_db<C>(&self, app: &TestApp<C>, value: bool) {
         let value = if value { 1 } else { 0 };
         let sql_result = sqlx::query!(
             "UPDATE `user` SET `LockedOut` = ? WHERE `user`.`UserName` = ?;",
@@ -258,7 +202,7 @@ impl TestUser {
         validate_one_row_affected(&sql_result).expect("failed to set user to disabled");
     }
 
-    async fn store(&self, pool: &DbPool, is_admin: bool) {
+    pub async fn store(&self, pool: &DbPool, is_admin: bool) {
         let salt = SaltString::generate(&mut rand::thread_rng());
         // Match production parameters
         let password_hash = wykies_server::authentication::argon2_settings()
@@ -331,7 +275,7 @@ pub async fn wait_for_message(
     bail!("Timed out after {MSG_WAIT_TIMEOUT:?}")
 }
 
-pub async fn store_host_branch(test_app: &TestApp) {
+pub async fn store_host_branch<C>(test_app: &TestApp<C>) {
     let sql_result = sqlx::query!(
         "INSERT INTO `hostbranch` 
         (`hostname`, `AssignedBranch`)

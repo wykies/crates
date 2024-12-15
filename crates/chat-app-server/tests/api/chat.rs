@@ -21,7 +21,7 @@ async fn sent_messages_received() {
         .await
         .expect("failed to receive on rx")
         .expect("connection result was not ok");
-    let author: Username = app.test_user.username.try_into().unwrap();
+    let author: Username = app.test_user.username.clone().try_into().unwrap();
     let expected_im = ChatMsg::IM(ChatIM {
         author: author.clone(),
         timestamp: Timestamp::now(),
