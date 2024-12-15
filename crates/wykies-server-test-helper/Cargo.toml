@@ -1,0 +1,21 @@
+[package]
+name = "wykies-server-test-helper"
+version = "0.1.0"
+edition = "2021"
+publish = false
+description = "Provides supporting code for running integration tests"
+
+[dependencies]
+anyhow.workspace = true
+argon2 = { workspace = true, features = ["std"] }
+ewebsock.workspace = true
+rand = { workspace = true, features = ["std_rng"] }
+serde.workspace = true
+sqlx = { workspace = true, features = ["runtime-tokio", "macros", "mysql", "chrono", "migrate"] }
+tokio.workspace = true
+tracing.workspace = true
+uuid = { workspace = true, features = ["v4", "serde"] }
+wykies-client-core = { workspace = true, features = ["expose_test"] }
+wykies-server.workspace = true
+wykies-shared = { workspace = true, features = ["server_only"] }
+wykies-time = { workspace = true, features = ["mysql"] }

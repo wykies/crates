@@ -8,6 +8,7 @@ members = [
   "crates/ws-auth",
   "crates/wykies-client-core",
   "crates/wykies-server",
+  "crates/wykies-server-test-helper",
   "crates/wykies-shared",
   "crates/wykies-time",
 ]
@@ -62,6 +63,7 @@ web-time = "1.1.0"
 ws-auth = { version = "*", path = "crates/ws-auth" }
 wykies-client-core = { version = "*", path = "crates/wykies-client-core" }
 wykies-server = { version = "*", path = "crates/wykies-server" }
+wykies-server-test-helper = { version = "*", path = "crates/wykies-server-test-helper" }
 wykies-shared = { version = "*", path = "crates/wykies-shared" }
 wykies-time = { version = "*", path = "crates/wykies-time" }
 

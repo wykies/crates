@@ -40,16 +40,15 @@ mod warning_suppress {
 
 #[cfg(test)] // Included to prevent unused crate warning
 mod warning_suppress_test {
-    use argon2 as _;
     use chrono as _;
     use ewebsock as _;
     use insta as _;
-    use rand as _;
     use secrecy as _;
     use serde_json as _;
     use sqlx as _;
     use uuid as _;
     use wykies_client_core as _;
+    use wykies_server_test_helper as _;
     use wykies_time as _;
 }
 

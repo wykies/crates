@@ -21,16 +21,14 @@ wykies-server.workspace = true
 wykies-shared = { workspace = true, features = ["server_only"] }
 
 [dev-dependencies]
-argon2 = { workspace = true, features = ["std"] }
 chrono.workspace = true
 ewebsock.workspace = true
 insta = { workspace = true, features = ["serde", "redactions", "json"] }
-rand = { workspace = true, features = ["std_rng"] }
 secrecy.workspace = true
 serde_json.workspace = true
-sqlx = { workspace = true, features = ["runtime-tokio", "macros", "mysql", "chrono", "migrate"] }
 uuid = { workspace = true, features = ["v4", "serde"] }
 wykies-client-core = { workspace = true, features = ["expose_test"] }
+wykies-server-test-helper.workspace = true
 wykies-time = { workspace = true, features = ["mysql"] }
 
 [features]

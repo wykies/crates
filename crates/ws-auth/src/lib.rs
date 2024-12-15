@@ -4,6 +4,8 @@
 //! <https://devcenter.heroku.com/articles/websocket-security> that cites
 //! <https://lucumr.pocoo.org/2012/9/24/websockets-101/> as the original source
 
+#![warn(unused_crate_dependencies)]
+
 mod errors;
 mod handlers;
 mod id;

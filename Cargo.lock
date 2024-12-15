@@ -1146,12 +1146,10 @@ version = "0.1.0"
 dependencies = [
  "actix-web",
  "anyhow",
- "argon2",
  "chrono",
  "ewebsock",
  "insta",
  "plugin-chat",
- "rand",
  "secrecy",
  "serde",
  "serde_json",
@@ -1163,6 +1161,7 @@ dependencies = [
  "ws-auth",
  "wykies-client-core",
  "wykies-server",
+ "wykies-server-test-helper",
  "wykies-shared",
  "wykies-time",
 ]
@@ -6586,6 +6585,25 @@ dependencies = [
  "tracing-subscriber",
  "tracked-cancellations",
  "ws-auth",
+ "wykies-shared",
+ "wykies-time",
+]
+
+[[package]]
+name = "wykies-server-test-helper"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "argon2",
+ "ewebsock",
+ "rand",
+ "serde",
+ "sqlx",
+ "tokio",
+ "tracing",
+ "uuid",
+ "wykies-client-core",
+ "wykies-server",
  "wykies-shared",
  "wykies-time",
 ]
