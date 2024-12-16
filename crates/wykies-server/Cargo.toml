@@ -7,7 +7,7 @@ description = "Reusable Server Functionality for an Actix-Web REST server that n
 [dependencies]
 actix-cors = { workspace = true, optional = true }
 actix-files.workspace = true
-actix-session = { workspace = true, features = ["redis-session-native-tls"] }
+actix-session = { workspace = true, features = ["redis-session-rustls"] }
 actix-web.workspace = true
 anyhow.workspace = true
 argon2 = { workspace = true, features = ["std"] }
