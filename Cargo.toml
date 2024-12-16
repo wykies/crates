@@ -63,11 +63,14 @@ web-sys = "0.3.72"
 web-time = "1.1.0"
 ws-auth = { version = "*", path = "crates/ws-auth" }
 wykies-client-core = { version = "*", path = "crates/wykies-client-core" }
-wykies-server = { version = "*", path = "crates/wykies-server" }
+wykies-server = { version = "*", path = "crates/wykies-server", default-features = false }
 wykies-server-test-helper = { version = "*", path = "crates/wykies-server-test-helper" }
 wykies-shared = { version = "*", path = "crates/wykies-shared" }
 wykies-time = { version = "*", path = "crates/wykies-time" }
 db-types = { version = "*", path = "crates/db-types", default-features = false }
+
+[profile.release]
+opt-level = 2 # fast and small wasm
 
 # https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html#testing-a-bugfix
 [patch.crates-io]
