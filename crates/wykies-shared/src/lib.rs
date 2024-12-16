@@ -4,10 +4,9 @@
 
 pub mod branch;
 pub mod const_config;
-#[cfg_attr(
-    all(feature = "mysql", feature = "server_only"),
-    path = "db_types_mysql.rs"
-)]
+
+#[cfg(feature = "server_only")]
+#[cfg_attr(all(feature = "mysql"), path = "db_types_mysql.rs")]
 pub mod db_types;
 #[cfg(feature = "server_only")]
 mod error_wrappers;
