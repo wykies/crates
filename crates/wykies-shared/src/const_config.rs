@@ -1,6 +1,6 @@
 //! Stores settings that are not expected to need to change but grouped together
-//! for discoverability and reuse. Each constant should be prefixed by the module
-//! name to allow importing the constant only and still be readable
+//! for discoverability and reuse. Each constant should be prefixed by the
+//! module name to allow importing the constant only and still be readable
 
 use crate::uac::RoleName;
 use std::sync::LazyLock;

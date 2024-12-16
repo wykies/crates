@@ -6,7 +6,8 @@
 
 #[cfg(all(feature = "disable-cors", not(debug_assertions)))]
 mod warning_suppress_release {
-    // Needed to prevent warning on release build testing in CI as we force CORS not to be disabled for release builds
+    // Needed to prevent warning on release build testing in CI as we force CORS not
+    // to be disabled for release builds
     use actix_cors as _;
 }
 

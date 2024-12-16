@@ -172,7 +172,7 @@ where
             #[cfg(all(not(feature = "redis-session-rustls"), feature = "cookie-session"))]
             let session_store = {
                 info!(
-                    // This info event gets repeated for each thread but less bad than duplicating the cfg
+                    // This info is repeated for each thread but less bad than duplicating the cfg
                     session_store = "CookieSessionStore",
                     "Using Cookie Only Session Storage"
                 );

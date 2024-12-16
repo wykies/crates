@@ -11,7 +11,8 @@ use anyhow::Context as _;
 use tracing::{error, instrument};
 use wykies_shared::{debug_panic, host_branch::HostId};
 
-/// Does a prescreening to see if the request is expected and then starts a WS session to be able to check the token
+/// Does a prescreening to see if the request is expected and then starts a WS
+/// session to be able to check the token
 #[instrument(err, skip(stream))]
 pub fn pre_screen_incoming_ws_req(
     req: HttpRequest,

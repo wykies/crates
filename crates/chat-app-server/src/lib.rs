@@ -55,7 +55,8 @@ mod warning_suppress_test {
 pub mod startup;
 mod websocket;
 
-// TODO 3: Ensure we have a way to access the logs... Maybe we have to switch back to stdout but see what options the hosting provider supports
+// TODO 3: Ensure we have a way to access the logs... Maybe we have to switch
+//          back to stdout but see what options the hosting provider supports
 // TODO 3: Enable HTTPS https://actix.rs/docs/server/#tls--https https://github.com/actix/examples/tree/master/https-tls/rustls
 // TODO 4: Some performance was left on the table by using `text` for the
 //         websockets instead of `binary`

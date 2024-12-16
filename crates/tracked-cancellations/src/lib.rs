@@ -1,4 +1,5 @@
-//! Simple wrapper around cancellation tokens that lets you know if tasks have completed cancellation
+//! Simple wrapper around cancellation tokens that lets you know if tasks have
+//! completed cancellation
 
 #![warn(unused_crate_dependencies)]
 

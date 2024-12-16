@@ -6,7 +6,8 @@
 
 #[cfg(target_arch = "wasm32")]
 mod suppress_wasm_warnings {
-    use getrandom as _; // Needed because we need to enable a feature on this crate
+    // Needed because we need to enable js feature on this crate
+    use getrandom as _;
 }
 
 #[cfg(test)] // Included to prevent unused crate warning

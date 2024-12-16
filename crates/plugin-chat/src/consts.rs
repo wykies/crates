@@ -1,4 +1,5 @@
-//! Constant here for simplicity but most can be moved to the settings if they need to be configurable
+//! Constant here for simplicity but most can be moved to the settings if they
+//! need to be configurable
 
 use wykies_time::Seconds;
 

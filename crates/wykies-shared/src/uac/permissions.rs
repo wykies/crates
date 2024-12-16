@@ -103,7 +103,8 @@ pub fn default_permissions() -> PermissionMap {
     result.insert(PATH_API_CHANGE_PASSWORD.path, vec![]);
     result.insert(PATH_API_HOSTBRANCH_LOOKUP.path, vec![]);
     result.insert(PATH_API_LOGOUT.path, vec![]);
-    result.insert(PATH_WS_TOKEN_CHAT.path, vec![]); // Included here because it's shared by all current applications and will give 404 if path is not there because uses no permissions
+    result.insert(PATH_WS_TOKEN_CHAT.path, vec![]); // Included here because it's shared by all current applications and will give
+                                                    // a 404 if the path is not registered so shouldn't hurt
     result
 }
 
@@ -112,7 +113,8 @@ pub fn try_set_permissions(value: PermissionMap) -> Result<(), PermissionMap> {
     PERMISSION_MAP.set(value)
 }
 
-/// Initializes the permissions may be run more than once without issue (will only have an effect the first time)
+/// Initializes the permissions may be run more than once without issue (will
+/// only have an effect the first time)
 pub fn init_permissions_to_defaults() {
     // Set permissions and ignore if they were already set
     let _ = try_set_permissions(default_permissions());
@@ -363,7 +365,8 @@ mod tests {
         }
     }
 
-    /// Just a sanity check that any admin paths in default require "management permissions"
+    /// Just a sanity check that any admin paths in default require "management
+    /// permissions"
     #[test]
     fn admin_paths_require_management_permission() {
         PERMISSION_MAP
@@ -378,7 +381,8 @@ mod tests {
             "At least one permission must be a admin permission"
         );
 
-        // All permissions are either not admin or they have 'Manage' in at least one of their required permissions
+        // All permissions are either not admin or they have 'Manage' in at least one of
+        // their required permissions
         for (path, permissions) in PERMISSION_MAP.get().unwrap().iter() {
             if path.contains("admin")
                 && !permissions

@@ -1,4 +1,5 @@
-//! Code related to the loop that handles incoming and outgoing messages to the client (Outgoing messages include those from other threads)
+//! Code related to the loop that handles incoming and outgoing messages to the
+//! client (Outgoing messages include those from other threads)
 
 use crate::{ChatIM, ChatMsg};
 

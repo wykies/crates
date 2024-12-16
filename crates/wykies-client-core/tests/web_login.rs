@@ -1,9 +1,10 @@
 //! IMPORTANT!!!
 //! A server must be started up on localhost separately (Will not work in CI due
-//! to IPv6). Only intended for local testing. Expects a "new" database (For instance expects the user to still be required to do a password change).
+//! to IPv6). Only intended for local testing. Expects a "new" database (For
+//! instance expects the user to still be required to do a password change).
 //! From the folder for the server crate run `cargo run --features disable-cors`
-//! to start the server. Then from the folder "crates/wykies-client-core" run one
-//! of the following to execute the tests
+//! to start the server. Then from the folder "crates/wykies-client-core" run
+//! one of the following to execute the tests
 //! - `wasm-pack test --headless --firefox`
 //! - `wasm-pack test --headless --chrome`
 use wasm_bindgen_test::wasm_bindgen_test;
@@ -52,7 +53,8 @@ fn main() {
 }
 
 async fn is_logged_in(client: &Client) -> bool {
-    // Also tests if able to establish a websocket connection but this was the simplest alternative that didn't need any permissions
+    // Also tests if able to establish a websocket connection but this was the
+    // simplest alternative that didn't need any permissions
     client
         .ws_connect(PATH_WS_TOKEN_CHAT, no_cb)
         .await
