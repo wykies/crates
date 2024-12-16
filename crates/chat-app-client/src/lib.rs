@@ -2,8 +2,6 @@
 
 #[cfg(target_arch = "wasm32")]
 mod suppress_wasm_warnings {
-    use getrandom as _; // Needed because we need to enable a feature on this crate
-
     // Only used in binary and triggers unused warning
     use wasm_bindgen_futures as _;
     use web_sys as _;

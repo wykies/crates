@@ -23,6 +23,7 @@ ewebsock = { workspace = true, features = ["tls", "tokio"] }
 # web:
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 ewebsock = { workspace = true, features = ["tls"] }
+getrandom = { workspace = true, features = ["js"] } # This is needed to enable the js feature
 
 [dev-dependencies]
 wasm-bindgen-test.workspace = true

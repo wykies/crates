@@ -61,6 +61,7 @@ uuid = "1"
 wasm-bindgen-test = "0.3.42"
 web-sys = "0.3.72"
 web-time = "1.1.0"
+getrandom = "0.2.15"
 ws-auth = { version = "*", path = "crates/ws-auth" }
 wykies-client-core = { version = "*", path = "crates/wykies-client-core" }
 wykies-server = { version = "*", path = "crates/wykies-server", default-features = false }

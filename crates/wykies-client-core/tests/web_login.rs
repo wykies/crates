@@ -1,7 +1,7 @@
 //! IMPORTANT!!!
 //! A server must be started up on localhost separately (Will not work in CI due
-//! to IPv6). Only intended for local testing.
-//! From the folder "crates/wykies-server" run `cargo run --features disable-cors`
+//! to IPv6). Only intended for local testing. Expects a "new" database (For instance expects the user to still be required to do a password change).
+//! From the folder for the server crate run `cargo run --features disable-cors`
 //! to start the server. Then from the folder "crates/wykies-client-core" run one
 //! of the following to execute the tests
 //! - `wasm-pack test --headless --firefox`

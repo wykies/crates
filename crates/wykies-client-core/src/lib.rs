@@ -4,6 +4,11 @@
 
 #![warn(unused_crate_dependencies)]
 
+#[cfg(target_arch = "wasm32")]
+mod suppress_wasm_warnings {
+    use getrandom as _; // Needed because we need to enable a feature on this crate
+}
+
 #[cfg(test)] // Included to prevent unused crate warning
 mod warning_suppress {
     use wasm_bindgen_test as _;
