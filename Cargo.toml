@@ -48,7 +48,7 @@ serde-aux = "4.5.0"
 sqlx = { version = "0.8.2", default-features = false }
 static_assertions = "1.1.0"
 strum = "0.26.2"
-thiserror = "2.0.3"
+thiserror = "2.0.7"
 tokio = { version = "1.42.0", default-features = false }
 tokio-util = "0.7.13"
 tracing = "0.1.41"
