@@ -7,7 +7,7 @@ description = "Reusable Server Functionality for an Actix-Web REST server that n
 [dependencies]
 actix-cors = { workspace = true, optional = true }
 actix-files.workspace = true
-actix-session = { workspace = true, features = ["redis-session-rustls"] }
+actix-session = { workspace = true, features = [] }
 actix-web.workspace = true
 anyhow.workspace = true
 argon2 = { workspace = true, features = ["std"] }
@@ -27,7 +27,20 @@ wykies-shared = { workspace = true, features = ["server_only"] }
 wykies-time.workspace = true
 
 [features]
-# TODO 5: Remove MYSQL as default only there for testing
-default = ["mysql"] # MySQL is there temporarily
+default = ["mysql", "redis-session-rustls"] # You must disable default features if you want to use Postgres
 mysql = ["sqlx/mysql", "wykies-shared/mysql"] # Uses MySQL as DB type
+postgres = [
+  "sqlx/postgres",
+  "wykies-shared/postgres",
+] # Uses Postgres as DB type (unless mysql is also enabled in which case mysql will be used)
+redis-session-rustls = ["actix-session/redis-session-rustls"] # Uses redis for session storage
+cookie-session = [
+  "actix-session/cookie-session",
+] # Uses only cookies for session storage (See limitations https://docs.rs/actix-session/latest/actix_session/storage/struct.CookieSessionStore.html#limitations)
+shuttle = [
+  "postgres",
+  "cookie-session", # Shuttle is currently being used for a demo, if we need to use for prod will need to write a postgres session backing option
+]
 disable-cors = ["dep:actix-cors"]
+
+# TODO 5: Implement SessionStore with postgres backing to replace cookies only https://docs.rs/actix-session/latest/actix_session/storage/trait.SessionStore.html
