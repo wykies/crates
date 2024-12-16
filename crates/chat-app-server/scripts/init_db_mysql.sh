@@ -13,20 +13,16 @@ fi
 if ! [ -x "$(command -v sqlx)" ]; then
   echo >&2 "Error: sqlx is not installed."
   echo >&2 "Use:"
-  echo >&2 "    cargo install --version='~0.6' sqlx-cli --no-default-features --features rustls,mysql"
+  echo >&2 "    cargo install --version='~0.8' sqlx-cli --no-default-features --features rustls,mysql"
   echo >&2 "to install it."
   exit 1
 fi
 
-# Check if a custom user has been set, otherwise default to 'test_user'
+# Check if a custom parameter has been set, otherwise use default values
 DB_USER="${MYSQL_USER:=db_user}"
-# Check if a custom password has been set, otherwise default to 'password'
 DB_PASSWORD="${MYSQL_PASSWORD:=password}"
-# Check if a custom database name has been set, otherwise default to 'chat_demo'
 DB_NAME="${MYSQL_DB:=chat_demo}"
-# Check if a custom port has been set, otherwise default to '3306'
 DB_PORT="${MYSQL_PORT:=3306}"
-# Check if a custom host has been set, otherwise default to 'localhost'
 DB_HOST="${MYSQL_HOST:=localhost}"
 
 # Allow to skip Docker if a MySql database is already running
@@ -49,7 +45,7 @@ then
       -p "${DB_PORT}":3306 \
       -d \
       --name "mysql_$(date '+%s')" \
-      mysql:latest
+      mysql
       # TODO 4: Increase number of connections for testing
 fi
 
@@ -62,7 +58,7 @@ until MYSQL_PWD="${DB_PASSWORD}" mysql --protocol=TCP -h "${DB_HOST}" -u "root" 
     exit 1
   fi
   sleep 1
-  ((max_retries--))  
+  ((max_retries--))
 done
 
 >&2 echo "MySql is up and running on port ${DB_PORT} - running migrations now!"

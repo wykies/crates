@@ -16,9 +16,9 @@ SUPERUSER="${SUPERUSER:=postgres}"
 SUPERUSER_PWD="${SUPERUSER_PWD:=password}"
 APP_USER="${APP_USER:=app}"
 APP_USER_PWD="${APP_USER_PWD:=secret}"
-APP_DB_NAME="${APP_DB_NAME:=newsletter}"
+APP_DB_NAME="${APP_DB_NAME:=chat_demo}"
 
-# Allow to skip Docker if a dockerized Postgres database is already running
+# Allow to skip Docker if a Postgres database is already running
 if [[ -z "${SKIP_DOCKER}" ]]
 then
   # if a postgres container is running, print instructions to kill it and exit
@@ -42,13 +42,19 @@ then
       --name "${CONTAINER_NAME}" \
       postgres -N 1000
       # ^ Increased maximum number of connections for testing purposes
-      
+
+  max_retries=120
   until [ \
     "$(docker inspect -f "{{.State.Health.Status}}" ${CONTAINER_NAME})" == \
     "healthy" \
   ]; do     
-    >&2 echo "Postgres is still unavailable - sleeping"
-    sleep 1 
+    >&2 echo "Postgres is still unavailable - sleeping ($max_retries attempts left)"
+    if [ $max_retries -lt 1 ];  then
+        >&2 echo "Exceeded attempts to connect to DB"
+        exit 1
+    fi
+    sleep 1
+    ((max_retries--))
   done
   
   # Create the application user
@@ -63,8 +69,7 @@ fi
 >&2 echo "Postgres is up and running on port ${DB_PORT} - running migrations now!"
 
 # Create the application database
-DATABASE_URL=postgres://${APP_USER}:${APP_USER_PWD}@localhost:${DB_PORT}/${APP_DB_NAME}
-export DATABASE_URL
+export DATABASE_URL=postgres://${APP_USER}:${APP_USER_PWD}@localhost:${DB_PORT}/${APP_DB_NAME}
 sqlx database create
 sqlx migrate run
 
