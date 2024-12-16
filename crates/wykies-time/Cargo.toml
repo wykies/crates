@@ -6,10 +6,11 @@ description = "Simple time wrappers to make mistakes harder to make"
 
 [dependencies]
 chrono.workspace = true
+db-types = { workspace = true, optional = false }
 serde.workspace = true
 sqlx = { workspace = true, optional = true }
 web-time.workspace = true
 
 [features]
 default = []
-mysql = ["dep:sqlx", "sqlx/mysql"] # Adds conversion support for MySql DB types in sqlx
+mysql = ["dep:sqlx", "sqlx/mysql", "db-types/mysql"] # Adds conversion support for MySql DB types in sqlx

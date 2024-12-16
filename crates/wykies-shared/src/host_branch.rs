@@ -62,18 +62,19 @@ impl TryFrom<actix_web::dev::ConnectionInfo> for HostId {
 #[cfg(feature = "server_only")]
 pub mod sql {
     use super::*;
+    use crate::db_types::Db;
 
-    impl sqlx::Encode<'_, sqlx::MySql> for HostId {
+    impl sqlx::Encode<'_, Db> for HostId {
         fn encode_by_ref(
             &self,
-            buf: &mut <sqlx::MySql as sqlx::Database>::ArgumentBuffer<'_>,
+            buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
         ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
             self.0.encode_by_ref(buf)
         }
     }
 
-    impl sqlx::Type<sqlx::MySql> for HostId {
-        fn type_info() -> <sqlx::MySql as sqlx::Database>::TypeInfo {
+    impl sqlx::Type<Db> for HostId {
+        fn type_info() -> <Db as sqlx::Database>::TypeInfo {
             String::type_info()
         }
     }

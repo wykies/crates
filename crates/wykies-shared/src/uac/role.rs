@@ -117,32 +117,34 @@ impl Deref for RoleDescription {
 #[cfg(feature = "server_only")]
 pub mod sql {
     use super::*;
-    impl sqlx::Encode<'_, sqlx::MySql> for RoleName {
+    use crate::db_types::Db;
+
+    impl sqlx::Encode<'_, Db> for RoleName {
         fn encode_by_ref(
             &self,
-            buf: &mut <sqlx::MySql as sqlx::Database>::ArgumentBuffer<'_>,
+            buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
         ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
             self.0.encode_by_ref(buf)
         }
     }
 
-    impl sqlx::Encode<'_, sqlx::MySql> for RoleDescription {
+    impl sqlx::Encode<'_, Db> for RoleDescription {
         fn encode_by_ref(
             &self,
-            buf: &mut <sqlx::MySql as sqlx::Database>::ArgumentBuffer<'_>,
+            buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
         ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
             self.0.encode_by_ref(buf)
         }
     }
 
-    impl sqlx::Type<sqlx::MySql> for RoleName {
-        fn type_info() -> <sqlx::MySql as sqlx::Database>::TypeInfo {
+    impl sqlx::Type<Db> for RoleName {
+        fn type_info() -> <Db as sqlx::Database>::TypeInfo {
             String::type_info()
         }
     }
 
-    impl sqlx::Type<sqlx::MySql> for RoleDescription {
-        fn type_info() -> <sqlx::MySql as sqlx::Database>::TypeInfo {
+    impl sqlx::Type<Db> for RoleDescription {
+        fn type_info() -> <Db as sqlx::Database>::TypeInfo {
             String::type_info()
         }
     }

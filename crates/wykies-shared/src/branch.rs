@@ -73,33 +73,34 @@ impl From<BranchAddress> for String {
 #[cfg(feature = "server_only")]
 pub mod sql {
     use super::*;
+    use crate::db_types::Db;
 
-    impl sqlx::Encode<'_, sqlx::MySql> for BranchName {
+    impl sqlx::Encode<'_, Db> for BranchName {
         fn encode_by_ref(
             &self,
-            buf: &mut <sqlx::MySql as sqlx::Database>::ArgumentBuffer<'_>,
+            buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
         ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
             self.0.encode_by_ref(buf)
         }
     }
 
-    impl sqlx::Encode<'_, sqlx::MySql> for BranchAddress {
+    impl sqlx::Encode<'_, Db> for BranchAddress {
         fn encode_by_ref(
             &self,
-            buf: &mut <sqlx::MySql as sqlx::Database>::ArgumentBuffer<'_>,
+            buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
         ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
             self.0.encode_by_ref(buf)
         }
     }
 
-    impl sqlx::Type<sqlx::MySql> for BranchName {
-        fn type_info() -> <sqlx::MySql as sqlx::Database>::TypeInfo {
+    impl sqlx::Type<Db> for BranchName {
+        fn type_info() -> <Db as sqlx::Database>::TypeInfo {
             String::type_info()
         }
     }
 
-    impl sqlx::Type<sqlx::MySql> for BranchAddress {
-        fn type_info() -> <sqlx::MySql as sqlx::Database>::TypeInfo {
+    impl sqlx::Type<Db> for BranchAddress {
+        fn type_info() -> <Db as sqlx::Database>::TypeInfo {
             String::type_info()
         }
     }

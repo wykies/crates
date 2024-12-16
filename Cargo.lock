@@ -6582,6 +6582,7 @@ name = "wykies-time"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "db-types",
  "serde",
  "sqlx",
  "web-time",
