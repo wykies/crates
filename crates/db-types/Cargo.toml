@@ -1,0 +1,12 @@
+[package]
+name = "db-types"
+version = "0.1.0"
+edition = "2021"
+description = "Acts as single point to specify types related to the database"
+
+[dependencies]
+sqlx.workspace = true
+
+[features]
+default = ["mysql"]
+mysql = ["sqlx/mysql"]

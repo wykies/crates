@@ -3,6 +3,7 @@ resolver = "2"
 members = [
   "crates/chat-app-client",
   "crates/chat-app-server",
+  "crates/db-types",
   "crates/plugin-chat",
   "crates/tracked-cancellations",
   "crates/ws-auth",
@@ -66,6 +67,7 @@ wykies-server = { version = "*", path = "crates/wykies-server" }
 wykies-server-test-helper = { version = "*", path = "crates/wykies-server-test-helper" }
 wykies-shared = { version = "*", path = "crates/wykies-shared" }
 wykies-time = { version = "*", path = "crates/wykies-time" }
+db-types = { version = "*", path = "crates/db-types", default-features = false }
 
 # https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html#testing-a-bugfix
 [patch.crates-io]

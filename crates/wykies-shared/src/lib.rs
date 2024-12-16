@@ -6,9 +6,6 @@ pub mod branch;
 pub mod const_config;
 
 #[cfg(feature = "server_only")]
-#[cfg_attr(all(feature = "mysql"), path = "db_types_mysql.rs")]
-pub mod db_types;
-#[cfg(feature = "server_only")]
 mod error_wrappers;
 pub mod errors;
 pub mod host_branch;
@@ -19,6 +16,9 @@ pub mod req_args;
 pub mod session;
 pub mod token;
 pub mod uac;
+
+#[cfg(feature = "server_only")]
+pub use db_types;
 
 pub use random::{random_string, random_string_def_len};
 
