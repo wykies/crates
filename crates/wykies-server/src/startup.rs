@@ -22,7 +22,7 @@ use anyhow::Context as _;
 use secrecy::ExposeSecret as _;
 use serde::de::DeserializeOwned;
 use std::{future::Future, net::TcpListener};
-use tracing::info;
+use tracing::{info, instrument};
 use tracing_actix_web::TracingLogger;
 use tracked_cancellations::{CancellationTracker, TrackedCancellationToken};
 use ws_auth::AuthTokenManager;
@@ -125,7 +125,8 @@ where
             .port())
     }
 
-    pub async fn finish<FOpen, FProtected>(
+    #[instrument(err, skip_all)]
+    pub async fn build_runnable_api_server<FOpen, FProtected>(
         self,
         open_resource: FOpen,
         protected_resource: FProtected,
@@ -157,11 +158,15 @@ where
             let redis_store = RedisSessionStore::new(self.configuration.redis_uri.expose_secret())
                 .await
                 .expect("failed to connect to Redis");
-            info!("Successfully connected to Redis");
+            info!(
+                session_store = "RedisSessionStore",
+                "Successfully connected to Redis"
+            );
             redis_store
         };
 
         let server = HttpServer::new(move || {
+            tracing::Span::current().record("session_store", "Huh");
             let app = App::new();
 
             // If both a debug build and disable-cors flag is set then set CORS to
@@ -179,7 +184,11 @@ where
 
             #[cfg(all(not(feature = "redis-session-rustls"), feature = "cookie-session"))]
             let session_store = {
-                info!("Using Cookie Only Session Storage");
+                info!(
+                    // This info event gets repeated for each thread but less bad than duplicating the cfg
+                    session_store = "CookieSessionStore",
+                    "Using Cookie Only Session Storage"
+                );
                 CookieSessionStore::default()
             };
 

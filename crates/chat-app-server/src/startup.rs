@@ -57,7 +57,7 @@ where
 
     // Finalize Server
     let api_server = api_server_builder
-        .finish(open_resources, protected_resources)
+        .build_runnable_api_server(open_resources, protected_resources)
         .await
         .expect("failed to finalize API Server");
 
