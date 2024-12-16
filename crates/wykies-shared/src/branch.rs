@@ -80,7 +80,7 @@ pub mod sql {
             &self,
             buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
         ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
-            self.0.encode_by_ref(buf)
+            <String as sqlx::Encode<'_, Db>>::encode_by_ref(&self.0, buf)
         }
     }
 
@@ -89,19 +89,19 @@ pub mod sql {
             &self,
             buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
         ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
-            self.0.encode_by_ref(buf)
+            <String as sqlx::Encode<'_, Db>>::encode_by_ref(&self.0, buf)
         }
     }
 
     impl sqlx::Type<Db> for BranchName {
         fn type_info() -> <Db as sqlx::Database>::TypeInfo {
-            String::type_info()
+            <String as sqlx::Type<Db>>::type_info()
         }
     }
 
     impl sqlx::Type<Db> for BranchAddress {
         fn type_info() -> <Db as sqlx::Database>::TypeInfo {
-            String::type_info()
+            <String as sqlx::Type<Db>>::type_info()
         }
     }
 }
