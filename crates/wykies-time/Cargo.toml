@@ -6,7 +6,7 @@ description = "Simple time wrappers to make mistakes harder to make"
 
 [dependencies]
 chrono.workspace = true
-db-types = { workspace = true, optional = false }
+db-types = { workspace = true, optional = true }
 serde.workspace = true
 sqlx = { workspace = true, optional = true }
 web-time.workspace = true
