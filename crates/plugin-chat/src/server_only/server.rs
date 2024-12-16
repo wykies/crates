@@ -422,8 +422,4 @@ impl ServerTask for ChatServer {
             }
         }
     }
-
-    async fn run_without_cancellation(self) -> anyhow::Result<()> {
-        unimplemented!("run should be used instead as we must check for cancelled to exit")
-    }
 }

@@ -40,20 +40,7 @@ pub trait ServerTask {
         cancellation_token: TrackedCancellationToken,
     ) -> impl Future<Output = anyhow::Result<()>> + Send
     where
-        Self: Sized + Send,
-    {
-        async move {
-            // Ensure that exiting causes the rest of the app to shut down
-            let _drop_guard = cancellation_token.clone().drop_guard();
-            self.run_without_cancellation().await
-        }
-    }
-
-    #[doc(hidden)]
-    /// Meant to be called from `run` or if you really don't want automatic cancellation support
-    /// When Implementing use `async fn run_without_cancellation(self) -> anyhow::Result<()>` instead.
-    /// Didn't use async syntax below to be able to add bounds
-    fn run_without_cancellation(self) -> impl Future<Output = anyhow::Result<()>> + Send;
+        Self: Sized + Send;
 }
 
 /// Bundles the information used to start a server
@@ -259,7 +246,8 @@ impl ServerTask for RunnableApiServer {
         "API Server"
     }
 
-    async fn run_without_cancellation(self) -> anyhow::Result<()> {
+    async fn run(self, cancellation_token: TrackedCancellationToken) -> anyhow::Result<()> {
+        let _guard = cancellation_token.drop_guard();
         self.0.await.context("api server crashed")
     }
 }
