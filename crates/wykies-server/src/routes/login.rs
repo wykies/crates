@@ -1,12 +1,12 @@
 use super::{execute_chained_handler, set_host_branch_pair};
 use crate::{
     authentication::{validate_credentials, AuthUserInfo, Credentials, LoginAttemptLimit},
-    db_types::DbPool,
     routes::host_branch_pair_lookup,
     session_state::TypedSession,
 };
 use actix_web::{dev::ConnectionInfo, web, HttpResponse};
 use anyhow::{anyhow, Context};
+use wykies_shared::db_types::DbPool;
 use wykies_shared::session::UserSessionInfo;
 use wykies_shared::{
     const_config::path::{PATH_API_ADMIN_HOSTBRANCH_SET, PATH_API_HOSTBRANCH_LOOKUP},

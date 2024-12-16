@@ -1,6 +1,6 @@
 use anyhow::bail;
 
-use crate::db_types::DbSqlResult;
+use wykies_shared::db_types::DbSqlResult;
 
 pub fn validate_one_row_affected(sql_result: &DbSqlResult) -> anyhow::Result<()> {
     validate_rows_affected(sql_result, 1)

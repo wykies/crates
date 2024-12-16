@@ -5,12 +5,12 @@ use std::{
 };
 use tracked_cancellations::TrackedCancellationToken;
 use wykies_client_core::LoginOutcome;
-use wykies_server::{db_types::DbPool, ApiServerBuilder, Configuration};
+use wykies_server::{ApiServerBuilder, Configuration};
 use wykies_server_test_helper::{
     build_test_app, port_to_test_address, spawn_app_without_host_branch_stored_before_migration,
     store_host_branch, TestUser,
 };
-use wykies_shared::const_config::path::PATH_WS_TOKEN_CHAT;
+use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, db_types::DbPool};
 
 pub use wykies_server_test_helper::{no_cb, wait_for_message};
 

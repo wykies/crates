@@ -1,6 +1,7 @@
-use crate::{db_types::DbPool, ServerTask, WebSocketSettings};
+use crate::{ServerTask, WebSocketSettings};
 use std::sync::Arc;
 use tracked_cancellations::TrackedCancellationToken;
+use wykies_shared::db_types::DbPool;
 
 pub struct ServerPluginArtifacts<T, H>
 where

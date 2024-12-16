@@ -36,3 +36,4 @@ static_assertions.workspace = true
 default = []
 server_only = ["dep:sqlx"] # Used to control things only the server should create
 client_only = [] # Used to control things only the client should create
+mysql = ["sqlx/mysql"] # Enables conversion from mysql types

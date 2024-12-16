@@ -29,5 +29,5 @@ wykies-time.workspace = true
 [features]
 # TODO 5: Remove MYSQL as default only there for testing
 default = ["mysql"] # MySQL is there temporarily
-mysql = ["sqlx/mysql"] # Uses MySQL as DB type
+mysql = ["sqlx/mysql", "wykies-shared/mysql"] # Uses MySQL as DB type
 disable-cors = ["dep:actix-cors"]

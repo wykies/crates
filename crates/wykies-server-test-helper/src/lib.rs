@@ -12,11 +12,11 @@ use std::time::{Duration, Instant};
 use uuid::Uuid;
 use wykies_server::Configuration;
 use wykies_server::{
-    db_types::{DbConnection, DbPool},
-    db_utils::validate_one_row_affected,
-    get_configuration, get_db_connection_pool, DatabaseSettings,
+    db_utils::validate_one_row_affected, get_configuration, get_db_connection_pool,
+    DatabaseSettings,
 };
 use wykies_shared::{
+    db_types::{DbConnection, DbPool},
     host_branch::HostBranchPair,
     id::DbId,
     req_args::LoginReqArgs,

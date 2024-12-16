@@ -1,9 +1,7 @@
-use crate::{
-    authentication::{validate_credentials, Credentials, LoginAttemptLimit},
-    db_types::DbPool,
-};
+use crate::authentication::{validate_credentials, Credentials, LoginAttemptLimit};
 use actix_web::{web, HttpResponse};
 use secrecy::ExposeSecret as _;
+use wykies_shared::db_types::DbPool;
 use wykies_shared::{
     req_args::api::ChangePasswordReqArgs, session::UserSessionInfo, uac::ChangePasswordError,
 };

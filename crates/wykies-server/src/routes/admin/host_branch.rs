@@ -1,6 +1,6 @@
-use crate::db_types::DbPool;
 use actix_web::{web, HttpResponse};
 use anyhow::Context as _;
+use wykies_shared::db_types::DbPool;
 use wykies_shared::{
     e500, host_branch::HostBranchPair, id::DbId, req_args::api::admin::host_branch,
 };

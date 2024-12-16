@@ -1,10 +1,10 @@
-use crate::db_types::DbPool;
 use crate::db_utils::{db_int_to_bool, validate_one_row_affected};
 use anyhow::Context;
 use argon2::password_hash::SaltString;
 use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version};
 use secrecy::{ExposeSecret, SecretString};
 use tracing::debug;
+use wykies_shared::db_types::DbPool;
 use wykies_shared::{
     id::DbId,
     telemetry::spawn_blocking_with_tracing,

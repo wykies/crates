@@ -19,9 +19,6 @@ mod session_state;
 mod startup;
 pub mod ws;
 
-#[cfg_attr(feature = "mysql", path = "db_types_mysql.rs")]
-pub mod db_types;
-
 pub use configuration::{get_configuration, Configuration, DatabaseSettings, WebSocketSettings};
 pub use startup::{get_db_connection_pool, ApiServerBuilder, ApiServerInit, ServerTask};
 use tracked_cancellations::CancellationTracker;

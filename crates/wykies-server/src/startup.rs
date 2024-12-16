@@ -1,6 +1,5 @@
 use crate::{
     authentication::{validate_user_access, LoginAttemptLimit},
-    db_types::{DbPool, DbPoolOptions},
     get_configuration,
     routes::{
         branch_create, branch_list, change_password, health_check, host_branch_pair_lookup,
@@ -23,7 +22,11 @@ use tracing::info;
 use tracing_actix_web::TracingLogger;
 use tracked_cancellations::{CancellationTracker, TrackedCancellationToken};
 use ws_auth::AuthTokenManager;
-use wykies_shared::{const_config, telemetry};
+use wykies_shared::{
+    const_config,
+    db_types::{DbPool, DbPoolOptions},
+    telemetry,
+};
 
 pub trait ServerTask {
     fn name(&self) -> &'static str;

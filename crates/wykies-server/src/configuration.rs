@@ -5,7 +5,7 @@ use sqlx::ConnectOptions;
 use std::convert::{TryFrom, TryInto};
 use wykies_time::Seconds;
 
-use crate::db_types::{DbConnectOptions, DbSslMode};
+use wykies_shared::db_types::{DbConnectOptions, DbSslMode};
 
 // TODO 5: Add comments to any settings that are no longer obvious
 #[derive(serde::Deserialize, Clone)]

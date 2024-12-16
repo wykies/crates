@@ -1,8 +1,8 @@
 // TODO 5: Decide if this should be updated or dropped
-use crate::db_types::DbPool;
 use actix_web::{web, HttpResponse};
 use std::error::Error;
 use tracing::error;
+use wykies_shared::db_types::DbPool;
 
 pub async fn status(pool: web::Data<DbPool>) -> HttpResponse {
     let mut result = r#"<!DOCTYPE html>
