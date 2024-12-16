@@ -31,7 +31,7 @@ default = ["mysql", "redis-session-rustls"] # You must disable default features 
 mysql = ["sqlx/mysql", "wykies-shared/mysql"] # Uses MySQL as DB type
 postgres = [
   "sqlx/postgres",
-  "wykies-shared/postgres",
+  # "wykies-shared/postgres", # TODO 1: Implement postgres support
 ] # Uses Postgres as DB type (unless mysql is also enabled in which case mysql will be used)
 redis-session-rustls = ["actix-session/redis-session-rustls"] # Uses redis for session storage
 cookie-session = [
