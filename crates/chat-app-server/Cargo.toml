@@ -17,7 +17,7 @@ tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tracing.workspace = true
 tracked-cancellations.workspace = true
 ws-auth.workspace = true
-wykies-server.workspace = true
+wykies-server = { workspace = true, features = ["cookie-session"] }
 wykies-shared = { workspace = true, features = ["server_only"] }
 
 [dev-dependencies]

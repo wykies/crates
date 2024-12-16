@@ -8,7 +8,11 @@ use crate::{
     },
     Configuration, DatabaseSettings,
 };
-use actix_session::{storage::RedisSessionStore, SessionMiddleware};
+#[cfg(all(not(feature = "redis-session-rustls"), feature = "cookie-session"))]
+use actix_session::storage::CookieSessionStore;
+#[cfg(feature = "redis-session-rustls")]
+use actix_session::storage::RedisSessionStore;
+use actix_session::SessionMiddleware;
 use actix_web::{
     middleware::from_fn,
     web::{self, ServiceConfig},
@@ -148,10 +152,14 @@ where
                 .as_bytes(),
         );
 
-        let redis_store = RedisSessionStore::new(self.configuration.redis_uri.expose_secret())
-            .await
-            .context("failed to connect to Redis")?;
-        info!("Successfully connected to Redis");
+        #[cfg(feature = "redis-session-rustls")]
+        let session_store = {
+            let redis_store = RedisSessionStore::new(self.configuration.redis_uri.expose_secret())
+                .await
+                .expect("failed to connect to Redis");
+            info!("Successfully connected to Redis");
+            redis_store
+        };
 
         let server = HttpServer::new(move || {
             let app = App::new();
@@ -169,58 +177,66 @@ where
                 eprintln!("CORS set to permissive");
             }
 
-            app.wrap(SessionMiddleware::new(
-                redis_store.clone(),
-                secret_key.clone(),
-            ))
-            .wrap(TracingLogger::default())
-            .service(
-                web::scope("/api")
-                    .wrap(from_fn(validate_user_access))
-                    .configure(protected_resource.clone())
-                    .route("/change_password", web::post().to(change_password))
-                    .route("/logout", web::post().to(log_out))
-                    .service(
-                        web::scope("/admin")
-                            .service(
-                                web::scope("/branch")
-                                    .route("/create", web::post().to(branch_create)),
-                            )
-                            .service(
-                                web::scope("/host_branch")
-                                    .route("/list", web::get().to(list_host_branch_pairs))
-                                    .route("/set", web::post().to(set_host_branch_pair)),
-                            )
-                            .service(
-                                web::scope("/role")
-                                    .route("/", web::get().to(role))
-                                    .route("/assign", web::post().to(role_assign))
-                                    .route("/create", web::post().to(role_create)),
-                            )
-                            .service(
-                                web::scope("/user")
-                                    .route("/", web::get().to(user))
-                                    .route("/list", web::get().to(list_users_and_roles))
-                                    .route("/new", web::post().to(user_new))
-                                    .route("/password_reset", web::post().to(password_reset))
-                                    .route("/update", web::post().to(user_update)),
-                            ),
-                    )
-                    .route(
-                        "/host_branch/lookup",
-                        web::get().to(host_branch_pair_lookup),
-                    ),
-            )
-            .configure(open_resource.clone())
-            .route("/login", web::post().to(login))
-            .route("/branches", web::get().to(branch_list))
-            .route("/health_check", web::get().to(health_check))
-            .route("/status", web::get().to(status))
-            .service(actix_files::Files::new("/", "./app/").index_file("index.html"))
-            .app_data(db_pool.clone())
-            .app_data(login_attempt_limit.clone())
-            .app_data(websocket_auth_manager.clone())
-            .default_service(web::route().to(not_found))
+            #[cfg(all(not(feature = "redis-session-rustls"), feature = "cookie-session"))]
+            let session_store = {
+                info!("Using Cookie Only Session Storage");
+                CookieSessionStore::default()
+            };
+
+            #[cfg(feature = "redis-session-rustls")]
+            let session_store = session_store.clone(); // When using redis we need to clone
+
+            // TODO 4: Look into session expiration https://docs.rs/actix-session/latest/actix_session/config/struct.SessionMiddlewareBuilder.html
+
+            app.wrap(SessionMiddleware::new(session_store, secret_key.clone()))
+                .wrap(TracingLogger::default())
+                .service(
+                    web::scope("/api")
+                        .wrap(from_fn(validate_user_access))
+                        .configure(protected_resource.clone())
+                        .route("/change_password", web::post().to(change_password))
+                        .route("/logout", web::post().to(log_out))
+                        .service(
+                            web::scope("/admin")
+                                .service(
+                                    web::scope("/branch")
+                                        .route("/create", web::post().to(branch_create)),
+                                )
+                                .service(
+                                    web::scope("/host_branch")
+                                        .route("/list", web::get().to(list_host_branch_pairs))
+                                        .route("/set", web::post().to(set_host_branch_pair)),
+                                )
+                                .service(
+                                    web::scope("/role")
+                                        .route("/", web::get().to(role))
+                                        .route("/assign", web::post().to(role_assign))
+                                        .route("/create", web::post().to(role_create)),
+                                )
+                                .service(
+                                    web::scope("/user")
+                                        .route("/", web::get().to(user))
+                                        .route("/list", web::get().to(list_users_and_roles))
+                                        .route("/new", web::post().to(user_new))
+                                        .route("/password_reset", web::post().to(password_reset))
+                                        .route("/update", web::post().to(user_update)),
+                                ),
+                        )
+                        .route(
+                            "/host_branch/lookup",
+                            web::get().to(host_branch_pair_lookup),
+                        ),
+                )
+                .configure(open_resource.clone())
+                .route("/login", web::post().to(login))
+                .route("/branches", web::get().to(branch_list))
+                .route("/health_check", web::get().to(health_check))
+                .route("/status", web::get().to(status))
+                .service(actix_files::Files::new("/", "./app/").index_file("index.html"))
+                .app_data(db_pool.clone())
+                .app_data(login_attempt_limit.clone())
+                .app_data(websocket_auth_manager.clone())
+                .default_service(web::route().to(not_found))
         })
         .listen(self.listener)
         .context("Failed to bind HTTP Server to listener")?
