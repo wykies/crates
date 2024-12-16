@@ -5,6 +5,8 @@
 # You can also check bacon's own bacon.toml file
 #  as an example: https://github.com/Canop/bacon/blob/main/bacon.toml
 
+# TODO 4: Copy of tracing config for testing of the chat server
+
 default_job = "check"
 
 [jobs.check]
