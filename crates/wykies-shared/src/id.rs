@@ -30,20 +30,7 @@ impl From<DbId> for u64 {
 #[cfg(feature = "server_only")]
 pub mod sql {
     use super::*;
-    use crate::db_types::Db;
+    use db_types::impl_encode_for_newtype_around_u64;
 
-    impl sqlx::Encode<'_, Db> for DbId {
-        fn encode_by_ref(
-            &self,
-            buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
-        ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
-            self.0.encode_by_ref(buf)
-        }
-    }
-
-    impl sqlx::Type<Db> for DbId {
-        fn type_info() -> <Db as sqlx::Database>::TypeInfo {
-            u64::type_info()
-        }
-    }
+    impl_encode_for_newtype_around_u64!(DbId, "mysql", "postgres");
 }

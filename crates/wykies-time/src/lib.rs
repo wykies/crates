@@ -183,22 +183,10 @@ impl Display for Seconds {
         self.0.fmt(f)
     }
 }
-#[cfg(feature = "mysql")]
+#[cfg(any(feature = "mysql", feature = "postgres"))]
 pub mod sql {
     use super::*;
-    use db_types::Db;
-    impl sqlx::Encode<'_, Db> for Seconds {
-        fn encode_by_ref(
-            &self,
-            buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
-        ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
-            self.0.encode_by_ref(buf)
-        }
-    }
+    use db_types::impl_encode_for_newtype_around_u64;
 
-    impl sqlx::Type<Db> for Seconds {
-        fn type_info() -> <Db as sqlx::Database>::TypeInfo {
-            u64::type_info()
-        }
-    }
+    impl_encode_for_newtype_around_u64!(Seconds, "mysql", "postgres");
 }

@@ -14,3 +14,10 @@ web-time.workspace = true
 [features]
 default = []
 mysql = ["dep:sqlx", "sqlx/mysql", "db-types/mysql"] # Adds conversion support for MySql DB types in sqlx
+postgres = [
+  # Adds conversion support for Postgres DB types in sqlx.
+  # Warning!!! : Postgres does not support unsigned types (see implication in warning in db-types)
+  "dep:sqlx",
+  "sqlx/postgres",
+  "db-types/postgres",
+]

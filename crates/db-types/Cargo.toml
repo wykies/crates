@@ -10,3 +10,9 @@ sqlx.workspace = true
 [features]
 default = ["mysql"]
 mysql = ["sqlx/mysql"]
+postgres = [
+  # Postgres does not support unsigned integers so any u64 values used are stored as i64 which reduces the
+  # positive range and may result in PANICS during conversion
+  # TODO 6: Look into avoiding panics on the unhappy path
+  "sqlx/postgres",
+]
