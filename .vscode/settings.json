@@ -20,5 +20,6 @@
       "username": "app",
       "password": "secret"
     }
-  ]
+  ],
+  "rust-analyzer.check.features": "all"
 }

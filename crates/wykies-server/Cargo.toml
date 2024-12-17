@@ -30,9 +30,10 @@ wykies-time.workspace = true
 default = ["mysql", "redis-session-rustls"] # You must disable default features if you want to use Postgres
 mysql = ["sqlx/mysql", "wykies-shared/mysql"] # Uses MySQL as DB type
 postgres = [
+  # Uses Postgres as DB type (unless mysql is also enabled in which case mysql will be used)
   "sqlx/postgres",
   "wykies-shared/postgres",
-] # Uses Postgres as DB type (unless mysql is also enabled in which case mysql will be used)
+]
 redis-session-rustls = ["actix-session/redis-session-rustls"] # Uses redis for session storage
 cookie-session = [
   "actix-session/cookie-session",
