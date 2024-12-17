@@ -1,3 +1,16 @@
+-- Notes on converting from MySql to Postgres (Left side is regex and right side is replacement, first is empty)
+-- ` ->
+-- int\(\d+\) -> int
+-- int UNSIGNED -> bigint
+-- engine.+; -> ;
+-- tinyint\(\d+\)|smallint\(\d+\) -> smallint
+-- \buser\b -> users
+-- comment '.+, -> ,
+-- binary -> varchar
+-- Timestamp -> unix_timestamp
+--
+-- Primary keys were done manually but could have been done see chat migration
+-- Indices were also not created but could have been, however the syntax was pretty different (see chat migration).
 --
 -- Table structure for table branch
 --
