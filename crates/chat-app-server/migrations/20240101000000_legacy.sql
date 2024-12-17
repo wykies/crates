@@ -1,4 +1,3 @@
-START TRANSACTION;
 --
 -- Table structure for table branch
 --
@@ -61,4 +60,3 @@ ADD CONSTRAINT hostbranch_ibfk_1 FOREIGN KEY (AssignedBranch) REFERENCES branch 
 --
 ALTER TABLE users
 ADD CONSTRAINT user_ibfk_1 FOREIGN KEY (AssignedRole) REFERENCES roles (RoleID);
-COMMIT;
