@@ -3,7 +3,8 @@
 -- int\(\d+\) -> int
 -- int UNSIGNED -> bigint
 -- engine.+; -> ;
--- tinyint\(\d+\)|smallint\(\d+\) -> smallint
+-- tinyint\(\d+\) -> boolean
+-- smallint\(\d+\) -> smallint
 -- \buser\b -> users
 -- comment '.+, -> ,
 -- binary -> varchar
@@ -39,7 +40,7 @@ CREATE TABLE roles (
   Name varchar(16) NOT NULL UNIQUE,
   Description varchar(50) NOT NULL DEFAULT '',
   Permissions varchar(256) NOT NULL,
-  LockedEditing smallint NOT NULL DEFAULT '0'
+  LockedEditing boolean NOT NULL DEFAULT false
 );
 -- --------------------------------------------------------
 --
@@ -50,13 +51,13 @@ CREATE TABLE users (
   UserName varchar(16) NOT NULL PRIMARY KEY,
   Password varchar(64) NOT NULL,
   salt varchar(64) NOT NULL,
-  LockedEditing smallint NOT NULL DEFAULT '0',
-  ForcePassChange smallint NOT NULL DEFAULT '1',
+  LockedEditing boolean NOT NULL DEFAULT false,
+  ForcePassChange boolean NOT NULL DEFAULT true,
   DisplayName varchar(30) NOT NULL UNIQUE,
   AssignedRole int DEFAULT NULL,
   PassChangeDate date NOT NULL,
-  Enabled smallint NOT NULL DEFAULT '1',
-  LockedOut smallint NOT NULL DEFAULT '0',
+  Enabled boolean NOT NULL DEFAULT true,
+  LockedOut boolean NOT NULL DEFAULT false,
   FailedAttempts smallint NOT NULL DEFAULT '0'
 );
 --

@@ -10,7 +10,7 @@ VALUES (
         'SeedAdmin',
         'Full Permissions',
         '11111111111111111111111111111111111',
-        '0'
+        false
     );
 -- Create Seed users
 INSERT INTO users (
@@ -31,7 +31,7 @@ VALUES (
         'Seed Admin users',
         LASTVAL(),
         CURRENT_DATE,
-        1
+        true
     );
 -- Create Seed Branch
 INSERT INTO branch (BranchName, BranchAddress)
