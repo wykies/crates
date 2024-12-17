@@ -8,5 +8,17 @@
     "ringbuffer",
     "Ronacher",
     "zbus"
+  ],
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "chat",
+      "database": "chat",
+      "username": "app",
+      "password": "secret"
+    }
   ]
 }
