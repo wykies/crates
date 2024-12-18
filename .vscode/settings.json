@@ -21,6 +21,7 @@
       "password": "secret"
     }
   ],
-  "rust-analyzer.cargo.features": ["shuttle"],
+  // "rust-analyzer.cargo.features": ["shuttle"], // Switch to Shuttle
+  "rust-analyzer.cargo.features": ["standalone"], // Switch to Standalone
   "rust-analyzer.cargo.noDefaultFeatures": true
 }

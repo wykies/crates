@@ -143,6 +143,7 @@ env.TEST_LOG = "true"
 command = ["cargo", "check", "--target", "wasm32-unknown-unknown", "--color", "always", "--package", "chat-app-client"]
 need_stdout = false
 
+# To test Standalone mode
 [jobs.test-chat-server-standalone]
 command = [
   "cargo",
@@ -160,6 +161,7 @@ command = [
 ]
 need_stdout = true
 
+# To test Shuttle mode
 [jobs.test-chat-server-shuttle]
 command = [
   "cargo",
