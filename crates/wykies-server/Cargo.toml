@@ -36,12 +36,16 @@ postgres = [
 ]
 redis-session-rustls = ["actix-session/redis-session-rustls"] # Uses redis for session storage
 cookie-session = [
+  # Uses only cookies for session storage, if both this and redis are enabled then redis is used
+  # (See limitations https://docs.rs/actix-session/latest/actix_session/storage/struct.CookieSessionStore.html#limitations)
   "actix-session/cookie-session",
-] # Uses only cookies for session storage (See limitations https://docs.rs/actix-session/latest/actix_session/storage/struct.CookieSessionStore.html#limitations), if both this and redis are enabled then redis is used
+]
 shuttle = [
   "postgres",
-  "cookie-session", # Shuttle is currently being used for a demo, if we need to use for prod will need to write a postgres session backing option
+  # Shuttle is currently being used for a demo, if we need to use for prod will need to evaluate our options for session management
+  # One option to consider is using postgres for the storage of the session info
+  "cookie-session",
 ]
 disable-cors = ["dep:actix-cors"]
 
-# TODO 5: Implement SessionStore with postgres backing to replace cookies only https://docs.rs/actix-session/latest/actix_session/storage/trait.SessionStore.html
+# TODO 5: Implement SessionStore with postgres backing to as alternative to cookies only https://docs.rs/actix-session/latest/actix_session/storage/trait.SessionStore.html

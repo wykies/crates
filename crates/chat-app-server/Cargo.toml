@@ -17,7 +17,7 @@ tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tracing.workspace = true
 tracked-cancellations.workspace = true
 ws-auth.workspace = true
-wykies-server = { workspace = true, features = ["cookie-session"] }
+wykies-server.workspace = true
 wykies-shared = { workspace = true, features = ["server_only"] }
 
 [dev-dependencies]
@@ -32,5 +32,7 @@ wykies-server-test-helper.workspace = true
 wykies-time = { workspace = true, features = ["mysql"] }
 
 [features]
-default = []
+default = ["standalone"]
 disable-cors = ["wykies-server/disable-cors"]
+standalone = ["wykies-server/default"] # Runs the app in the standalone mode, see wykies-server for details
+shuttle = ["wykies-server/shuttle"] # Runs the app in the shuttle mode, see wykies-server for details
