@@ -53,7 +53,7 @@ jobs:
       - name: Migrate database
         run: |
           sudo apt-get install mysql-client -y
-          cd crates/chat-app-server && SKIP_DOCKER=true ./scripts/init_db.sh
+          cd crates/chat-app-server && SKIP_DOCKER=true ./scripts/init_db_mysql.sh
       - name: Check sqlx prepared queries are is up-to-date
         run: |
           cargo sqlx prepare --check --workspace -- --bins --tests --all-features

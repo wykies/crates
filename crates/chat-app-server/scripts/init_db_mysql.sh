@@ -65,6 +65,6 @@ done
 
 export DATABASE_URL=mysql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}
 sqlx database create
-sqlx migrate run
+sqlx migrate run --source migrations_mysql
 
 >&2 echo "MySql has been migrated, ready to go!"

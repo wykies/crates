@@ -53,7 +53,13 @@ pub async fn spawn_app_without_host_branch_stored() -> TestApp {
 }
 
 async fn do_migrations(connection_pool: &DbPool) {
-    sqlx::migrate!("./migrations")
+    #[cfg(feature = "mysql")]
+    let migrator = sqlx::migrate!("./migrations_mysql");
+
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let migrator = sqlx::migrate!("./migrations_pg");
+
+    migrator
         .run(connection_pool)
         .await
         .expect("Failed to migrate the database");

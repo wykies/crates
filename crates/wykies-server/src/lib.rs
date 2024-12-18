@@ -11,6 +11,9 @@ mod warning_suppress_release {
     use actix_cors as _;
 }
 
+#[cfg(all(not(feature = "mysql"), not(feature = "postgres")))]
+compile_error!("At least one database must be selected using feature flags");
+
 pub mod authentication;
 mod configuration;
 pub mod db_utils;
