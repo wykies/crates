@@ -6,6 +6,7 @@
 //!     - Switch sqlx by uncommenting the marked line in .env (Mark: Switch to ...)
 //!     - Ensure correct database is available (restart container or run matching init script)
 //!     - Use marked job in bacon (Mark: To test ...)
+//!     - Will need to disable offline mode for sqlx if using postgres because we are committing the mysql prepared sqlx files
 //! - For variable length fields in the database we restrict in the code to
 //!   number of bytes not characters because our common case will be to use
 //!   ascii anyway and checking number of bytes is cheaper and will work all
