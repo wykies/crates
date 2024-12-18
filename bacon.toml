@@ -5,8 +5,6 @@
 # You can also check bacon's own bacon.toml file
 #  as an example: https://github.com/Canop/bacon/blob/main/bacon.toml
 
-# TODO 4: Copy of tracing config for testing of the chat server
-
 default_job = "check"
 
 [jobs.check]
@@ -96,9 +94,96 @@ command = ["cargo", "run", "--color", "always", "--example"]
 need_stdout = true
 allow_warnings = true
 
+[jobs.include-ignored]
+command = [
+  "cargo",
+  "test",
+  "--all-features",
+  "--all-targets",
+  "--color",
+  "always",
+  "--",
+  "--include-ignored",
+  "--color",
+  "always", # see https://github.com/Canop/bacon/issues/124
+]
+need_stdout = true
+background = false
+env.TEST_LOG = "true"
+
+[jobs.test-chat-server-trace]
+command = [
+  "cargo",
+  "test",
+  "--color",
+  "always",
+  "--package",
+  "chat-app-server",
+  "--",
+  "--color",
+  "always",
+]
+need_stdout = true
+env.TEST_LOG = "true"
+
+[jobs.test-trace]
+command = [
+  "cargo",
+  "test",
+  "--color",
+  "always",
+  "--",
+  "--color",
+  "always",
+]
+need_stdout = true
+env.TEST_LOG = "true"
+
+[jobs.check-wasm-client]
+command = ["cargo", "check", "--target", "wasm32-unknown-unknown", "--color", "always", "--package", "chat-app-client"]
+need_stdout = false
+
+[jobs.test-chat-server-standalone]
+command = [
+  "cargo",
+  "test",
+  "--color",
+  "always",
+  "--package",
+  "chat-app-server",
+  "--",
+  "--color",
+  "always",
+]
+need_stdout = true
+
+[jobs.test-chat-server-shuttle]
+command = [
+  "cargo",
+  "test",
+  "--color",
+  "always",
+  "--package",
+  "chat-app-server",
+  "--no-default-features",
+  "--features",
+  "shuttle",
+  "--",
+  "--color",
+  "always",
+]
+need_stdout = true
+
 # You may define here keybindings that would be specific to
 # a project, for example a shortcut to launch a specific job.
 # Shortcuts to internal functions (scrolling, toggling, etc.)
 # should go in your personal global prefs.toml file instead.
 [keybindings]
 alt-T = "job:test-all"
+i = "job:include-ignored"
+alt-s = "job:test-chat-server-trace"
+alt-t = "job:test-trace"
+alt-q = "job:check" # Provides a way to do a quick check without including clippy like I normally want
+w = "job:check-wasm-client"
+s = "job:test-chat-server-standalone"
+p = "job:test-chat-server-shuttle"
