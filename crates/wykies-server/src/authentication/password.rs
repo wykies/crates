@@ -214,13 +214,21 @@ pub async fn validate_credentials(
 }
 
 async fn reset_failed_login_attempts(username: &str, pool: &DbPool) -> anyhow::Result<()> {
-    let sql_result = sqlx::query!(
-        "UPDATE `user` SET `FailedAttempts`=0 WHERE `UserName`=?; ",
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!(
+        "UPDATE `user` SET `FailedAttempts`=0 WHERE `UserName`=?;",
         username,
-    )
-    .execute(pool)
-    .await
-    .context("failed to reset `failed attempts`")?;
+    );
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let query = sqlx::query!(
+        "UPDATE users SET failed_attempts=0 WHERE user_name=$1;",
+        username,
+    );
+
+    let sql_result = query
+        .execute(pool)
+        .await
+        .context("failed to reset `failed attempts`")?;
     validate_one_row_affected(&sql_result).context("failed to to reset `failed attempts`")
 }
 
