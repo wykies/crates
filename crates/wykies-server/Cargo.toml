@@ -16,7 +16,13 @@ rand = { workspace = true, features = ["std_rng"] }
 secrecy.workspace = true
 serde.workspace = true
 serde-aux.workspace = true
-sqlx = { workspace = true, features = ["runtime-tokio", "macros", "mysql", "chrono", "migrate"] }
+sqlx = { workspace = true, features = [
+  "runtime-tokio",
+  "macros",
+  "mysql",
+  "chrono",
+  "migrate",
+] }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tracing.workspace = true
 tracing-actix-web.workspace = true
@@ -27,14 +33,25 @@ wykies-shared = { workspace = true, features = ["server_only"] }
 wykies-time.workspace = true
 
 [features]
-default = ["mysql", "redis-session-rustls"] # You must disable default features if you want to use Postgres
-mysql = ["sqlx/mysql", "wykies-shared/mysql"] # Uses MySQL as DB type
+default = [
+  "mysql",
+  "redis-session-rustls",
+] # You must disable default features if you want to use Postgres
+mysql = [
+  # Uses MySQL as DB type
+  "sqlx/mysql",
+  "wykies-shared/mysql",
+  "wykies-time/mysql",
+]
 postgres = [
   # Uses Postgres as DB type (unless mysql is also enabled in which case mysql will be used)
   "sqlx/postgres",
   "wykies-shared/postgres",
+  "wykies-time/postgres",
 ]
-redis-session-rustls = ["actix-session/redis-session-rustls"] # Uses redis for session storage
+redis-session-rustls = [
+  "actix-session/redis-session-rustls",
+] # Uses redis for session storage
 cookie-session = [
   # Uses only cookies for session storage, if both this and redis are enabled then redis is used
   # (See limitations https://docs.rs/actix-session/latest/actix_session/storage/struct.CookieSessionStore.html#limitations)

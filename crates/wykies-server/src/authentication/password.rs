@@ -285,22 +285,25 @@ async fn increment_locked_out_count(
 
     // Get new current value
     #[cfg(feature = "mysql")]
-    let query = sqlx::query!(
+    let current_failed_attempts = sqlx::query!(
         "SELECT `FailedAttempts` FROM `user` WHERE `UserName`=?; ",
         username
-    );
+    )
+    .fetch_one(pool)
+    .await
+    .context("failed to get `failed attempts` count")?
+    .FailedAttempts;
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
-    let query = sqlx::query!(
+    let current_failed_attempts: i8 = sqlx::query!(
         "SELECT failed_attempts FROM users WHERE user_name=$1;",
         username
-    );
-    let current_failed_attempts: i8 = query
-        .fetch_one(pool)
-        .await
-        .context("failed to get `failed attempts` count")?
-        .failed_attempts
-        .try_into()
-        .context("value from db is out of range")?;
+    )
+    .fetch_one(pool)
+    .await
+    .context("failed to get `failed attempts` count")?
+    .failed_attempts
+    .try_into()
+    .context("value from db is out of range")?;
 
     // Check if flag needs to be toggled
     if current_failed_attempts >= login_attempt_limit.as_i8() {
@@ -358,7 +361,7 @@ pub async fn change_password(
         username,
     );
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
-    // TODO 5: Check why encode trait impl doesn't make converting username not necessary
+    // TODO 5: Check why encode trait impl doesn't make converting not necessary
     let query = sqlx::query!(
         "
         UPDATE users SET 
