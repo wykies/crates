@@ -9,25 +9,43 @@ use wykies_shared::{
     uac::{Role, RoleDraft},
 };
 
-#[tracing::instrument(skip(pool))]
+#[tracing::instrument(ret, err, skip(pool))]
 pub async fn role(
     pool: web::Data<DbPool>,
     web::Query(role::LookupReqArgs { role_id }): web::Query<role::LookupReqArgs>,
 ) -> actix_web::Result<web::Json<Role>> {
     let pool: &DbPool = &pool;
-    let row = sqlx::query!(
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!(
         "SELECT `RoleID`, `Name`, `Description`, `Permissions` FROM `roles` WHERE `RoleID` = ?",
         role_id
-    )
-    .fetch_one(pool)
-    .await
-    .context("failed to find role")
-    .map_err(e400)?;
+    );
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let query = {
+        let role_id: i32 = role_id.try_into().map_err(e500)?;
+        sqlx::query!(
+            "SELECT role_id, role_name, role_description, permissions FROM roles WHERE role_id = $1",
+            role_id
+        )
+    };
+    let row = query
+        .fetch_one(pool)
+        .await
+        .context("failed to find role")
+        .map_err(e400)?;
+    #[cfg(feature = "mysql")]
     let result = Role {
         id: role_id,
         name: row.Name.try_into().map_err(e500)?,
         description: row.Description.try_into().map_err(e500)?,
         permissions: row.Permissions.try_into().map_err(e500)?,
+    };
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let result = Role {
+        id: role_id,
+        name: row.role_name.try_into().map_err(e500)?,
+        description: row.role_description.try_into().map_err(e500)?,
+        permissions: row.permissions.try_into().map_err(e500)?,
     };
     Ok(web::Json(result))
 }
