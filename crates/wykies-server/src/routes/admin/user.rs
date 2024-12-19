@@ -253,14 +253,19 @@ async fn get_role_list(pool: &DbPool) -> actix_web::Result<Vec<RoleIdAndName>> {
 }
 
 async fn get_users_list(pool: &DbPool) -> actix_web::Result<Vec<UserMetadata>> {
-    sqlx::query!("SELECT `UserName`, `DisplayName`, `ForcePassChange`, `AssignedRole`, `Enabled`, `LockedOut`, `FailedAttempts`, `PassChangeDate` FROM `user`",)
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!("SELECT `UserName`, `DisplayName`, `ForcePassChange`, `AssignedRole`, `Enabled`, `LockedOut`, `FailedAttempts`, `PassChangeDate` FROM `user`",);
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let query = sqlx::query!("SELECT user_name, display_name, force_pass_change, assigned_role, is_enabled, locked_out, failed_attempts, pass_change_date FROM users",);
+    query
         .fetch_all(pool)
         .await
         .context("failed to get list of users")
         .map_err(e500)?
         .into_iter()
         .map(|x| {
-            Ok(UserMetadata {
+            #[cfg(feature = "mysql")]
+            return Ok(UserMetadata {
                 username: x.UserName.try_into()?,
                 display_name: x.DisplayName.try_into()?,
                 force_pass_change: db_int_to_bool(x.ForcePassChange),
@@ -271,8 +276,23 @@ async fn get_users_list(pool: &DbPool) -> actix_web::Result<Vec<UserMetadata>> {
                 },
                 enabled: db_int_to_bool(x.Enabled),
                 locked_out: db_int_to_bool(x.LockedOut),
-                failed_attempts: x.FailedAttempts as _,
-                pass_change_date: x.PassChangeDate
+                failed_attempts: x.FailedAttempts.try_into()?,
+                pass_change_date: x.PassChangeDate,
+            });
+            #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+            Ok(UserMetadata {
+                username: x.user_name.try_into()?,
+                display_name: x.display_name.try_into()?,
+                force_pass_change: x.force_pass_change,
+                assigned_role: if let Some(x) = x.assigned_role {
+                    Some(x.try_into()?)
+                } else {
+                    None
+                },
+                enabled: x.is_enabled,
+                locked_out: x.locked_out,
+                failed_attempts: x.failed_attempts.try_into()?,
+                pass_change_date: x.pass_change_date,
             })
         })
         .collect::<anyhow::Result<Vec<UserMetadata>>>()
