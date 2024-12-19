@@ -55,9 +55,10 @@ impl Default for DbUser {
     }
 }
 
-#[tracing::instrument(skip(username, pool))]
+#[tracing::instrument(skip(pool))]
 async fn get_user_from_db(username: &str, pool: &DbPool) -> Result<Option<DbUser>, anyhow::Error> {
-    let row = sqlx::query!(
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!(
         r#"
         SELECT UserName, password_hash, ForcePassChange, DisplayName, Enabled, LockedOut, FailedAttempts, Permissions
         FROM user
@@ -65,15 +66,29 @@ async fn get_user_from_db(username: &str, pool: &DbPool) -> Result<Option<DbUser
         WHERE UserName = ?
         "#,
         username,
-    )
-    .fetch_optional(pool)
-    .await
-    .context("Failed to performed a query to retrieve stored credentials.")?;
+    );
+
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let query = sqlx::query!(
+        r#"
+        SELECT user_name, password_hash, force_pass_change, display_name, is_enabled, locked_out, failed_attempts, permissions
+        FROM users
+        LEFT JOIN roles ON users.assigned_role = roles.role_id
+        WHERE user_name = $1
+        "#,
+        username,
+    );
+    let row = query
+        .fetch_optional(pool)
+        .await
+        .context("Failed to performed a query to retrieve stored credentials.")?;
     let Some(row) = row else {
         debug!("User not found: {username}");
         return Ok(None);
     };
-    let user_info = DbUser {
+
+    #[cfg(feature = "mysql")]
+    return Ok(Some(DbUser {
         username: row.UserName,
         password_hash: SecretString::from(row.password_hash),
         force_pass_change: db_int_to_bool(row.ForcePassChange),
@@ -82,8 +97,19 @@ async fn get_user_from_db(username: &str, pool: &DbPool) -> Result<Option<DbUser
         enabled: db_int_to_bool(row.Enabled),
         locked_out: db_int_to_bool(row.LockedOut),
         failed_attempts: row.FailedAttempts,
-    };
-    Ok(Some(user_info))
+    }));
+
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    Ok(Some(DbUser {
+        username: row.user_name,
+        password_hash: SecretString::from(row.password_hash),
+        force_pass_change: row.force_pass_change,
+        display_name: row.display_name,
+        permissions: row.permissions.try_into()?,
+        enabled: row.is_enabled,
+        locked_out: row.locked_out,
+        failed_attempts: row.failed_attempts.try_into()?,
+    }))
 }
 
 #[derive(Debug)]
