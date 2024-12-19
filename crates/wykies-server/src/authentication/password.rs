@@ -1,4 +1,6 @@
-use crate::db_utils::{db_int_to_bool, validate_one_row_affected};
+#[cfg(feature = "mysql")]
+use crate::db_utils::db_int_to_bool;
+use crate::db_utils::validate_one_row_affected;
 use anyhow::Context;
 use argon2::password_hash::SaltString;
 use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version};
@@ -341,7 +343,9 @@ pub async fn change_password(
     let password_hash = spawn_blocking_with_tracing(move || compute_password_hash(password))
         .await?
         .context("failed to hash password")?;
-    let sql_result = sqlx::query!(
+    #[cfg(feature = "mysql")]
+    // TODO 1: Raw string doesn't look like it's needed here
+    let query = sqlx::query!(
         r#"
         UPDATE `user` SET 
         `password_hash` = ?, 
@@ -352,10 +356,25 @@ pub async fn change_password(
         password_hash.expose_secret(),
         should_force_pass_change,
         username,
-    )
-    .execute(pool)
-    .await
-    .context("failed to change user's password in the database.")?;
+    );
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    // TODO 5: Check why encode trait impl doesn't make converting username not necessary
+    let query = sqlx::query!(
+        "
+        UPDATE users SET 
+        password_hash = $1, 
+        force_pass_change = $2,
+        pass_change_date = CURRENT_DATE
+        WHERE users.user_name = $3; 
+        ",
+        password_hash.expose_secret(),
+        should_force_pass_change,
+        username.as_ref(),
+    );
+    let sql_result = query
+        .execute(pool)
+        .await
+        .context("failed to change user's password in the database.")?;
     validate_one_row_affected(&sql_result)?;
 
     Ok(())
