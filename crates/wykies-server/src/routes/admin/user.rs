@@ -226,16 +226,26 @@ pub async fn list_users_and_roles(
 }
 
 async fn get_role_list(pool: &DbPool) -> actix_web::Result<Vec<RoleIdAndName>> {
-    sqlx::query!("SELECT `RoleID`, `Name` FROM `roles`",)
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!("SELECT `RoleID`, `Name` FROM `roles`");
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let query = sqlx::query!("SELECT role_id, role_name FROM roles");
+    query
         .fetch_all(pool)
         .await
         .context("failed to get list of roles")
         .map_err(e500)?
         .into_iter()
         .map(|x| {
-            Ok(RoleIdAndName {
+            #[cfg(feature = "mysql")]
+            return Ok(RoleIdAndName {
                 id: x.RoleID.try_into()?,
                 name: x.Name.try_into()?,
+            });
+            #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+            Ok(RoleIdAndName {
+                id: x.role_id.try_into()?,
+                name: x.role_name.try_into()?,
             })
         })
         .collect::<anyhow::Result<Vec<RoleIdAndName>>>()
