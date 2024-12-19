@@ -265,24 +265,40 @@ async fn increment_locked_out_count(
     login_attempt_limit: &LoginAttemptLimit,
 ) -> Result<(), AuthError> {
     // Increment current value in DB
-    let sql_result = sqlx::query!(
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!(
         "UPDATE `user` SET `FailedAttempts`=`FailedAttempts`+1 WHERE `UserName`=?; ",
         username,
-    )
-    .execute(pool)
-    .await
-    .context("failed to increment `failed attempts`")?;
+    );
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let query = sqlx::query!(
+        "UPDATE users SET failed_attempts=failed_attempts+1 WHERE user_name=$1;",
+        username,
+    );
+    let sql_result = query
+        .execute(pool)
+        .await
+        .context("failed to increment `failed attempts`")?;
     validate_one_row_affected(&sql_result).context("failed to to increment `failed attempts`")?;
 
     // Get new current value
-    let current_failed_attempts = sqlx::query!(
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!(
         "SELECT `FailedAttempts` FROM `user` WHERE `UserName`=?; ",
         username
-    )
-    .fetch_one(pool)
-    .await
-    .context("failed to get `failed attempts` count")?
-    .FailedAttempts;
+    );
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let query = sqlx::query!(
+        "SELECT failed_attempts FROM users WHERE user_name=$1;",
+        username
+    );
+    let current_failed_attempts: i8 = query
+        .fetch_one(pool)
+        .await
+        .context("failed to get `failed attempts` count")?
+        .failed_attempts
+        .try_into()
+        .context("value from db is out of range")?;
 
     // Check if flag needs to be toggled
     if current_failed_attempts >= login_attempt_limit.as_i8() {
