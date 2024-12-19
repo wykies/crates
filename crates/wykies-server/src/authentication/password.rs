@@ -213,6 +213,7 @@ pub async fn validate_credentials(
     })
 }
 
+#[tracing::instrument(skip(pool))]
 async fn reset_failed_login_attempts(username: &str, pool: &DbPool) -> anyhow::Result<()> {
     #[cfg(feature = "mysql")]
     let query = sqlx::query!(
@@ -234,15 +235,26 @@ async fn reset_failed_login_attempts(username: &str, pool: &DbPool) -> anyhow::R
 
 #[tracing::instrument(skip(pool))]
 async fn set_locked_out_in_db(username: &str, pool: &DbPool, value: bool) -> anyhow::Result<()> {
-    let value = if value { 1 } else { 0 };
-    let sql_result = sqlx::query!(
-        "UPDATE `user` SET `LockedOut` = ? WHERE `user`.`UserName` = ?;",
+    #[cfg(feature = "mysql")]
+    let query = {
+        // TODO 5: Do we need the manual conversion to numbers here?
+        let value = if value { 1 } else { 0 };
+        sqlx::query!(
+            "UPDATE `user` SET `LockedOut` = ? WHERE `user`.`UserName` = ?;",
+            value,
+            username,
+        )
+    };
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let query = sqlx::query!(
+        "UPDATE users SET locked_out = $1 WHERE users.user_name = $2;",
         value,
         username,
-    )
-    .execute(pool)
-    .await
-    .context("failed to set user to disabled")?;
+    );
+    let sql_result = query
+        .execute(pool)
+        .await
+        .context("failed to set user to disabled")?;
     validate_one_row_affected(&sql_result).context("failed to set user to disabled")
 }
 
