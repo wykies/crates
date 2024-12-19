@@ -11,7 +11,8 @@ pub async fn set_host_branch_pair(
     web::Json(pair): web::Json<HostBranchPair>,
 ) -> actix_web::Result<HttpResponse> {
     let pool: &DbPool = &pool;
-    sqlx::query!(
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!(
         "INSERT INTO `hostbranch` 
         (`hostname`, `AssignedBranch`)
         VALUES (?, ?) 
@@ -19,11 +20,27 @@ pub async fn set_host_branch_pair(
         pair.host_id,
         pair.branch_id,
         pair.branch_id,
-    )
-    .execute(pool)
-    .await
-    .context("failed to set host_branch_pair")
-    .map_err(e500)?;
+    );
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let query = {
+        // TODO 5: Check why encode trait impl doesn't make converting not necessary
+        let assigned_branch: i32 = pair.branch_id.try_into().map_err(e500)?;
+        sqlx::query!(
+            "INSERT INTO hostbranch 
+            (hostname, assigned_branch)
+            VALUES ($1, $2) 
+            ON CONFLICT (hostname) DO UPDATE
+            SET assigned_branch = $2;",
+            pair.host_id.as_ref(),
+            assigned_branch,
+        )
+    };
+
+    query
+        .execute(pool)
+        .await
+        .context("failed to set host_branch_pair")
+        .map_err(e500)?;
     // Can not validate number of rows because it can change if update to same, insert new or update https://dev.mysql.com/doc/refman/8.4/en/insert-on-duplicate.html
     Ok(HttpResponse::Ok().finish())
 }

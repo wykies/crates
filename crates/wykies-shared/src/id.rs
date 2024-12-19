@@ -1,3 +1,5 @@
+use anyhow::Context;
+
 #[derive(
     Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, Copy,
 )]
@@ -24,6 +26,17 @@ impl TryFrom<i32> for DbId {
 impl From<DbId> for u64 {
     fn from(value: DbId) -> Self {
         value.0
+    }
+}
+
+impl TryFrom<DbId> for i32 {
+    type Error = anyhow::Error;
+
+    fn try_from(value: DbId) -> Result<Self, Self::Error> {
+        value
+            .0
+            .try_into()
+            .context("failed to convert DbId into i32")
     }
 }
 

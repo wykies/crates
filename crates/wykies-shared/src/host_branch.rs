@@ -15,6 +15,12 @@ impl HostId {
     const MAX_LENGTH: usize = 50;
 }
 
+impl AsRef<str> for HostId {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 impl Display for HostId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
