@@ -11,7 +11,11 @@ use wykies_shared::{
 #[tracing::instrument(skip(pool))]
 pub async fn branch_list(pool: web::Data<DbPool>) -> actix_web::Result<web::Json<Vec<Branch>>> {
     let pool: &DbPool = &pool;
-    let rows = sqlx::query!("SELECT `BranchID`, `BranchName`, `BranchAddress` FROM `branch`",)
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!("SELECT `BranchID`, `BranchName`, `BranchAddress` FROM `branch`");
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let query = sqlx::query!("SELECT branch_id, branch_name, branch_address FROM branch");
+    let rows = query
         .fetch_all(pool)
         .await
         .context("failed to get branches")
@@ -19,11 +23,21 @@ pub async fn branch_list(pool: web::Data<DbPool>) -> actix_web::Result<web::Json
     let result = rows
         .into_iter()
         .map(|x| {
-            Ok(Branch {
+            #[cfg(feature = "mysql")]
+            return Ok(Branch {
                 id: x.BranchID.try_into()?,
                 name: x.BranchName.try_into().context("invalid branch name")?,
                 address: x
                     .BranchAddress
+                    .try_into()
+                    .context("invalid branch address")?,
+            });
+            #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+            Ok(Branch {
+                id: x.branch_id.try_into()?,
+                name: x.branch_name.try_into().context("invalid branch name")?,
+                address: x
+                    .branch_address
                     .try_into()
                     .context("invalid branch address")?,
             })
