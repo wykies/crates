@@ -37,8 +37,8 @@ CREATE TABLE hostbranch (
 
 CREATE TABLE roles (
   role_id serial NOT NULL PRIMARY KEY,
-  name varchar(16) NOT NULL UNIQUE,
-  description varchar(50) NOT NULL DEFAULT '',
+  role_name varchar(16) NOT NULL UNIQUE,
+  role_description varchar(50) NOT NULL DEFAULT '',
   permissions varchar(256) NOT NULL,
   locked_editing boolean NOT NULL DEFAULT false
 );
@@ -53,7 +53,7 @@ CREATE TABLE users (
   display_name varchar(30) NOT NULL UNIQUE,
   assigned_role int DEFAULT NULL,
   pass_change_date date NOT NULL,
-  enabled boolean NOT NULL DEFAULT true,
+  is_enabled boolean NOT NULL DEFAULT true,
   locked_out boolean NOT NULL DEFAULT false,
   failed_attempts smallint NOT NULL DEFAULT '0'
 );

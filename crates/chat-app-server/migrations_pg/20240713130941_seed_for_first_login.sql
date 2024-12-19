@@ -1,8 +1,8 @@
 -- f
 -- Create Seed Role
 INSERT INTO roles (
-        name,
-        description,
+        role_name,
+        role_description,
         permissions,
         locked_editing
     )
@@ -19,7 +19,7 @@ INSERT INTO users (
         display_name,
         assigned_role,
         pass_change_date,
-        enabled
+        is_enabled
     )
 VALUES (
         'seed_admin',
