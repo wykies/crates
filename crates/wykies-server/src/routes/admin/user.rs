@@ -24,20 +24,31 @@ pub async fn user(
     web::Query(user::LookupReqArgs { username }): web::Query<user::LookupReqArgs>,
 ) -> actix_web::Result<web::Json<UserMetadata>> {
     let pool: &DbPool = &pool;
-    let Some(record) = sqlx::query!(
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!(
         "SELECT `UserName`, `DisplayName`, `ForcePassChange`, `AssignedRole`, `Enabled`, `LockedOut`, `FailedAttempts`, `PassChangeDate`
          FROM `user`
-         WHERE UserName=?",
-    username)
-    .fetch_optional(pool)
-    .await
-    .context("failed to get user")
-    .map_err(e500)?
+         WHERE UserName=?;",
+    username);
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    // TODO 5: Check why encode trait impl doesn't make converting not necessary
+    let query = sqlx::query!(
+        "SELECT user_name, display_name, force_pass_change, assigned_role, is_enabled, locked_out, failed_attempts, pass_change_date
+         FROM users
+         WHERE user_name=$1;",
+        username.as_ref()
+    );
+    let Some(record) = query
+        .fetch_optional(pool)
+        .await
+        .context("failed to get user")
+        .map_err(e500)?
     else {
         return Err(e400("no user found with that username"));
     };
 
-    Ok(web::Json(UserMetadata {
+    #[cfg(feature = "mysql")]
+    let result = UserMetadata {
         username: record.UserName.try_into().map_err(e500)?,
         display_name: record.DisplayName.try_into().map_err(e500)?,
         force_pass_change: db_int_to_bool(record.ForcePassChange),
@@ -48,9 +59,26 @@ pub async fn user(
         },
         enabled: db_int_to_bool(record.Enabled),
         locked_out: db_int_to_bool(record.LockedOut),
-        failed_attempts: record.FailedAttempts as _,
+        failed_attempts: record.FailedAttempts.try_into().map_err(e500)?,
         pass_change_date: record.PassChangeDate,
-    }))
+    };
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let result = UserMetadata {
+        username: record.user_name.try_into().map_err(e500)?,
+        display_name: record.display_name.try_into().map_err(e500)?,
+        force_pass_change: record.force_pass_change,
+        assigned_role: if let Some(x) = record.assigned_role {
+            Some(x.try_into().map_err(e500)?)
+        } else {
+            None
+        },
+        enabled: record.is_enabled,
+        locked_out: record.locked_out,
+        failed_attempts: record.failed_attempts.try_into().map_err(e500)?,
+        pass_change_date: record.pass_change_date,
+    };
+
+    Ok(web::Json(result))
 }
 
 #[tracing::instrument(ret, err(Debug), skip(pool))]
