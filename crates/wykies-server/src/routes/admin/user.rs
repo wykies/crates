@@ -135,13 +135,15 @@ pub async fn user_update(
     pool: web::Data<DbPool>,
     wrapped: web::Json<RonWrapper>,
 ) -> actix_web::Result<actix_web::HttpResponse> {
+    // TODO 2: Ensure there is a test that assigns a role, changes a role and removes a role
     let pool: &DbPool = &pool;
     let diff: UserMetadataDiff = wrapped
         .deserialize()
         .context("convert from ron failed")
         .map_err(e400)?;
     diff.is_valid().map_err(e400)?;
-    let sql_result = sqlx::query!(
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!(
         "UPDATE `user` SET
         `DisplayName` = CASE WHEN ? IS NULL THEN `DisplayName` ELSE ? end,
         `ForcePassChange` = CASE WHEN ? IS NULL THEN `ForcePassChange` ELSE ? end,
@@ -149,7 +151,7 @@ pub async fn user_update(
         `Enabled` = CASE WHEN ? IS NULL THEN `Enabled` ELSE ? end,
         `LockedOut` = CASE WHEN ? IS NULL THEN `LockedOut` ELSE ? end,
         `FailedAttempts` = CASE WHEN ? IS NULL THEN `FailedAttempts` ELSE ? end
-        WHERE `UserName`=?",
+        WHERE `UserName`=?;",
         diff.display_name,
         diff.display_name,
         diff.force_pass_change,
@@ -163,11 +165,49 @@ pub async fn user_update(
         diff.failed_attempts,
         diff.failed_attempts,
         diff.username
-    )
-    .execute(pool)
-    .await
-    .context("failed to update user")
-    .map_err(e500)?;
+    );
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    // TODO 5: Check why encode trait impl doesn't make converting not necessary
+    let query = {
+        let display_name = diff.display_name.map(|x| x.to_string());
+        let assigned_role: Option<i32> = match diff.assigned_role {
+            Some(Some(x)) => Some(x.try_into().map_err(e500)?),
+            Some(None) | None => None,
+        };
+        let failed_attempts: Option<i16> = diff
+            .failed_attempts
+            .map(|x| x.try_into())
+            .transpose()
+            .map_err(e500)?;
+        sqlx::query!(
+            "UPDATE users SET
+            display_name = CASE WHEN $1 THEN display_name ELSE $2 end,
+            force_pass_change = CASE WHEN $3 THEN force_pass_change ELSE $4 end,
+            assigned_role = CASE WHEN $5 THEN assigned_role ELSE $6 end,
+            is_enabled = CASE WHEN $7 THEN is_enabled ELSE $8 end,
+            locked_out = CASE WHEN $9 THEN locked_out ELSE $10 end,
+            failed_attempts = CASE WHEN $11 THEN failed_attempts ELSE $12 end
+            WHERE user_name=$13",
+            display_name.is_none(),
+            display_name,
+            diff.force_pass_change.is_none(),
+            diff.force_pass_change,
+            diff.assigned_role.is_none(),
+            assigned_role,
+            diff.enabled.is_none(),
+            diff.enabled,
+            diff.locked_out.is_none(),
+            diff.locked_out,
+            diff.failed_attempts.is_none(),
+            failed_attempts,
+            diff.username.as_ref()
+        )
+    };
+    let sql_result = query
+        .execute(pool)
+        .await
+        .context("failed to update user")
+        .map_err(e500)?;
     validate_one_row_affected(&sql_result)
         .context("wrong number of rows changed when updating user")
         .map_err(e500)?;
