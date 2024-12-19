@@ -1,4 +1,4 @@
-#[cfg(not(feature = "mysql"))]
+#[cfg(all(not(feature = "mysql"), not(feature = "postgres")))]
 compile_error!("No Database Type selected. Please use create features to select a DB to use");
 
 #[cfg_attr(feature = "mysql", path = "db_types_mysql.rs")]

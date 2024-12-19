@@ -35,7 +35,13 @@ static_assertions.workspace = true
 
 [features]
 default = []
-server_only = ["dep:sqlx", "dep:db-types"] # Used to control things only the server should create
+server_only = [
+    "dep:sqlx",
+    "dep:db-types",
+] # Used to control things only the server should create
 client_only = [] # Used to control things only the client should create
 mysql = ["sqlx/mysql", "db-types/mysql"] # Enables conversion from mysql types
-postgres = ["sqlx/postgres", "db-types/postgres"] # Enables conversion from mysql types
+postgres = [
+    "sqlx/postgres",
+    "db-types/postgres",
+] # Enables conversion from postgres types

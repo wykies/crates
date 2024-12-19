@@ -29,10 +29,16 @@ serde_json.workspace = true
 uuid = { workspace = true, features = ["v4", "serde"] }
 wykies-client-core = { workspace = true, features = ["expose_internal"] }
 wykies-server-test-helper.workspace = true
-wykies-time = { workspace = true, features = ["mysql"] }
+wykies-time = { workspace = true }
 
 [features]
 default = ["standalone"]
 disable-cors = ["wykies-server/disable-cors"]
-standalone = ["wykies-server/default"] # Runs the app in the standalone mode, see wykies-server for details
-shuttle = ["wykies-server/shuttle"] # Runs the app in the shuttle mode, see wykies-server for details
+standalone = [
+    # Runs the app in the standalone mode, see wykies-server for details
+    "wykies-server/default",
+]
+shuttle = [
+    # Runs the app in the shuttle mode, see wykies-server for details
+    "wykies-server/shuttle",
+]
