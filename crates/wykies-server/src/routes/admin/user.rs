@@ -100,10 +100,9 @@ pub async fn user_new(
         password_hash,
         args.display_name,
         args.assigned_role
-    )
-    .execute(pool)
-    .await
-    .expect("failed to store test user");
+        .await
+        .context("failed to store user")
+        .map_err(e500)?;
     validate_one_row_affected(&sql_result)
         .context("failed to save new user")
         .map_err(e500)?;
