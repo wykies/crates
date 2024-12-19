@@ -96,6 +96,13 @@ impl Display for DisplayName {
         write!(f, "{}", self.0)
     }
 }
+
+impl AsRef<str> for DisplayName {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 /// Stores the user info that is returned on login
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
 pub struct UserInfo {

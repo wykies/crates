@@ -92,7 +92,8 @@ pub async fn user_new(
         .hash_password(args.password.expose_secret().as_bytes(), &salt)
         .unwrap()
         .to_string();
-    let sql_result = sqlx::query!(
+    #[cfg(feature = "mysql")]
+    let query  = sqlx::query!(
         "INSERT INTO `user`
         (`UserName`, `Password`, `password_hash`, `salt`, `DisplayName`, `AssignedRole`, `PassChangeDate`, `Enabled`) 
         VALUES (?, '', ?, '', ?, ?, CURRENT_DATE(), 1);",
@@ -100,6 +101,26 @@ pub async fn user_new(
         password_hash,
         args.display_name,
         args.assigned_role
+    );
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    // TODO 5: Check why encode trait impl doesn't make converting not necessary
+    let query = {
+        let assigned_role: Option<i32> = match args.assigned_role {
+            Some(x) => Some(x.try_into().map_err(e500)?),
+            None => None,
+        };
+        sqlx::query!(
+            "INSERT INTO users
+        (user_name, password_hash, display_name, assigned_role, pass_change_date, is_enabled) 
+        VALUES ($1, $2, $3, $4, CURRENT_DATE, true);",
+            args.username.as_ref(),
+            password_hash,
+            args.display_name.as_ref(),
+            assigned_role
+        )
+    };
+    let sql_result = query
+        .execute(pool)
         .await
         .context("failed to store user")
         .map_err(e500)?;
