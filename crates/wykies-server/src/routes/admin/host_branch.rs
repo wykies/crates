@@ -50,7 +50,11 @@ pub async fn list_host_branch_pairs(
     pool: web::Data<DbPool>,
 ) -> actix_web::Result<web::Json<Vec<HostBranchPair>>> {
     let pool: &DbPool = &pool;
-    let rows = sqlx::query!("SELECT `hostname`, `AssignedBranch` FROM `hostbranch`",)
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!("SELECT `hostname`, `AssignedBranch` FROM `hostbranch`");
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let query = sqlx::query!("SELECT hostname, assigned_branch FROM hostbranch");
+    let rows = query
         .fetch_all(pool)
         .await
         .context("failed to get list of host_branch_pairs")
@@ -58,9 +62,15 @@ pub async fn list_host_branch_pairs(
     let result = rows
         .into_iter()
         .map(|x| {
-            Ok(HostBranchPair {
+            #[cfg(feature = "mysql")]
+            return Ok(HostBranchPair {
                 host_id: x.hostname.try_into()?,
                 branch_id: x.AssignedBranch.try_into()?,
+            });
+            #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+            Ok(HostBranchPair {
+                host_id: x.hostname.try_into()?,
+                branch_id: x.assigned_branch.try_into()?,
             })
         })
         .collect::<anyhow::Result<Vec<HostBranchPair>>>()
