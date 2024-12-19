@@ -52,10 +52,17 @@ pub struct WebSocketSettings {
 
 impl DatabaseSettings {
     pub fn without_db(&self) -> DbConnectOptions {
+        #[cfg(feature = "mysql")]
         let ssl_mode = if self.require_ssl {
             DbSslMode::Required
         } else {
             DbSslMode::Preferred
+        };
+        #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+        let ssl_mode = if self.require_ssl {
+            DbSslMode::Require
+        } else {
+            DbSslMode::Prefer
         };
         DbConnectOptions::new()
             .host(&self.host)
