@@ -6,7 +6,7 @@ use wykies_shared::{
     e400, e500,
     id::DbId,
     req_args::api::admin::role::{self, AssignReqArgs},
-    uac::{Role, RoleDraft, Username},
+    uac::{Role, RoleDraft},
 };
 
 #[tracing::instrument(skip(pool))]
@@ -67,7 +67,7 @@ pub async fn role_assign(
         SET `AssignedRole` = ? 
         WHERE `user`.`UserName` = ?;",
         req_args.role_id,
-        <Username as Into<String>>::into(req_args.username)
+        req_args.username
     )
     .execute(pool)
     .await

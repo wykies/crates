@@ -15,9 +15,7 @@ use wykies_shared::{
         RonWrapper,
     },
     session::UserSessionInfo,
-    uac::{
-        ListUsersRoles, ResetPasswordError, RoleIdAndName, UserMetadata, UserMetadataDiff, Username,
-    },
+    uac::{ListUsersRoles, ResetPasswordError, RoleIdAndName, UserMetadata, UserMetadataDiff},
 };
 
 #[tracing::instrument(ret, err(Debug), skip(pool))]
@@ -30,7 +28,7 @@ pub async fn user(
         "SELECT `UserName`, `DisplayName`, `ForcePassChange`, `AssignedRole`, `Enabled`, `LockedOut`, `FailedAttempts`, `PassChangeDate`
          FROM `user`
          WHERE UserName=?",
-    <Username as Into<String>>::into(username))
+    username)
     .fetch_optional(pool)
     .await
     .context("failed to get user")

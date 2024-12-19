@@ -347,15 +347,12 @@ pub async fn change_password(
         .await?
         .context("failed to hash password")?;
     #[cfg(feature = "mysql")]
-    // TODO 1: Raw string doesn't look like it's needed here
     let query = sqlx::query!(
-        r#"
-        UPDATE `user` SET 
+        "UPDATE `user` SET 
         `password_hash` = ?, 
         `ForcePassChange` = ?,
         `PassChangeDate` = CURRENT_DATE()
-        WHERE `user`.`UserName` = ?; 
-        "#,
+        WHERE `user`.`UserName` = ?;",
         password_hash.expose_secret(),
         should_force_pass_change,
         username,
