@@ -50,27 +50,52 @@ pub async fn role(
     Ok(web::Json(result))
 }
 
-#[tracing::instrument(skip(pool))]
+#[tracing::instrument(ret, err, skip(pool))]
 pub async fn role_create(
     pool: web::Data<DbPool>,
     web::Json(draft_role): web::Json<RoleDraft>,
 ) -> actix_web::Result<web::Json<DbId>> {
     let pool: &DbPool = &pool;
     let permissions: String = draft_role.permissions.into();
-    let sql_result = sqlx::query!(
-        "INSERT INTO `roles` 
-    (`RoleID`, `Name`, `Description`, `Permissions`, `LockedEditing`)
-    VALUES (NULL, ?, ?, ?, '0');",
-        draft_role.name,
-        draft_role.description,
-        permissions
-    )
-    .execute(pool)
-    .await
-    .context("failed to insert role")
-    .map_err(e500)?;
-    validate_one_row_affected(&sql_result).map_err(e500)?;
-    let result = sql_result.last_insert_id().into();
+    #[cfg(feature = "mysql")]
+    let result = {
+        let sql_result = sqlx::query!(
+            "INSERT INTO `roles` 
+            (`RoleID`, `Name`, `Description`, `Permissions`, `LockedEditing`)
+            VALUES (NULL, ?, ?, ?, '0');",
+            draft_role.name,
+            draft_role.description,
+            permissions
+        )
+        .execute(pool)
+        .await
+        .context("failed to insert role")
+        .map_err(e500)?;
+        validate_one_row_affected(&sql_result).map_err(e500)?;
+        sql_result.last_insert_id().into()
+    };
+
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    // TODO 5: Check why encode trait impl doesn't make converting not necessary
+    let result = {
+        let name: &str = draft_role.name.as_ref();
+        let description: &str = draft_role.description.as_ref();
+        sqlx::query!(
+            "INSERT INTO roles 
+            (role_id, role_name, role_description, permissions)
+            VALUES (NULL, $1, $2, $3) RETURNING role_id;",
+            name,
+            description,
+            permissions
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(e500)?
+        .role_id
+        .try_into()
+        .map_err(e500)?
+    };
+
     Ok(web::Json(result))
 }
 
