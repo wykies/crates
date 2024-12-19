@@ -84,17 +84,28 @@ pub async fn host_branch_pair_lookup(
     web::Query(host_branch::LookupReqArgs { host_id }): web::Query<host_branch::LookupReqArgs>,
 ) -> actix_web::Result<web::Json<Option<DbId>>> {
     let pool: &DbPool = &pool;
-    let row = sqlx::query!(
-        "SELECT `hostname`, `AssignedBranch` FROM `hostbranch` where `hostname` = ?",
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!(
+        "SELECT `hostname`, `AssignedBranch` FROM `hostbranch` where `hostname` = ?;",
         host_id
-    )
-    .fetch_optional(pool)
-    .await
-    .context("failed to lookup host_branch_pair")
-    .map_err(e500)?;
+    );
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    // TODO 5: Check why encode trait impl doesn't make converting not necessary
+    let query = sqlx::query!(
+        "SELECT hostname, assigned_branch FROM hostbranch where hostname = $1;",
+        host_id.as_ref()
+    );
+    let row = query
+        .fetch_optional(pool)
+        .await
+        .context("failed to lookup host_branch_pair")
+        .map_err(e500)?;
     let Some(row) = row else {
         return Ok(web::Json(None));
     };
+    #[cfg(feature = "mysql")]
     let result = row.AssignedBranch.try_into().map_err(e500)?;
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let result = row.assigned_branch.try_into().map_err(e500)?;
     Ok(web::Json(Some(result)))
 }
