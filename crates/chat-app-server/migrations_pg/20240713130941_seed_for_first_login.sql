@@ -1,10 +1,10 @@
 -- f
 -- Create Seed Role
 INSERT INTO roles (
-        Name,
-        Description,
-        Permissions,
-        LockedEditing
+        name,
+        description,
+        permissions,
+        locked_editing
     )
 VALUES (
         'SeedAdmin',
@@ -14,25 +14,21 @@ VALUES (
     );
 -- Create Seed users
 INSERT INTO users (
-        UserName,
-        Password,
+        user_name,
         password_hash,
-        salt,
-        DisplayName,
-        AssignedRole,
-        PassChangeDate,
-        Enabled
+        display_name,
+        assigned_role,
+        pass_change_date,
+        enabled
     )
 VALUES (
         'seed_admin',
-        '',
         '$argon2id$v=19$m=15000,t=2,p=1$MKnXfAG4x97WMzfWuOjs1g$MWvmzgFNfj8lneYHgghXuzXCpX+fs1NbVcWr2ieev8M',
-        '',
         'Seed Admin users',
         LASTVAL(),
         CURRENT_DATE,
         true
     );
 -- Create Seed Branch
-INSERT INTO branch (BranchName, BranchAddress)
+INSERT INTO branch (branch_name, branch_address)
 VALUES ('Seed Branch', '');

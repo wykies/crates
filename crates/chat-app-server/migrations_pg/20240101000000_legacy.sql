@@ -17,9 +17,9 @@
 --
 
 CREATE TABLE branch (
-  BranchID serial NOT NULL PRIMARY KEY,
-  BranchName varchar(30) NOT NULL UNIQUE,
-  BranchAddress varchar(200) NOT NULL
+  branch_id serial NOT NULL PRIMARY KEY,
+  branch_name varchar(30) NOT NULL UNIQUE,
+  branch_address varchar(200) NOT NULL
 );
 -- --------------------------------------------------------
 --
@@ -28,7 +28,7 @@ CREATE TABLE branch (
 
 CREATE TABLE hostbranch (
   hostname varchar(50) NOT NULL PRIMARY KEY,
-  AssignedBranch int NOT NULL
+  assigned_branch int NOT NULL
 );
 -- --------------------------------------------------------
 --
@@ -36,11 +36,11 @@ CREATE TABLE hostbranch (
 --
 
 CREATE TABLE roles (
-  RoleID serial NOT NULL PRIMARY KEY,
-  Name varchar(16) NOT NULL UNIQUE,
-  Description varchar(50) NOT NULL DEFAULT '',
-  Permissions varchar(256) NOT NULL,
-  LockedEditing boolean NOT NULL DEFAULT false
+  role_id serial NOT NULL PRIMARY KEY,
+  name varchar(16) NOT NULL UNIQUE,
+  description varchar(50) NOT NULL DEFAULT '',
+  permissions varchar(256) NOT NULL,
+  locked_editing boolean NOT NULL DEFAULT false
 );
 -- --------------------------------------------------------
 --
@@ -48,17 +48,14 @@ CREATE TABLE roles (
 --
 
 CREATE TABLE users (
-  UserName varchar(16) NOT NULL PRIMARY KEY,
-  Password varchar(64) NOT NULL,
-  salt varchar(64) NOT NULL,
-  LockedEditing boolean NOT NULL DEFAULT false,
-  ForcePassChange boolean NOT NULL DEFAULT true,
-  DisplayName varchar(30) NOT NULL UNIQUE,
-  AssignedRole int DEFAULT NULL,
-  PassChangeDate date NOT NULL,
-  Enabled boolean NOT NULL DEFAULT true,
-  LockedOut boolean NOT NULL DEFAULT false,
-  FailedAttempts smallint NOT NULL DEFAULT '0'
+  user_name varchar(16) NOT NULL PRIMARY KEY,
+  force_pass_change boolean NOT NULL DEFAULT true,
+  display_name varchar(30) NOT NULL UNIQUE,
+  assigned_role int DEFAULT NULL,
+  pass_change_date date NOT NULL,
+  enabled boolean NOT NULL DEFAULT true,
+  locked_out boolean NOT NULL DEFAULT false,
+  failed_attempts smallint NOT NULL DEFAULT '0'
 );
 --
 -- Constraints for dumped tables
@@ -68,9 +65,9 @@ CREATE TABLE users (
 -- Constraints for table hostbranch
 --
 ALTER TABLE hostbranch
-ADD CONSTRAINT hostbranch_ibfk_1 FOREIGN KEY (AssignedBranch) REFERENCES branch (BranchID);
+ADD CONSTRAINT hostbranch_ibfk_1 FOREIGN KEY (assigned_branch) REFERENCES branch (branch_id);
 --
 -- Constraints for table users
 --
 ALTER TABLE users
-ADD CONSTRAINT user_ibfk_1 FOREIGN KEY (AssignedRole) REFERENCES roles (RoleID);
+ADD CONSTRAINT user_ibfk_1 FOREIGN KEY (assigned_role) REFERENCES roles (role_id);

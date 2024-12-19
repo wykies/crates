@@ -4,19 +4,19 @@
 --
 
 CREATE TABLE chat (
-    ChatID serial NOT NULL,
-    Author varchar(16) NOT NULL,
+    chat_id serial NOT NULL,
+    author varchar(16) NOT NULL,
     unix_timestamp bigint NOT NULL,
-    Content varchar(255) NOT NULL
+    content varchar(255) NOT NULL
 );
 --
 -- Indexes for table chat
 --
 ALTER TABLE chat
-ADD PRIMARY KEY (ChatID);
+ADD PRIMARY KEY (chat_id);
 CREATE INDEX ON chat (unix_timestamp);
 --
 -- Constraints for table chat
 --
 ALTER TABLE chat
-ADD CONSTRAINT chat_ibfk_1 FOREIGN KEY (Author) REFERENCES users (UserName);
+ADD CONSTRAINT chat_ibfk_1 FOREIGN KEY (author) REFERENCES users (user_name);
