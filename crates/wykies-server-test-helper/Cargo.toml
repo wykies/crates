@@ -23,3 +23,9 @@ uuid = { workspace = true, features = ["v4", "serde"] }
 wykies-server.workspace = true
 wykies-shared = { workspace = true, features = ["server_only"] }
 wykies-time.workspace = true
+
+
+[features]
+default = []
+mysql = []
+postgres = []

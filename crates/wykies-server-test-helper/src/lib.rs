@@ -130,14 +130,21 @@ fn start_tracing() {
     println!("{logging_msg}");
 }
 
-#[allow(non_snake_case)]
 async fn get_seed_branch_from_db(pool: &DbPool) -> DbId {
+    #[cfg(feature = "mysql")]
     let branch_id = sqlx::query!("SELECT `BranchID` FROM branch LIMIT 1;")
         .fetch_one(pool)
         .await
         .context("failed to get seed branch id")
         .unwrap()
         .BranchID;
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let branch_id = sqlx::query!("SELECT branch_id FROM branch LIMIT 1;")
+        .fetch_one(pool)
+        .await
+        .context("failed to get seed branch id")
+        .unwrap()
+        .branch_id;
     branch_id.try_into().unwrap()
 }
 

@@ -36,13 +36,13 @@ default = ["standalone"]
 disable-cors = ["wykies-server/disable-cors"]
 standalone = [
     # Runs the app in the standalone mode, see wykies-server for details
-    "wykies-server/default",
     "mysql",
+    "wykies-server/default",
 ]
 shuttle = [
     # Runs the app in the shuttle mode, see wykies-server for details
-    "wykies-server/shuttle",
     "postgres",
+    "wykies-server/shuttle",
 ]
-mysql = []
-postgres = []
+mysql = ["wykies-server-test-helper/mysql"]
+postgres = ["wykies-server-test-helper/postgres"]

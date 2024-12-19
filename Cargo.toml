@@ -23,7 +23,10 @@ actix-web = "4.6.0"
 actix-ws = "0.3.0"
 anyhow = "1.0.94"
 argon2 = "0.5.3"
-chrono = { version = "0.4.34", default-features = false, features = ["clock", "serde"] }
+chrono = { version = "0.4.34", default-features = false, features = [
+  "clock",
+  "serde",
+] }
 clap = "4.2.4"
 config = { version = "0.14", default-features = false, features = ["toml"] }
 eframe = "0.29.1"
@@ -36,7 +39,11 @@ insta = "1.40.0"
 log = "0.4.22"
 plugin-chat = { version = "*", path = "crates/plugin-chat" }
 rand = "0.8"
-reqwest = { version = "*", default-features = false, features = ["json", "rustls-tls", "cookies"] } # Only to set features, version set by reqwest-cross
+reqwest = { version = "*", default-features = false, features = [
+  "json",
+  "rustls-tls",
+  "cookies",
+] } # Only to set features, version set by reqwest-cross
 reqwest-cross = "0.4.1"
 ringbuffer = "0.15.0"
 ron = "0.8.1"
