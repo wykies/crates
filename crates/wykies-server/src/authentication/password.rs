@@ -303,7 +303,7 @@ async fn increment_locked_out_count(
     .context("failed to get `failed attempts` count")?
     .failed_attempts
     .try_into()
-    .context("value from db is out of range")?;
+    .context("failed_attempts from db is out of range")?;
 
     // Check if flag needs to be toggled
     if current_failed_attempts >= login_attempt_limit.as_i8() {
