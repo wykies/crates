@@ -46,6 +46,12 @@ impl From<BranchName> for String {
     }
 }
 
+impl AsRef<str> for BranchName {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
 impl BranchAddress {
     const MAX_LENGTH: usize = 200;
 }
@@ -67,6 +73,12 @@ impl TryFrom<String> for BranchAddress {
 impl From<BranchAddress> for String {
     fn from(value: BranchAddress) -> Self {
         value.0
+    }
+}
+
+impl AsRef<str> for BranchAddress {
+    fn as_ref(&self) -> &str {
+        &self.0
     }
 }
 

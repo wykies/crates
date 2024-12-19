@@ -53,18 +53,43 @@ pub async fn branch_create(
     web::Json(draft): web::Json<BranchDraft>,
 ) -> actix_web::Result<web::Json<DbId>> {
     let pool: &DbPool = &pool;
-    let sql_result = sqlx::query!(
-        "INSERT INTO `branch` 
-        (`BranchID`, `BranchName`, `BranchAddress`) 
-        VALUES (NULL, ?, ?);",
-        draft.name,
-        draft.address,
-    )
-    .execute(pool)
-    .await
-    .context("failed to insert branch")
-    .map_err(e500)?;
-    validate_one_row_affected(&sql_result).map_err(e500)?;
-    let result = sql_result.last_insert_id().into();
-    Ok(web::Json(result))
+    #[cfg(feature = "mysql")]
+    {
+        let sql_result = sqlx::query!(
+            "INSERT INTO `branch` 
+            (`BranchID`, `BranchName`, `BranchAddress`) 
+            VALUES (NULL, ?, ?);",
+            draft.name,
+            draft.address,
+        )
+        .execute(pool)
+        .await
+        .context("failed to insert branch")
+        .map_err(e500)?;
+        validate_one_row_affected(&sql_result).map_err(e500)?;
+        let result = sql_result.last_insert_id().into();
+        return Ok(web::Json(result));
+    }
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    {
+        // TODO 5: Check why encode trait impl doesn't make converting not necessary
+        let result = sqlx::query!(
+            "INSERT INTO branch
+            (branch_id, branch_name, branch_address) 
+            VALUES (NULL, $1, $2) RETURNING branch_id;",
+            draft.name.as_ref(),
+            draft.address.as_ref(),
+        )
+        .fetch_one(pool)
+        .await
+        .map_err(e500)?
+        .branch_id;
+
+        Ok(web::Json(
+            result
+                .try_into()
+                .context("value from db is out of expected range")
+                .map_err(e500)?,
+        ))
+    }
 }
