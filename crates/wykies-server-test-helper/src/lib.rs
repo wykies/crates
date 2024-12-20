@@ -336,15 +336,26 @@ pub async fn wait_for_message(
 }
 
 pub async fn store_host_branch<C>(test_app: &TestApp<C>) {
-    let sql_result = sqlx::query!(
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!(
         "INSERT INTO `hostbranch` 
         (`hostname`, `AssignedBranch`)
         VALUES (?, ?);",
         test_app.host_branch_pair.host_id,
         test_app.host_branch_pair.branch_id
-    )
-    .execute(&test_app.db_pool)
-    .await
-    .unwrap();
+    );
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    // TODO 5: Check why encode trait impl doesn't make converting not necessary
+    let query = {
+        let branch_id: i32 = test_app.host_branch_pair.branch_id.try_into().unwrap();
+        sqlx::query!(
+            "INSERT INTO hostbranch 
+        (hostname, assigned_branch)
+        VALUES ($1, $2);",
+            test_app.host_branch_pair.host_id.as_ref(),
+            branch_id
+        )
+    };
+    let sql_result = query.execute(&test_app.db_pool).await.unwrap();
     validate_one_row_affected(&sql_result).unwrap();
 }
