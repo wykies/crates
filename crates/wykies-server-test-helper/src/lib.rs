@@ -186,13 +186,20 @@ impl TestUser {
     }
 
     pub async fn disable_in_db<C>(&self, app: &TestApp<C>) {
-        let sql_result = sqlx::query!(
+        #[cfg(feature = "mysql")]
+        let query = sqlx::query!(
             "UPDATE `user` SET `Enabled` = '0' WHERE `user`.`UserName` = ?;",
             self.username,
-        )
-        .execute(&app.db_pool)
-        .await
-        .expect("failed to set user to disabled");
+        );
+        #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+        let query = sqlx::query!(
+            "UPDATE users SET is_enabled = false WHERE users.user_name = $1;",
+            self.username,
+        );
+        let sql_result = query
+            .execute(&app.db_pool)
+            .await
+            .expect("failed to set user to disabled");
         validate_one_row_affected(&sql_result).expect("failed to set user to disabled");
     }
 
