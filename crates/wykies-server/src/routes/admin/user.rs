@@ -1,7 +1,6 @@
-use crate::{
-    authentication,
-    db_utils::{db_int_to_bool, validate_one_row_affected},
-};
+#[cfg(feature = "mysql")]
+use crate::db_utils::db_int_to_bool;
+use crate::{authentication, db_utils::validate_one_row_affected};
 use actix_web::{web, HttpResponse};
 use anyhow::Context;
 use argon2::password_hash::SaltString;
