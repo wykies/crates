@@ -44,5 +44,5 @@ shuttle = [
     "postgres",
     "wykies-server/shuttle",
 ]
-mysql = ["wykies-server-test-helper/mysql"]
-postgres = ["wykies-server-test-helper/postgres"]
+mysql = ["plugin-chat/mysql", "wykies-server-test-helper/mysql"]
+postgres = ["plugin-chat/postgres", "wykies-server-test-helper/postgres"]

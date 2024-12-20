@@ -6581,6 +6581,7 @@ dependencies = [
 name = "wykies-time"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "chrono",
  "db-types",
  "serde",

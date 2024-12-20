@@ -132,17 +132,42 @@ impl ChatServer {
 
     #[instrument]
     async fn send_history(&self, req: ReqHistoryBody, conn_id: WsConnId) {
-        let outcome = sqlx::query!(
-            "
-SELECT `Author`,`Timestamp`,`Content`
-FROM chat WHERE `Timestamp` <= ?
-ORDER BY `Timestamp` DESC LIMIT ?",
+        #[cfg(feature = "mysql")]
+        let query = sqlx::query!(
+            "SELECT `Author`, `Timestamp`, `Content`
+            FROM chat WHERE `Timestamp` <= ?
+            ORDER BY `Timestamp` DESC LIMIT ?",
             req.latest_timestamp.as_secs_since_unix_epoch(),
             req.qty
-        )
-        .fetch_all(&self.db_pool)
-        .await
-        .context("failed to get ims");
+        );
+        #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+        let query = {
+            let timestamp: anyhow::Result<i64> = req
+                .latest_timestamp
+                .as_secs_since_unix_epoch()
+                .try_into()
+                .context("fatal error: failed to convert timestamp into DB format");
+            let timestamp = match timestamp {
+                Ok(x) => x,
+                Err(e) => {
+                    // Abort Error occurred
+                    log_err_as_error!(Err::<(), anyhow::Error>(e));
+                    return;
+                }
+            };
+            let qty: i64 = req.qty.into();
+            sqlx::query!(
+                "SELECT author, unix_timestamp, content
+                FROM chat WHERE unix_timestamp <= $1
+                ORDER BY unix_timestamp DESC LIMIT $2",
+                timestamp,
+                qty
+            )
+        };
+        let outcome = query
+            .fetch_all(&self.db_pool)
+            .await
+            .context("failed to get ims");
 
         let rows = match outcome {
             Ok(x) => x,
@@ -156,11 +181,20 @@ ORDER BY `Timestamp` DESC LIMIT ?",
         let result = rows
             .into_iter()
             .map(|x| {
-                Ok(ChatIM {
+                #[cfg(feature = "mysql")]
+                return Ok(ChatIM {
                     author: x.Author.try_into()?,
                     timestamp: x.Timestamp.into(),
                     content: x.Content.try_into()?,
-                })
+                });
+                #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+                {
+                    Ok(ChatIM {
+                        author: x.author.try_into()?,
+                        timestamp: x.unix_timestamp.try_into()?,
+                        content: x.content.try_into()?,
+                    })
+                }
             })
             .collect::<anyhow::Result<Vec<_>>>()
             .context("failed to convert rows from DB into chat history");

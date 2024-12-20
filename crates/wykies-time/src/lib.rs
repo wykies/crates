@@ -4,6 +4,8 @@
 
 use std::{fmt::Display, time::Duration};
 
+use anyhow::Context as _;
+
 /// Intended to be similar to Duration but always clear that it is in Seconds
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize, PartialOrd, Ord,
@@ -68,6 +70,18 @@ impl Timestamp {
     /// timestamp is in the future
     pub fn elapsed(self) -> Option<Seconds> {
         Self::now().seconds_since(self)
+    }
+}
+
+impl TryFrom<i64> for Timestamp {
+    type Error = anyhow::Error;
+
+    fn try_from(value: i64) -> Result<Self, Self::Error> {
+        Ok(Self(
+            value
+                .try_into()
+                .context("failed to create Timestamp from i64")?,
+        ))
     }
 }
 
@@ -139,6 +153,17 @@ impl From<Seconds> for Duration {
 impl From<Duration> for Seconds {
     fn from(value: Duration) -> Self {
         value.as_secs().into()
+    }
+}
+
+impl TryFrom<Seconds> for i64 {
+    type Error = anyhow::Error;
+
+    fn try_from(value: Seconds) -> Result<Self, Self::Error> {
+        value
+            .0
+            .try_into()
+            .context("failed to convert seconds into i64. Out of range?")
     }
 }
 

@@ -5,6 +5,7 @@ edition = "2021"
 description = "Simple time wrappers to make mistakes harder to make"
 
 [dependencies]
+anyhow.workspace = true
 chrono.workspace = true
 db-types = { workspace = true, optional = true }
 serde.workspace = true
@@ -13,11 +14,16 @@ web-time.workspace = true
 
 [features]
 default = []
-mysql = ["dep:sqlx", "sqlx/mysql", "db-types/mysql"] # Adds conversion support for MySql DB types in sqlx
+mysql = [
+  # Adds conversion support for MySql DB types in sqlx
+  "db-types/mysql",
+  "dep:sqlx",
+  "sqlx/mysql",
+]
 postgres = [
   # Adds conversion support for Postgres DB types in sqlx.
   # Warning!!! : Postgres does not support unsigned types (see implication in warning in db-types)
+  "db-types/postgres",
   "dep:sqlx",
   "sqlx/postgres",
-  "db-types/postgres",
 ]
