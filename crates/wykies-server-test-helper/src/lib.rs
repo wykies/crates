@@ -204,15 +204,25 @@ impl TestUser {
     }
 
     pub async fn set_locked_out_in_db<C>(&self, app: &TestApp<C>, value: bool) {
-        let value = if value { 1 } else { 0 };
-        let sql_result = sqlx::query!(
-            "UPDATE `user` SET `LockedOut` = ? WHERE `user`.`UserName` = ?;",
+        #[cfg(feature = "mysql")]
+        let query = {
+            let value = if value { 1 } else { 0 };
+            sqlx::query!(
+                "UPDATE `user` SET `LockedOut` = ? WHERE `user`.`UserName` = ?;",
+                value,
+                self.username,
+            )
+        };
+        #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+        let query = sqlx::query!(
+            "UPDATE users SET locked_out = $1 WHERE users.user_name = $2;",
             value,
             self.username,
-        )
-        .execute(&app.db_pool)
-        .await
-        .expect("failed to set user to disabled");
+        );
+        let sql_result = query
+            .execute(&app.db_pool)
+            .await
+            .expect("failed to set user to disabled");
         validate_one_row_affected(&sql_result).expect("failed to set user to disabled");
     }
 
