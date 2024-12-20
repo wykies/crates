@@ -18,12 +18,16 @@ async fn list_users_and_roles() {
     app.login_assert().await;
 
     // Act
-    let actual = app
+    let mut actual = app
         .core_client
         .list_users_and_roles(no_cb)
         .await
         .expect("failed to receive on rx")
         .expect("failed to extract result");
+
+    // Sort for snapshot
+    actual.users.sort_by_key(|x| x.username.to_string());
+    actual.roles.sort_by_key(|x| x.name.to_string());
 
     // Assert
     insta::assert_json_snapshot!(actual, {
