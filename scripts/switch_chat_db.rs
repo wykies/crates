@@ -61,13 +61,14 @@ impl Mode {
 enum FileType {
     Json,
     DotEnv,
+    Toml,
 }
 
 impl FileType {
     fn to_comment_slice(&self) -> &'static str {
         match self {
             FileType::Json => "//",
-            FileType::DotEnv => "#",
+            FileType::DotEnv | FileType::Toml => "#",
         }
     }
 }
@@ -98,9 +99,10 @@ fn main() -> anyhow::Result<()> {
     info!(?path);
     check_version_control(&path, &cli.check_version_control)
         .context("failed version control check")?;
-
     switch_rust_analyzer(&path, &cli.mode).context("failed to switch rust analyzer")?;
     switch_sqlx(&path, &cli.mode).context("failed to switch sqlx")?;
+    switch_port(&path, &cli.mode).context("failed to switch db port")?;
+    println!("Switch completed to: {}", cli.mode);
     Ok(())
 }
 
@@ -119,6 +121,15 @@ fn switch_sqlx(path: &Path, db: &Mode) -> anyhow::Result<()> {
         db,
         "Switch to ",
         FileType::DotEnv.to_comment_slice(),
+    )
+}
+
+fn switch_port(path: &Path, db: &Mode) -> anyhow::Result<()> {
+    do_switch(
+        path.join("crates/chat-app-server/configuration/base.toml"),
+        db,
+        "Switch to ",
+        FileType::Toml.to_comment_slice(),
     )
 }
 
@@ -197,4 +208,3 @@ fn ensure_line_commenting<'a>(
         }
     }
 }
-

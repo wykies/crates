@@ -120,7 +120,14 @@ where
     // Use a random OS port
     c.application.port = 0;
     // Use root user to be able to create a new database
-    c.database.username = "root".to_string();
+    #[cfg(feature = "mysql")]
+    {
+        c.database.username = "root".to_string();
+    }
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    {
+        c.database.username = "postgres".to_string();
+    }
     c
 }
 
@@ -152,8 +159,13 @@ async fn create_database(config: &DatabaseSettings) -> DbPool {
     let mut connection = DbConnection::connect_with(&config.without_db())
         .await
         .expect("Failed to connect to Database");
+
+    #[cfg(feature = "mysql")]
+    let query = format!(r#"CREATE DATABASE `{}`;"#, config.database_name);
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    let query = format!(r#"CREATE DATABASE "{}";"#, config.database_name);
     connection
-        .execute(&*format!(r#"CREATE DATABASE `{}`;"#, config.database_name))
+        .execute(&*query)
         .await
         .expect("Failed to create database");
 

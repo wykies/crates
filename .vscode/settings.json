@@ -17,9 +17,9 @@
       "port": 5432,
       "driver": "PostgreSQL",
       "name": "chat",
-      "database": "chat",
-      "username": "app",
-      "password": "secret"
+      "database": "chat_demo",
+      "username": "db_user",
+      "password": "password"
     }
   ],
   "rust-analyzer.cargo.features": ["shuttle"], // Switch to Shuttle
