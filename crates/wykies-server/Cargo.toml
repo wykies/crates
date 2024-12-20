@@ -57,12 +57,6 @@ cookie-session = [
   # (See limitations https://docs.rs/actix-session/latest/actix_session/storage/struct.CookieSessionStore.html#limitations)
   "actix-session/cookie-session",
 ]
-shuttle = [
-  "postgres",
-  # Shuttle is currently being used for a demo, if we need to use for prod will need to evaluate our options for session management
-  # One option to consider is using postgres for the storage of the session info
-  "cookie-session",
-]
 disable-cors = ["dep:actix-cors"]
 
 # TODO 5: Implement SessionStore with postgres backing to as alternative to cookies only https://docs.rs/actix-session/latest/actix_session/storage/trait.SessionStore.html

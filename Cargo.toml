@@ -29,12 +29,14 @@ chrono = { version = "0.4.34", default-features = false, features = [
 ] }
 clap = "4.2.4"
 config = { version = "0.14", default-features = false, features = ["toml"] }
+db-types = { version = "*", path = "crates/db-types", default-features = false }
 eframe = "0.29.1"
 egui = { version = "0.29.1", default-features = false }
 egui_extras = "0.29.1"
 ewebsock = "0.8.0"
 futures = "0.3.28"
 futures-util = "0.3.30"
+getrandom = "0.2.15"
 insta = "1.40.0"
 log = "0.4.22"
 plugin-chat = { version = "*", path = "crates/plugin-chat" }
@@ -68,14 +70,12 @@ uuid = "1"
 wasm-bindgen-test = "0.3.42"
 web-sys = "0.3.72"
 web-time = "1.1.0"
-getrandom = "0.2.15"
 ws-auth = { version = "*", path = "crates/ws-auth" }
 wykies-client-core = { version = "*", path = "crates/wykies-client-core" }
 wykies-server = { version = "*", path = "crates/wykies-server", default-features = false }
 wykies-server-test-helper = { version = "*", path = "crates/wykies-server-test-helper" }
 wykies-shared = { version = "*", path = "crates/wykies-shared" }
 wykies-time = { version = "*", path = "crates/wykies-time" }
-db-types = { version = "*", path = "crates/db-types", default-features = false }
 
 [profile.release]
 opt-level = 2 # fast and small wasm
