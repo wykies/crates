@@ -23,10 +23,7 @@ actix-web = "4.6.0"
 actix-ws = "0.3.0"
 anyhow = "1.0.94"
 argon2 = "0.5.3"
-chrono = { version = "0.4.34", default-features = false, features = [
-  "clock",
-  "serde",
-] }
+chrono = { version = "0.4.34", default-features = false, features = ["clock", "serde"] }
 clap = "4.2.4"
 config = { version = "0.14", default-features = false, features = ["toml"] }
 db-types = { version = "*", path = "crates/db-types", default-features = false }
@@ -41,11 +38,7 @@ insta = "1.40.0"
 log = "0.4.22"
 plugin-chat = { version = "*", path = "crates/plugin-chat" }
 rand = "0.8"
-reqwest = { version = "*", default-features = false, features = [
-  "json",
-  "rustls-tls",
-  "cookies",
-] } # Only to set features, version set by reqwest-cross
+reqwest = { version = "*", default-features = false, features = ["json", "rustls-tls", "cookies"] } # Only to set features, version set by reqwest-cross
 reqwest-cross = "0.4.1"
 ringbuffer = "0.15.0"
 ron = "0.8.1"
@@ -55,7 +48,7 @@ serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.113"
 serde-aux = "4.5.0"
 shuttle-actix-web = "0.49.0"
-shuttle-runtime = "0.49.0"
+shuttle-runtime = { version = "0.49.0", default-features = false }
 shuttle-shared-db = "0.49.0"
 sqlx = { version = "0.8.2", default-features = false }
 static_assertions = "1.1.0"

@@ -59,6 +59,21 @@ where
     listener: TcpListener,
 }
 
+/// Initializes Tracing
+pub fn initialize_tracing<Sink, D, N>(
+    subscriber_name: N,
+    default_env_filter_directive: D,
+    sink: Sink,
+) where
+    Sink: for<'b> tracing_subscriber::fmt::MakeWriter<'b> + Send + Sync + 'static,
+    D: AsRef<str>,
+    N: Into<String>,
+{
+    let subscriber =
+        telemetry::get_subscriber(subscriber_name.into(), default_env_filter_directive, sink);
+    telemetry::init_subscriber(subscriber).expect("failed to initialize the subscriber");
+}
+
 pub struct RunnableApiServer(actix_web::dev::Server);
 
 impl<T> ApiServerInit<T>
@@ -66,19 +81,7 @@ where
     T: Clone + DeserializeOwned,
 {
     /// Does the initial prep before starting to build the server
-    pub fn new_with_tracing_init<Sink, D, N>(
-        subscriber_name: N,
-        default_env_filter_directive: D,
-        sink: Sink,
-    ) -> ApiServerInit<T>
-    where
-        Sink: for<'b> tracing_subscriber::fmt::MakeWriter<'b> + Send + Sync + 'static,
-        D: AsRef<str>,
-        N: Into<String>,
-    {
-        let subscriber =
-            telemetry::get_subscriber(subscriber_name.into(), default_env_filter_directive, sink);
-        telemetry::init_subscriber(subscriber).expect("failed to initialize the subscriber");
+    pub fn new() -> ApiServerInit<T> {
         let (cancellation_token, cancellation_tracker) = TrackedCancellationToken::new();
         let configuration = get_configuration::<T>().expect("failed to read configuration.");
 
@@ -94,8 +97,7 @@ impl<'a, T> ApiServerBuilder<'a, T>
 where
     T: Clone + DeserializeOwned,
 {
-    pub async fn new(configuration: &'a Configuration<T>) -> anyhow::Result<Self> {
-        let db_pool = get_db_connection_pool(&configuration.database);
+    pub async fn new(configuration: &'a Configuration<T>, db_pool: DbPool) -> anyhow::Result<Self> {
         let listener = get_listener(configuration).context("failed to register listener")?;
         Ok(Self {
             db_pool,

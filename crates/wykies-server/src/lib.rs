@@ -24,7 +24,9 @@ mod startup;
 pub mod ws;
 
 pub use configuration::{get_configuration, Configuration, DatabaseSettings, WebSocketSettings};
-pub use startup::{get_db_connection_pool, ApiServerBuilder, ApiServerInit, ServerTask};
+pub use startup::{
+    get_db_connection_pool, initialize_tracing, ApiServerBuilder, ApiServerInit, ServerTask,
+};
 use tracked_cancellations::CancellationTracker;
 use wykies_shared::const_config::server::SERVER_SHUTDOWN_TIMEOUT;
 
