@@ -5,3 +5,6 @@ crates/chat-app-server/app/
 
 # Ignore folders with traces
 traces/
+
+# Ignore new snapshot files
+*.snap.new
