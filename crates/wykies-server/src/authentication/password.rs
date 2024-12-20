@@ -61,23 +61,20 @@ impl Default for DbUser {
 async fn get_user_from_db(username: &str, pool: &DbPool) -> Result<Option<DbUser>, anyhow::Error> {
     #[cfg(feature = "mysql")]
     let query = sqlx::query!(
-        r#"
-        SELECT UserName, password_hash, ForcePassChange, DisplayName, Enabled, LockedOut, FailedAttempts, Permissions
+        "SELECT UserName, password_hash, ForcePassChange, DisplayName, Enabled, LockedOut, FailedAttempts, Permissions
         FROM user
         LEFT JOIN roles ON user.AssignedRole = roles.RoleID
         WHERE UserName = ?
-        "#,
+        ",
         username,
     );
 
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
     let query = sqlx::query!(
-        r#"
-        SELECT user_name, password_hash, force_pass_change, display_name, is_enabled, locked_out, failed_attempts, permissions
+        "SELECT user_name, password_hash, force_pass_change, display_name, is_enabled, locked_out, failed_attempts, permissions
         FROM users
         LEFT JOIN roles ON users.assigned_role = roles.role_id
-        WHERE user_name = $1
-        "#,
+        WHERE user_name = $1;",
         username,
     );
     let row = query
