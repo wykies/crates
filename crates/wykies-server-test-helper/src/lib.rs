@@ -235,40 +235,76 @@ impl TestUser {
             .to_string();
 
         if is_admin {
-            let sql_result = sqlx::query!(
-                "INSERT INTO `roles` 
-                (`RoleID`, `Name`, `Description`, `Permissions`, `LockedEditing`) 
-                VALUES (NULL, 'Admin', 'Full Permissions', '11111111111111111111111111111111111', '0'); ",
-            )
-            .execute(pool)
-            .await
-            .expect("failed to store test user");
-            validate_one_row_affected(&sql_result).expect("failed to store admin role");
-            let role_id = sql_result.last_insert_id();
-
-            let sql_result = sqlx::query!(
+            #[cfg(feature = "mysql")]
+            let role_id = {
+                let sql_result = sqlx::query!(
+                        "INSERT INTO `roles` 
+                        (`RoleID`, `Name`, `Description`, `Permissions`, `LockedEditing`) 
+                        VALUES (NULL, 'Admin', 'Full Permissions', '11111111111111111111111111111111111', '0');",
+                    )
+                    .execute(pool)
+                    .await
+                    .expect("failed to store test user");
+                validate_one_row_affected(&sql_result).expect("failed to store admin role");
+                sql_result.last_insert_id()
+            };
+            #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+            let role_id =
+                sqlx::query!(
+                    "INSERT INTO roles 
+                    (role_id, role_name, role_description, permissions) 
+                    VALUES (NULL, 'Admin', 'Full Permissions', '11111111111111111111111111111111111')
+                    RETURNING role_id;",
+                )
+                .fetch_one(pool)
+                .await
+                .expect("failed to store admin role")
+                .role_id;
+            #[cfg(feature = "mysql")]
+            let query = sqlx::query!(
                 "INSERT INTO `user`
                 (`UserName`, `Password`, `password_hash`, `salt`, `DisplayName`, `AssignedRole`, `PassChangeDate`, `Enabled`) 
                 VALUES (?, '', ?, '', 'Admin User', ?, CURRENT_DATE(), 1);",
                 self.username,
                 password_hash,
                 role_id
-            )
-            .execute(pool)
-            .await
-            .expect("failed to store test user");
+            );
+            #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+            let query = sqlx::query!(
+                "INSERT INTO users
+                (user_name, password_hash, display_name, assigned_role, pass_change_date, is_enabled) 
+                VALUES ($1, $2, 'Admin User', $3, CURRENT_DATE, true);",
+                self.username,
+                password_hash,
+                role_id
+            );
+
+            let sql_result = query
+                .execute(pool)
+                .await
+                .expect("failed to store test user");
             validate_one_row_affected(&sql_result).expect("failed to store admin user");
         } else {
-            let sql_result = sqlx::query!(
+            #[cfg(feature = "mysql")]
+            let query = sqlx::query!(
                 "INSERT INTO `user`
                 (`UserName`, `Password`, `password_hash`, `salt`, `DisplayName`, `PassChangeDate`, `Enabled`) 
                 VALUES (?, '', ?, '', 'Test User', CURRENT_DATE(), 1);",
                 self.username,
                 password_hash,
-            )
-            .execute(pool)
-            .await
-            .expect("failed to store test user");
+            );
+            #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+            let query = sqlx::query!(
+                "INSERT INTO users
+                (user_name, password_hash, display_name, pass_change_date, is_enabled) 
+                VALUES ($1, $2, 'Test User', CURRENT_DATE, true);",
+                self.username,
+                password_hash,
+            );
+            let sql_result = query
+                .execute(pool)
+                .await
+                .expect("failed to store test user");
             validate_one_row_affected(&sql_result).expect("failed to store test user");
         }
     }
