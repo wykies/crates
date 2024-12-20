@@ -45,7 +45,7 @@ command = [
   "always",
   "--",
   "--color",
-  "always",  # see https://github.com/Canop/bacon/issues/124
+  "always",
 ]
 need_stdout = true
 
@@ -58,7 +58,7 @@ command = [
   "always",
   "--",
   "--color",
-  "always",         # see https://github.com/Canop/bacon/issues/124
+  "always",
 ]
 need_stdout = true
 
@@ -71,7 +71,7 @@ need_stdout = false
 [jobs.doc-open]
 command = ["cargo", "doc", "--color", "always", "--no-deps", "--open"]
 need_stdout = false
-on_success = "back"                                                    # so that we don't open the browser at each change
+on_success = "back" # so that we don't open the browser at each change
 
 # You can run your application and have the result displayed in bacon,
 # *if* it makes sense for this crate.
@@ -112,7 +112,7 @@ command = [
   "--",
   "--include-ignored",
   "--color",
-  "always",            # see https://github.com/Canop/bacon/issues/124
+  "always",
 ]
 need_stdout = true
 background = false
@@ -208,17 +208,31 @@ command = [
 need_stdout = true
 env.TEST_LOG = "true"
 
+[jobs.check-shuttle]
+command = [
+  "cargo",
+  "check",
+  "--package",
+  "chat-app-server",
+  "--no-default-features",
+  "--features",
+  "shuttle",
+  "--color",
+  "always",
+]
+need_stdout = false
+
 # You may define here keybindings that would be specific to
 # a project, for example a shortcut to launch a specific job.
 # Shortcuts to internal functions (scrolling, toggling, etc.)
 # should go in your personal global prefs.toml file instead.
 [keybindings]
-alt-T = "job:test-all"
 i = "job:include-ignored"
 alt-t = "job:test-trace"
-alt-q = "job:check"                             # Provides a way to do a quick check without including clippy like I normally want
+alt-q = "job:check" # Provides a way to do a quick check without including clippy like I normally want
 w = "job:check-wasm-client"
 s = "job:test-chat-server-standalone"
 alt-s = "job:test-chat-server-standalone-trace"
 p = "job:test-chat-server-shuttle"
 alt-p = "job:test-chat-server-shuttle-trace"
+v = "job:check-shuttle"

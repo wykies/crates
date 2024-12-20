@@ -8,3 +8,7 @@ traces/
 
 # Ignore new snapshot files
 *.snap.new
+
+# For Shuttle
+.shuttle*
+Secrets*.toml

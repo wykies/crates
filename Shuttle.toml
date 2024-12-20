@@ -1,0 +1,4 @@
+name = "chat-app-demo"
+
+[deploy]
+deny_dirty = true
