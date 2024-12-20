@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT user_name, password_hash, force_pass_change, display_name, is_enabled, locked_out, failed_attempts, permissions AS \"permissions?\"\n        FROM users\n        LEFT JOIN roles ON users.assigned_role = roles.role_id\n        WHERE user_name = $1;",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "user_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "password_hash",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "force_pass_change",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 3,
+        "name": "display_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "is_enabled",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 5,
+        "name": "locked_out",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 6,
+        "name": "failed_attempts",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 7,
+        "name": "permissions?",
+        "type_info": "Varchar"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "083958604e0d3705655fa0bec3a85b3656baf8ec29006c0f2782c61571df13ac"
+}
