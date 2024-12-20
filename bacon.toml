@@ -12,7 +12,14 @@ command = ["cargo", "check", "--color", "always"]
 need_stdout = false
 
 [jobs.check-all]
-command = ["cargo", "check", "--all-features", "--all-targets", "--color", "always"]
+command = [
+  "cargo",
+  "check",
+  "--all-features",
+  "--all-targets",
+  "--color",
+  "always",
+]
 need_stdout = false
 
 [jobs.clippy]
@@ -38,7 +45,7 @@ command = [
   "always",
   "--",
   "--color",
-  "always", # see https://github.com/Canop/bacon/issues/124
+  "always",  # see https://github.com/Canop/bacon/issues/124
 ]
 need_stdout = true
 
@@ -51,7 +58,7 @@ command = [
   "always",
   "--",
   "--color",
-  "always", # see https://github.com/Canop/bacon/issues/124
+  "always",         # see https://github.com/Canop/bacon/issues/124
 ]
 need_stdout = true
 
@@ -64,7 +71,7 @@ need_stdout = false
 [jobs.doc-open]
 command = ["cargo", "doc", "--color", "always", "--no-deps", "--open"]
 need_stdout = false
-on_success = "back" # so that we don't open the browser at each change
+on_success = "back"                                                    # so that we don't open the browser at each change
 
 # You can run your application and have the result displayed in bacon,
 # *if* it makes sense for this crate.
@@ -105,42 +112,28 @@ command = [
   "--",
   "--include-ignored",
   "--color",
-  "always", # see https://github.com/Canop/bacon/issues/124
+  "always",            # see https://github.com/Canop/bacon/issues/124
 ]
 need_stdout = true
 background = false
 env.TEST_LOG = "true"
 
-[jobs.test-chat-server-trace]
-command = [
-  "cargo",
-  "test",
-  "--color",
-  "always",
-  "--package",
-  "chat-app-server",
-  "--",
-  "--color",
-  "always",
-]
-need_stdout = true
-env.TEST_LOG = "true"
-
 [jobs.test-trace]
-command = [
-  "cargo",
-  "test",
-  "--color",
-  "always",
-  "--",
-  "--color",
-  "always",
-]
+command = ["cargo", "test", "--color", "always", "--", "--color", "always"]
 need_stdout = true
 env.TEST_LOG = "true"
 
 [jobs.check-wasm-client]
-command = ["cargo", "check", "--target", "wasm32-unknown-unknown", "--color", "always", "--package", "chat-app-client"]
+command = [
+  "cargo",
+  "check",
+  "--target",
+  "wasm32-unknown-unknown",
+  "--color",
+  "always",
+  "--package",
+  "chat-app-client",
+]
 need_stdout = false
 
 # To test Standalone mode
@@ -161,6 +154,24 @@ command = [
 ]
 need_stdout = true
 
+[jobs.test-chat-server-standalone-trace]
+command = [
+  "cargo",
+  "test",
+  "--color",
+  "always",
+  "--package",
+  "chat-app-server",
+  "--no-default-features",
+  "--features",
+  "standalone",
+  "--",
+  "--color",
+  "always",
+]
+need_stdout = true
+env.TEST_LOG = "true"
+
 # To test Shuttle mode
 [jobs.test-chat-server-shuttle]
 command = [
@@ -179,6 +190,24 @@ command = [
 ]
 need_stdout = true
 
+[jobs.test-chat-server-shuttle-trace]
+command = [
+  "cargo",
+  "test",
+  "--color",
+  "always",
+  "--package",
+  "chat-app-server",
+  "--no-default-features",
+  "--features",
+  "shuttle",
+  "--",
+  "--color",
+  "always",
+]
+need_stdout = true
+env.TEST_LOG = "true"
+
 # You may define here keybindings that would be specific to
 # a project, for example a shortcut to launch a specific job.
 # Shortcuts to internal functions (scrolling, toggling, etc.)
@@ -186,9 +215,10 @@ need_stdout = true
 [keybindings]
 alt-T = "job:test-all"
 i = "job:include-ignored"
-alt-s = "job:test-chat-server-trace"
 alt-t = "job:test-trace"
-alt-q = "job:check" # Provides a way to do a quick check without including clippy like I normally want
+alt-q = "job:check"                             # Provides a way to do a quick check without including clippy like I normally want
 w = "job:check-wasm-client"
 s = "job:test-chat-server-standalone"
+alt-s = "job:test-chat-server-standalone-trace"
 p = "job:test-chat-server-shuttle"
+alt-p = "job:test-chat-server-shuttle-trace"
