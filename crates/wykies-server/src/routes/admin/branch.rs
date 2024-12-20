@@ -75,8 +75,8 @@ pub async fn branch_create(
         // TODO 5: Check why encode trait impl doesn't make converting not necessary
         sqlx::query!(
             "INSERT INTO branch
-            (branch_id, branch_name, branch_address) 
-            VALUES (NULL, $1, $2) RETURNING branch_id;",
+            (branch_name, branch_address) 
+            VALUES ($1, $2) RETURNING branch_id;",
             draft.name.as_ref(),
             draft.address.as_ref(),
         )

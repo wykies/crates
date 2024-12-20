@@ -82,8 +82,8 @@ pub async fn role_create(
         let description: &str = draft_role.description.as_ref();
         sqlx::query!(
             "INSERT INTO roles 
-            (role_id, role_name, role_description, permissions)
-            VALUES (NULL, $1, $2, $3) RETURNING role_id;",
+            (role_name, role_description, permissions)
+            VALUES ($1, $2, $3) RETURNING role_id;",
             name,
             description,
             permissions
