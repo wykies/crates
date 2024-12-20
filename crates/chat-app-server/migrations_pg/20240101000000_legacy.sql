@@ -5,10 +5,15 @@
 -- engine.+; -> ;
 -- tinyint\(\d+\) -> boolean
 -- smallint\(\d+\) -> smallint
--- \buser\b -> users
 -- comment '.+, -> ,
 -- binary -> varchar
 -- Timestamp -> unix_timestamp
+-- Table and 
+-- Reserved (Special) words avoidance
+-- user -> users # NB: The seed user has the word user in their name
+-- name -> role_name
+-- description -> role_description
+-- enabled -> is_enabled
 --
 -- Primary keys were done manually but could have been done see chat migration
 -- Indices were also not created but could have been, however the syntax was pretty different (see chat migration).
