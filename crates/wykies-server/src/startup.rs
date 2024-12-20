@@ -112,7 +112,7 @@ where
             .port())
     }
 
-    #[instrument(err, skip_all)]
+    #[instrument(err(Debug), skip_all)]
     pub async fn build_runnable_api_server<FOpen, FProtected>(
         self,
         open_resource: FOpen,

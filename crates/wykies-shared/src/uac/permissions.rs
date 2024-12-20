@@ -138,7 +138,7 @@ impl Permissions {
         perms.iter().all(|x| self.0.contains(x))
     }
 
-    #[instrument(ret, err)]
+    #[instrument(ret, err(Debug))]
     pub fn is_allowed_access(&self, path: &str) -> anyhow::Result<bool> {
         match get_required_permissions(path) {
             Some(required_permissions) => Ok(self.includes(required_permissions)),

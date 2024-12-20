@@ -9,7 +9,7 @@ use wykies_shared::{
     uac::{Role, RoleDraft},
 };
 
-#[tracing::instrument(ret, err, skip(pool))]
+#[tracing::instrument(ret, err(Debug), skip(pool))]
 pub async fn role(
     pool: web::Data<DbPool>,
     web::Query(role::LookupReqArgs { role_id }): web::Query<role::LookupReqArgs>,
@@ -50,7 +50,7 @@ pub async fn role(
     Ok(web::Json(result))
 }
 
-#[tracing::instrument(ret, err, skip(pool))]
+#[tracing::instrument(ret, err(Debug), skip(pool))]
 pub async fn role_create(
     pool: web::Data<DbPool>,
     web::Json(draft_role): web::Json<RoleDraft>,
@@ -99,7 +99,7 @@ pub async fn role_create(
     Ok(web::Json(result))
 }
 
-#[tracing::instrument(err, skip(pool))]
+#[tracing::instrument(err(Debug), skip(pool))]
 pub async fn role_assign(
     pool: web::Data<DbPool>,
     web::Json(req_args): web::Json<AssignReqArgs>,
