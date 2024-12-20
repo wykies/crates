@@ -153,7 +153,6 @@ where
         };
 
         let server = HttpServer::new(move || {
-            tracing::Span::current().record("session_store", "Huh");
             let app = App::new();
 
             // If both a debug build and disable-cors flag is set then set CORS to
