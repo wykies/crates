@@ -5,7 +5,7 @@ use anyhow::Context;
 use argon2::password_hash::SaltString;
 use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version};
 use secrecy::{ExposeSecret, SecretString};
-use tracing::debug;
+use tracing::info;
 use wykies_shared::db_types::DbPool;
 use wykies_shared::{
     id::DbId,
@@ -82,7 +82,7 @@ async fn get_user_from_db(username: &str, pool: &DbPool) -> Result<Option<DbUser
         .await
         .context("Failed to performed a query to retrieve stored credentials.")?;
     let Some(row) = row else {
-        debug!("User not found: {username}");
+        info!("User not found: {username}");
         return Ok(None);
     };
 
