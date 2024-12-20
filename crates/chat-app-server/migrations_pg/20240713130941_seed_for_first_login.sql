@@ -24,7 +24,7 @@ INSERT INTO users (
 VALUES (
         'seed_admin',
         '$argon2id$v=19$m=15000,t=2,p=1$MKnXfAG4x97WMzfWuOjs1g$MWvmzgFNfj8lneYHgghXuzXCpX+fs1NbVcWr2ieev8M',
-        'Seed Admin users',
+        'Seed Admin User',
         LASTVAL(),
         CURRENT_DATE,
         true
