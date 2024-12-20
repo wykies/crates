@@ -97,7 +97,7 @@ jobs:
         with:
           components: clippy
       - name: Linting
-        run: cargo clippy -- -D warnings
+        run: cargo clippy --all-features -- -D warnings
   wasm:
     name: Clippy WASM
     runs-on: ubuntu-latest
