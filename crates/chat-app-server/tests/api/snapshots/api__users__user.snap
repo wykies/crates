@@ -1,6 +1,8 @@
 ---
 source: crates/chat-app-server/tests/api/users.rs
+assertion_line: 54
 expression: actual
+snapshot_kind: text
 ---
 {
   "username": "[value varies]",
