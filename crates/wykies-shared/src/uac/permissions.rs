@@ -188,6 +188,14 @@ impl TryFrom<String> for Permissions {
     }
 }
 
+impl TryFrom<Option<String>> for Permissions {
+    type Error = anyhow::Error;
+
+    fn try_from(value: Option<String>) -> Result<Self, Self::Error> {
+        value.unwrap_or_default().try_into()
+    }
+}
+
 impl From<&Permissions> for String {
     fn from(value: &Permissions) -> Self {
         let mut iter = value.0.iter();

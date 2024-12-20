@@ -71,10 +71,10 @@ async fn get_user_from_db(username: &str, pool: &DbPool) -> Result<Option<DbUser
 
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
     let query = sqlx::query!(
-        "SELECT user_name, password_hash, force_pass_change, display_name, is_enabled, locked_out, failed_attempts, permissions
+        r#"SELECT user_name, password_hash, force_pass_change, display_name, is_enabled, locked_out, failed_attempts, permissions AS "permissions?"
         FROM users
         LEFT JOIN roles ON users.assigned_role = roles.role_id
-        WHERE user_name = $1;",
+        WHERE user_name = $1;"#,
         username,
     );
     let row = query
