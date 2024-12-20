@@ -250,8 +250,13 @@ impl ServerTask for RunnableApiServer {
         self.0.await.context("api server crashed")
     }
 }
-
+#[instrument(skip_all)]
 pub fn get_db_connection_pool(database_config: &DatabaseSettings) -> DbPool {
+    #[cfg(feature = "mysql")]
+    info!("DB in use is MySql");
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    info!("DB in use is Postgres");
+
     DbPoolOptions::new()
         .acquire_timeout(const_config::server::DB_ACQUIRE_TIMEOUT.into())
         .connect_lazy_with(database_config.with_db())
