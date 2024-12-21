@@ -289,14 +289,7 @@ pub fn get_db_connection_pool(database_config: &DatabaseSettings) -> DbPool {
 
 pub fn get_socket_address(app_config: &ApplicationSettings) -> anyhow::Result<SocketAddr> {
     let address = format!("{}:{}", app_config.host, app_config.port);
-    info!("Server address is: {address}");
-    println!("Server status page address is: http://{address}/status"); // Provides feedback on stdout that server is starting
-    println!("Client app being served at http://{address}/",);
-    #[cfg(debug_assertions)]
-    println!(
-        "To avoid CORS issues during testing use this link http://localhost:{}/",
-        app_config.port
-    );
+    info!("Socket address to parse is: {address}");
     let result = SocketAddr::from_str(&address)
         .with_context(|| format!("failed to parse address: {address}"))?;
     Ok(result)

@@ -87,10 +87,13 @@ pub async fn start_servers(
         )
     });
 
-    // Print a message to stdout that server is started
-    println!("-- Server Started --");
-    info!("-- Server Started --");
-    println!("{}", "-".repeat(80)); // Add separator
+    #[cfg(feature = "standalone")]
+    {
+        // Print a message to stdout that server is started
+        println!("-- Server Started --");
+        info!("-- Server Started --");
+        println!("{}", "-".repeat(80)); // Add separator
+    }
 
     (result, cancellation_tacker, port)
 }

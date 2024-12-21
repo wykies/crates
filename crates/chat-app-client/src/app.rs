@@ -21,7 +21,7 @@ pub struct ChatApp {
     #[serde(skip)]
     login_page: Option<UiLogin>,
     data_shared: DataShared,
-    active_pages: Vec<UiPage>,
+    active_pages: Vec<UiPage>, // TODO 1: Open chat page by default
     shortcuts: Shortcuts,
 }
 
