@@ -40,25 +40,18 @@ async fn actix_web(
 #[cfg(not(feature = "shuttle"))]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    // Prep to start building server
-
-    use wykies_server::get_db_connection_pool;
     let (file, path) = telemetry::create_trace_file("chat-app-server")
         .context("failed to create file for traces")?;
     initialize_tracing("chat_app_server", "info", file);
     println!("Traces being written to: {path:?}");
-    let ApiServerInitBundle::<CustomConfiguration> {
-        cancellation_token,
-        cancellation_tracker,
-        configuration,
-    } = ApiServerInitBundle::new();
-    let db_pool = get_db_connection_pool(&configuration.database);
-
-    let api_server_builder = ApiServerBuilder::new(&configuration, db_pool)
+    let api_server_init_bundle = ApiServerInitBundle::<CustomConfiguration>::new();
+    let db_pool =
+        wykies_server::get_db_connection_pool(&api_server_init_bundle.configuration.database);
+    let api_server_builder = ApiServerBuilder::new(api_server_init_bundle, db_pool)
         .await
         .expect("failed to initialize API Server");
 
-    let mut join_set = start_servers(api_server_builder, &configuration, cancellation_token).await;
+    let (mut join_set, cancellation_tracker, _) = start_servers(api_server_builder).await;
     let join_outcome = join_set.join_next().await.context("no tasks in join set")?;
     report_exit(join_outcome);
 

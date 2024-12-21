@@ -3,14 +3,13 @@ use actix_web::web::{self, ServiceConfig};
 use plugin_chat::server_only::{
     chat_ws_start_client_handler_loop, ChatPlugin, ChatPluginConfig, ChatSettings,
 };
-use serde::de::DeserializeOwned;
 use tokio::task::{JoinError, JoinSet};
 use tracing::info;
-use tracked_cancellations::TrackedCancellationToken;
+use tracked_cancellations::CancellationTracker;
 use ws_auth::ws_get_route_add_closures;
 use wykies_server::{
     plugin::{ServerPlugin, ServerPluginArtifacts},
-    ApiServerBuilder, Configuration, ServerTask as _,
+    ApiServerBuilder, ServerTask as _,
 };
 use wykies_shared::uac::init_permissions_to_defaults;
 
@@ -19,15 +18,20 @@ pub struct CustomConfiguration {
     pub chat: ChatSettings,
 }
 
-pub async fn start_servers<T>(
-    api_server_builder: ApiServerBuilder<'_, T>,
-    configuration: &Configuration<CustomConfiguration>,
-    cancellation_token: TrackedCancellationToken,
-) -> JoinSet<(&'static str, Result<anyhow::Result<()>, JoinError>)>
-where
-    T: Clone + DeserializeOwned,
-{
+pub async fn start_servers(
+    api_server_builder: ApiServerBuilder<CustomConfiguration>,
+) -> (
+    JoinSet<(&'static str, Result<anyhow::Result<()>, JoinError>)>,
+    CancellationTracker,
+    u16,
+) {
     init_permissions_to_defaults();
+
+    let configuration = &api_server_builder.api_server_init_bundle.configuration;
+    let cancellation_token = api_server_builder
+        .api_server_init_bundle
+        .cancellation_token
+        .clone();
 
     // Chat Server
     let ServerPluginArtifacts {
@@ -56,7 +60,7 @@ where
     };
 
     // Finalize Server
-    let api_server = api_server_builder
+    let (api_server, cancellation_tacker, port) = api_server_builder
         .build_runnable_api_server(open_resources, protected_resources)
         .await
         .expect("failed to finalize API Server");
@@ -84,5 +88,5 @@ where
     info!("-- Server Started --");
     println!("{}", "-".repeat(80)); // Add separator
 
-    result
+    (result, cancellation_tacker, port)
 }

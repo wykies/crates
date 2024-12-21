@@ -75,7 +75,7 @@ where
     (configuration, connection_pool)
 }
 
-pub fn port_to_test_address(application_port: u16) -> String {
+pub fn convert_port_to_test_address(application_port: u16) -> String {
     format!("http://localhost:{application_port}")
 }
 

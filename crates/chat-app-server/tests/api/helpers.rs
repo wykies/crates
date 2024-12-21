@@ -5,10 +5,10 @@ use std::{
 };
 use tracked_cancellations::TrackedCancellationToken;
 use wykies_client_core::LoginOutcome;
-use wykies_server::{get_db_connection_pool, ApiServerBuilder, Configuration};
+use wykies_server::{ApiServerBuilder, ApiServerInitBundle, Configuration};
 use wykies_server_test_helper::{
-    build_test_app, port_to_test_address, spawn_app_without_host_branch_stored_before_migration,
-    store_host_branch, TestUser,
+    build_test_app, convert_port_to_test_address,
+    spawn_app_without_host_branch_stored_before_migration, store_host_branch, TestUser,
 };
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, db_types::DbPool};
 
@@ -38,14 +38,14 @@ pub async fn spawn_app() -> TestApp {
 }
 
 pub async fn spawn_app_without_host_branch_stored() -> TestApp {
-    let (configuration, connection_pool) =
+    let (configuration, db_pool) =
         spawn_app_without_host_branch_stored_before_migration::<CustomConfiguration>().await;
-    do_migrations(&connection_pool).await;
-    let application_port = start_server_in_background(&configuration).await;
+    do_migrations(&db_pool).await;
+    let application_port = start_server_in_background(configuration.clone(), db_pool).await;
     TestApp(
         build_test_app(
             configuration,
-            port_to_test_address(application_port),
+            convert_port_to_test_address(application_port),
             wykies_client_core::Client::new,
         )
         .await,
@@ -65,22 +65,26 @@ async fn do_migrations(connection_pool: &DbPool) {
         .expect("Failed to migrate the database");
 }
 
-async fn start_server_in_background(configuration: &Configuration<CustomConfiguration>) -> u16 {
+async fn start_server_in_background(
+    configuration: Configuration<CustomConfiguration>,
+    db_pool: DbPool,
+) -> u16 {
     // Prepare to start server
-    let (cancellation_token, _) = TrackedCancellationToken::new();
-    let db_pool = get_db_connection_pool(&configuration.database);
+    let (cancellation_token, cancellation_tracker) = TrackedCancellationToken::new();
 
-    // Launch the application as a background task
-    let server_builder = ApiServerBuilder::new(configuration, db_pool)
+    let api_server_init_bundle = ApiServerInitBundle {
+        cancellation_token,
+        cancellation_tracker,
+        configuration,
+    };
+
+    let api_server_builder = ApiServerBuilder::new(api_server_init_bundle, db_pool)
         .await
         .expect("Failed to build application.");
-    let application_port = server_builder
-        .port()
-        .expect("failed to get application port");
-    let join_set = start_servers(server_builder, configuration, cancellation_token).await;
-    forget(join_set);
+    let (join_set, _cancellation_tracker, port) = start_servers(api_server_builder).await;
     // Leak the JoinSet so the server doesn't get shutdown
-    application_port
+    forget(join_set);
+    port
 }
 
 impl TestApp {

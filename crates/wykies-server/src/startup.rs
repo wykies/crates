@@ -50,13 +50,12 @@ pub struct ApiServerInitBundle<T: Clone> {
     pub configuration: Configuration<T>,
 }
 
-pub struct ApiServerBuilder<'a, T>
+pub struct ApiServerBuilder<T>
 where
     T: Clone,
 {
     pub db_pool: DbPool,
-    configuration: &'a Configuration<T>,
-    listener: TcpListener,
+    pub api_server_init_bundle: ApiServerInitBundle<T>,
 }
 
 /// Initializes Tracing
@@ -93,25 +92,24 @@ where
     }
 }
 
-impl<'a, T> ApiServerBuilder<'a, T>
+impl<T> Default for ApiServerInitBundle<T>
 where
     T: Clone + DeserializeOwned,
 {
-    pub async fn new(configuration: &'a Configuration<T>, db_pool: DbPool) -> anyhow::Result<Self> {
-        let listener = get_listener(configuration).context("failed to register listener")?;
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
+    pub async fn new(
+        api_server_init_bundle: ApiServerInitBundle<T>,
+        db_pool: DbPool,
+    ) -> anyhow::Result<Self> {
         Ok(Self {
             db_pool,
-            configuration,
-            listener,
+            api_server_init_bundle,
         })
-    }
-
-    pub fn port(&self) -> anyhow::Result<u16> {
-        Ok(self
-            .listener
-            .local_addr()
-            .context("failed to access local address")?
-            .port())
     }
 
     #[instrument(err(Debug), skip_all)]
@@ -119,23 +117,28 @@ where
         self,
         open_resource: FOpen,
         protected_resource: FProtected,
-    ) -> anyhow::Result<RunnableApiServer>
+    ) -> anyhow::Result<(RunnableApiServer, CancellationTracker, u16)>
     where
         FOpen: Fn(&mut ServiceConfig) + Send + Clone + 'static,
         FProtected: Fn(&mut ServiceConfig) + Send + Clone + 'static,
     {
         let db_pool = web::Data::new(self.db_pool);
+        let ApiServerInitBundle {
+            cancellation_tracker,
+            configuration,
+            ..
+        } = self.api_server_init_bundle;
 
         let login_attempt_limit = web::Data::new(LoginAttemptLimit(
-            self.configuration.user_auth.login_attempt_limit,
+            configuration.user_auth.login_attempt_limit,
         ));
 
         let websocket_auth_manager = web::Data::new(AuthTokenManager::new(
-            self.configuration.websockets.token_lifetime_secs,
+            configuration.websockets.token_lifetime_secs,
         ));
 
         let secret_key = actix_web::cookie::Key::from(
-            self.configuration
+            configuration
                 .application
                 .hmac_secret
                 .expose_secret()
@@ -144,7 +147,7 @@ where
 
         #[cfg(feature = "redis-session-rustls")]
         let session_store = {
-            let redis_store = RedisSessionStore::new(self.configuration.redis_uri.expose_secret())
+            let redis_store = RedisSessionStore::new(configuration.redis_uri.expose_secret())
                 .await
                 .expect("failed to connect to Redis");
             info!(
@@ -153,6 +156,12 @@ where
             );
             redis_store
         };
+
+        let listener = get_listener(&configuration).context("failed to bind listener")?;
+        let port = listener
+            .local_addr()
+            .context("failed to get local address of listener")?
+            .port();
 
         let server = HttpServer::new(move || {
             let app = App::new();
@@ -235,10 +244,10 @@ where
                 .app_data(websocket_auth_manager.clone())
                 .default_service(web::route().to(not_found))
         })
-        .listen(self.listener)
+        .listen(listener)
         .context("Failed to bind HTTP Server to listener")?
         .run();
-        Ok(RunnableApiServer(server))
+        Ok((RunnableApiServer(server), cancellation_tracker, port))
     }
 }
 
