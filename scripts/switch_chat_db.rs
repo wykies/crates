@@ -46,6 +46,26 @@ struct Cli {
     check_version_control: CheckOptions,
 }
 
+fn main() -> anyhow::Result<()> {
+    let cli = Cli::parse();
+
+    tracing_subscriber::registry()
+        .with(fmt::layer().with_span_events(FmtSpan::ACTIVE))
+        .with(EnvFilter::try_from_default_env().unwrap_or(EnvFilter::new("warn")))
+        .init();
+
+    info!("Switching to {}", cli.mode);
+    let path = cli.root.canonicalize()?;
+    info!(?path);
+    check_version_control(&path, &cli.check_version_control)
+        .context("failed version control check")?;
+    switch_rust_analyzer(&path, &cli.mode).context("failed to switch rust analyzer")?;
+    switch_sqlx(&path, &cli.mode).context("failed to switch sqlx")?;
+    switch_port(&path, &cli.mode).context("failed to switch db port")?;
+    println!("Switch completed to: {}", cli.mode);
+    Ok(())
+}
+
 #[derive(ValueEnum, Clone, PartialEq, Eq, PartialOrd, Ord, Debug, Default)]
 enum Mode {
     #[default]
@@ -79,26 +99,6 @@ impl Display for Mode {
             }
         )
     }
-}
-
-fn main() -> anyhow::Result<()> {
-    let cli = Cli::parse();
-
-    tracing_subscriber::registry()
-        .with(fmt::layer().with_span_events(FmtSpan::ACTIVE))
-        .with(EnvFilter::try_from_default_env().unwrap_or(EnvFilter::new("warn")))
-        .init();
-
-    info!("Switching to {}", cli.mode);
-    let path = cli.root.canonicalize()?;
-    info!(?path);
-    check_version_control(&path, &cli.check_version_control)
-        .context("failed version control check")?;
-    switch_rust_analyzer(&path, &cli.mode).context("failed to switch rust analyzer")?;
-    switch_sqlx(&path, &cli.mode).context("failed to switch sqlx")?;
-    switch_port(&path, &cli.mode).context("failed to switch db port")?;
-    println!("Switch completed to: {}", cli.mode);
-    Ok(())
 }
 
 fn switch_rust_analyzer(path: &Path, db: &Mode) -> anyhow::Result<()> {
