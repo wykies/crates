@@ -52,11 +52,6 @@ enum Mode {
     Standalone,
     Shuttle,
 }
-impl Mode {
-    fn should_enable_sqlx_offline(&self) -> bool {
-        matches!(self, Self::Standalone)
-    }
-}
 
 enum FileType {
     Json,
@@ -152,13 +147,8 @@ fn do_switch<P: std::fmt::Debug + AsRef<Path>>(
                 ensure_line_commenting(comment, &mut changed, line, should_be_uncommented, i)
             }
             None => {
-                if line.contains("SQLX_OFFLINE") {
-                    let should_be_uncommented = mode.should_enable_sqlx_offline();
-                    ensure_line_commenting(comment, &mut changed, line, should_be_uncommented, i)
-                } else {
-                    // Leave line unchanged
-                    Cow::Borrowed(line)
-                }
+                // Leave line unchanged
+                Cow::Borrowed(line)
             }
         };
         writeln!(output, "{new_line}").expect("memory for string should already be allocated");
@@ -208,3 +198,4 @@ fn ensure_line_commenting<'a>(
         }
     }
 }
+
