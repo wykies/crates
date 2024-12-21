@@ -1,0 +1,34 @@
+{
+  "db_name": "MySQL",
+  "query": "SELECT `hostname`, `AssignedBranch` FROM `hostbranch` where `hostname` = ?;",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "hostname",
+        "type_info": {
+          "type": "VarString",
+          "flags": "NOT_NULL | PRIMARY_KEY | NO_DEFAULT_VALUE",
+          "max_size": 200
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "AssignedBranch",
+        "type_info": {
+          "type": "Long",
+          "flags": "NOT_NULL | MULTIPLE_KEY | NO_DEFAULT_VALUE",
+          "max_size": 11
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false
+    ]
+  },
+  "hash": "5bddb1405b566f83cbcfbb0ff5aa4b1fbe0ffd4d72a298007debfee8df27c757"
+}

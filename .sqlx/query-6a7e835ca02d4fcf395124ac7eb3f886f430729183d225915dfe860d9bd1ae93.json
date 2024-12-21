@@ -1,0 +1,94 @@
+{
+  "db_name": "MySQL",
+  "query": "SELECT `UserName`, `DisplayName`, `ForcePassChange`, `AssignedRole`, `Enabled`, `LockedOut`, `FailedAttempts`, `PassChangeDate` FROM `user`",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "UserName",
+        "type_info": {
+          "type": "VarString",
+          "flags": "NOT_NULL | PRIMARY_KEY | NO_DEFAULT_VALUE",
+          "max_size": 64
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "DisplayName",
+        "type_info": {
+          "type": "VarString",
+          "flags": "NOT_NULL | UNIQUE_KEY | NO_DEFAULT_VALUE",
+          "max_size": 120
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "ForcePassChange",
+        "type_info": {
+          "type": "Tiny",
+          "flags": "NOT_NULL",
+          "max_size": 1
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "AssignedRole",
+        "type_info": {
+          "type": "Long",
+          "flags": "MULTIPLE_KEY",
+          "max_size": 11
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "Enabled",
+        "type_info": {
+          "type": "Tiny",
+          "flags": "NOT_NULL",
+          "max_size": 1
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "LockedOut",
+        "type_info": {
+          "type": "Tiny",
+          "flags": "NOT_NULL",
+          "max_size": 1
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "FailedAttempts",
+        "type_info": {
+          "type": "Tiny",
+          "flags": "NOT_NULL",
+          "max_size": 4
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "PassChangeDate",
+        "type_info": {
+          "type": "Date",
+          "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
+          "max_size": 10
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 0
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "6a7e835ca02d4fcf395124ac7eb3f886f430729183d225915dfe860d9bd1ae93"
+}

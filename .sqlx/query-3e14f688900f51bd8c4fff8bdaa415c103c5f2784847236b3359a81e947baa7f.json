@@ -1,0 +1,94 @@
+{
+  "db_name": "MySQL",
+  "query": "SELECT UserName, password_hash, ForcePassChange, DisplayName, Enabled, LockedOut, FailedAttempts, Permissions\n        FROM user\n        LEFT JOIN roles ON user.AssignedRole = roles.RoleID\n        WHERE UserName = ?\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "UserName",
+        "type_info": {
+          "type": "VarString",
+          "flags": "NOT_NULL | PRIMARY_KEY | NO_DEFAULT_VALUE",
+          "max_size": 64
+        }
+      },
+      {
+        "ordinal": 1,
+        "name": "password_hash",
+        "type_info": {
+          "type": "Blob",
+          "flags": "NOT_NULL | BLOB | NO_DEFAULT_VALUE",
+          "max_size": 262140
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "ForcePassChange",
+        "type_info": {
+          "type": "Tiny",
+          "flags": "NOT_NULL",
+          "max_size": 1
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "DisplayName",
+        "type_info": {
+          "type": "VarString",
+          "flags": "NOT_NULL | UNIQUE_KEY | NO_DEFAULT_VALUE",
+          "max_size": 120
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "Enabled",
+        "type_info": {
+          "type": "Tiny",
+          "flags": "NOT_NULL",
+          "max_size": 1
+        }
+      },
+      {
+        "ordinal": 5,
+        "name": "LockedOut",
+        "type_info": {
+          "type": "Tiny",
+          "flags": "NOT_NULL",
+          "max_size": 1
+        }
+      },
+      {
+        "ordinal": 6,
+        "name": "FailedAttempts",
+        "type_info": {
+          "type": "Tiny",
+          "flags": "NOT_NULL",
+          "max_size": 4
+        }
+      },
+      {
+        "ordinal": 7,
+        "name": "Permissions",
+        "type_info": {
+          "type": "VarString",
+          "flags": "NO_DEFAULT_VALUE",
+          "max_size": 1024
+        }
+      }
+    ],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "3e14f688900f51bd8c4fff8bdaa415c103c5f2784847236b3359a81e947baa7f"
+}

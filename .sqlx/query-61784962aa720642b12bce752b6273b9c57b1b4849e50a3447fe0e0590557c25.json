@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "UPDATE `user` SET `LockedOut` = ? WHERE `user`.`UserName` = ?;",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "61784962aa720642b12bce752b6273b9c57b1b4849e50a3447fe0e0590557c25"
+}
