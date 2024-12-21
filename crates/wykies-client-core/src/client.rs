@@ -38,6 +38,7 @@ impl Default for Client {
         //          with "ws"  it will not be a problem. Ignore the following s as both
         //          would need it. Both https and wss.
         Self::new("https://chat-demo-umon.shuttle.app".to_string())
+        // Self::new("http://localhost:8789".to_string())
     }
 }
 

@@ -13,6 +13,8 @@ use crate::pages::{
 use crate::shortcuts::Shortcuts;
 use crate::DisplayablePage;
 
+const VERSION_STR: &str = concat!("ver: ", env!("CARGO_PKG_VERSION"));
+
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 // TODO 2: Make chat page to show by default
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
@@ -210,6 +212,8 @@ impl ChatApp {
                         self.lock();
                     }
                     ui.label(format!("Logged in as {}", self.data_shared.display_name));
+                    ui.separator();
+                    ui.label(VERSION_STR);
                 }
                 egui::warn_if_debug_build(ui);
             });
