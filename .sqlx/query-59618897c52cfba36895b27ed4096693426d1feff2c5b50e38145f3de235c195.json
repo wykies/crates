@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "SELECT user_name, display_name, force_pass_change, assigned_role, is_enabled, locked_out, failed_attempts, pass_change_date\n         FROM users\n         WHERE user_name=$1;",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "user_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 1,
+        "name": "display_name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "force_pass_change",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 3,
+        "name": "assigned_role",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 4,
+        "name": "is_enabled",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 5,
+        "name": "locked_out",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 6,
+        "name": "failed_attempts",
+        "type_info": "Int2"
+      },
+      {
+        "ordinal": 7,
+        "name": "pass_change_date",
+        "type_info": "Date"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "59618897c52cfba36895b27ed4096693426d1feff2c5b50e38145f3de235c195"
+}

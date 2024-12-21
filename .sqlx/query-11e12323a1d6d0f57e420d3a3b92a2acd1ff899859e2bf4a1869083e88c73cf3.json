@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "INSERT INTO hostbranch \n            (hostname, assigned_branch)\n            VALUES ($1, $2) \n            ON CONFLICT (hostname) DO UPDATE\n            SET assigned_branch = $2;",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Varchar",
+        "Int4"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "11e12323a1d6d0f57e420d3a3b92a2acd1ff899859e2bf4a1869083e88c73cf3"
+}
