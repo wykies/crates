@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO `hostbranch` \n        (`hostname`, `AssignedBranch`)\n        VALUES (?, ?) \n        ON DUPLICATE KEY UPDATE `AssignedBranch` = ?;",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 3
+    },
+    "nullable": []
+  },
+  "hash": "53b22a8eec13d74d271d43ba7f3fce597ba844cc33c3d56ed2e19543ba109205"
+}

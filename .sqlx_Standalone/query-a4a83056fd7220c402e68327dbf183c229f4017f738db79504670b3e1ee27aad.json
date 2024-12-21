@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "UPDATE `user` SET `Enabled` = '0' WHERE `user`.`UserName` = ?;",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 1
+    },
+    "nullable": []
+  },
+  "hash": "a4a83056fd7220c402e68327dbf183c229f4017f738db79504670b3e1ee27aad"
+}
