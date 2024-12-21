@@ -196,6 +196,7 @@ impl ChatApp {
                     ui.separator();
                     self.menu(ui, ctx);
                 }
+                ui.label(VERSION_STR);
             });
         });
     }
@@ -212,8 +213,6 @@ impl ChatApp {
                         self.lock();
                     }
                     ui.label(format!("Logged in as {}", self.data_shared.display_name));
-                    ui.separator();
-                    ui.label(VERSION_STR);
                 }
                 egui::warn_if_debug_build(ui);
             });
