@@ -1,13 +1,15 @@
 use crate::websocket::WsIds;
 use actix_web::web::{self, ServiceConfig};
+use anyhow::Context;
 use plugin_chat::server_only::{
     chat_ws_start_client_handler_loop, ChatPlugin, ChatPluginConfig, ChatSettings,
 };
 use tokio::task::{JoinError, JoinSet};
-use tracing::info;
+use tracing::{error, info};
 use tracked_cancellations::CancellationTracker;
 use ws_auth::ws_get_route_add_closures;
 use wykies_server::{
+    cancel_remaining_tasks,
     plugin::{ServerPlugin, ServerPluginArtifacts},
     ApiServerBuilder, ServerTask as _,
 };
@@ -90,4 +92,47 @@ pub async fn start_servers(
     println!("{}", "-".repeat(80)); // Add separator
 
     (result, cancellation_tacker, port)
+}
+
+struct ShuttleService(ApiServerBuilder<CustomConfiguration>);
+impl shuttle_runtime::Service for ShuttleService {
+    async fn bind(self, addr: std::net::SocketAddr) -> Result<(), shuttle_runtime::Error> {
+        let (mut join_set, cancellation_tracker, _) = start_servers(self.0, addr).await;
+        let join_outcome = join_set.join_next().await.context("no tasks in join set")?;
+        report_exit(join_outcome);
+
+        // Cancel any remaining tasks
+        cancel_remaining_tasks(cancellation_tracker).await;
+
+        Ok(())
+    }
+}
+
+fn report_exit(join_set_outcome: Result<(&str, Result<anyhow::Result<()>, JoinError>), JoinError>) {
+    match join_set_outcome {
+        Ok((task_name, spawn_join_outcome)) => match spawn_join_outcome {
+            Ok(Ok(())) => info!("{task_name} has exited from the join set with Ok(())"),
+            Ok(Err(e)) => {
+                error!(
+                    error.cause_chain = ?e,
+                    error.message = %e,
+                    "{task_name} resulted in an error: {e}"
+                );
+            }
+            Err(e) => {
+                error!(
+                    error.cause_chain = ?e,
+                    error.message = %e,
+                    "{task_name} resulted in a join error so it must have panicked"
+                );
+            }
+        },
+        Err(e) => {
+            error!( // Not expected to happen as we have a very small anonymous async function that should not panic
+                error.cause_chain = ?e,
+                error.message = %e,
+                "anonymous async function panicked instead of returning the task name. NO TASK name available"
+            );
+        }
+    }
 }

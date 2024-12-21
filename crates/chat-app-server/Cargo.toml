@@ -13,11 +13,8 @@ anyhow.workspace = true
 plugin-chat = { workspace = true, features = ["server_only"] }
 serde.workspace = true
 shuttle-actix-web = { workspace = true, optional = true }
-shuttle-runtime = { workspace = true, optional = true }
-shuttle-shared-db = { workspace = true, optional = true, features = [
-    "postgres",
-    "sqlx",
-] }
+shuttle-runtime = { workspace = true }
+shuttle-shared-db = { workspace = true, optional = true, features = ["postgres", "sqlx"] }
 sqlx = { workspace = true, features = ["tls-rustls"] }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tracing.workspace = true
@@ -41,24 +38,23 @@ wykies-time = { workspace = true }
 default = ["standalone", "mysql"]
 disable-cors = ["wykies-server/disable-cors"]
 standalone = [
-    # Runs the app in the standalone mode (also needs mysql or postgres)
-    "wykies-server/redis-session-rustls",
+  # Runs the app in the standalone mode (also needs mysql or postgres)
+  "wykies-server/redis-session-rustls",
 ]
 shuttle = [
-    # Runs the app in the shuttle mode (Uses postgres and cookie's only for sessions)
-    "dep:shuttle-actix-web",
-    "dep:shuttle-runtime",
-    "dep:shuttle-shared-db",
-    "postgres",
-    "wykies-server/cookie-session",
+  # Runs the app in the shuttle mode (Uses postgres and cookie's only for sessions)
+  "dep:shuttle-actix-web",
+  "dep:shuttle-shared-db",
+  "postgres",
+  "wykies-server/cookie-session",
 ]
 mysql = [
-    "plugin-chat/mysql",
-    "wykies-server-test-helper/mysql",
-    "wykies-server/mysql",
+  "plugin-chat/mysql",
+  "wykies-server-test-helper/mysql",
+  "wykies-server/mysql",
 ]
 postgres = [
-    "plugin-chat/postgres",
-    "wykies-server-test-helper/postgres",
-    "wykies-server/postgres",
+  "plugin-chat/postgres",
+  "wykies-server-test-helper/postgres",
+  "wykies-server/postgres",
 ]
