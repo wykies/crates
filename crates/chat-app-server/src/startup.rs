@@ -4,6 +4,7 @@ use anyhow::Context;
 use plugin_chat::server_only::{
     chat_ws_start_client_handler_loop, ChatPlugin, ChatPluginConfig, ChatSettings,
 };
+use shuttle_runtime::async_trait;
 use tokio::task::{JoinError, JoinSet};
 use tracing::{error, info};
 use tracked_cancellations::CancellationTracker;
@@ -94,7 +95,9 @@ pub async fn start_servers(
     (result, cancellation_tacker, port)
 }
 
-struct ShuttleService(ApiServerBuilder<CustomConfiguration>);
+pub struct ShuttleService(pub ApiServerBuilder<CustomConfiguration>);
+
+#[async_trait]
 impl shuttle_runtime::Service for ShuttleService {
     async fn bind(self, addr: std::net::SocketAddr) -> Result<(), shuttle_runtime::Error> {
         let (mut join_set, cancellation_tracker, _) = start_servers(self.0, addr).await;

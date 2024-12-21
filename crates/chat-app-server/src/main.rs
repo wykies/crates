@@ -1,10 +1,9 @@
 use actix_web::web::ServiceConfig;
 use anyhow::Context;
-use chat_app_server::startup::{start_servers, CustomConfiguration};
-use tokio::task::JoinError;
-use tracing::{error, info};
+use chat_app_server::startup::CustomConfiguration;
+use chat_app_server::startup::ShuttleService;
+use shuttle_runtime::Service;
 use wykies_server::initialize_tracing;
-use wykies_server::{cancel_remaining_tasks, ApiServerBuilder, ApiServerInitBundle};
 use wykies_shared::telemetry;
 
 #[cfg(feature = "shuttle")]
@@ -40,6 +39,8 @@ async fn actix_web(
 #[cfg(not(feature = "shuttle"))]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    use wykies_server::{ApiServerBuilder, ApiServerInitBundle};
+
     let (file, path) = telemetry::create_trace_file("chat-app-server")
         .context("failed to create file for traces")?;
     initialize_tracing("chat_app_server", "info", file);
@@ -58,6 +59,7 @@ async fn main() -> anyhow::Result<()> {
             .application,
     )
     .context("failed to get socket address")?;
+
     ShuttleService(api_server_builder)
         .bind(addr)
         .await
