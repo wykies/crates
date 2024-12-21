@@ -1,14 +1,3 @@
-#!/usr/bin/env -S cargo +nightly -Zscript
----cargo
-package.edition = "2021" # Desirable to stop warning but not needed
-[dependencies]
-version-control-clean-check = { version = "0.1.4", features = ["clap"] }
-anyhow = "1.0.94"
-clap = { version = "4.5.23", features = ["derive", "wrap_help"] }
-tracing = "0.1.41"
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
----
-
 use anyhow::Context;
 use clap::{Parser, ValueEnum};
 use std::{
@@ -46,7 +35,7 @@ struct Cli {
     check_version_control: CheckOptions,
 }
 
-fn main() -> anyhow::Result<()> {
+pub fn run() -> anyhow::Result<()> {
     let cli = Cli::parse();
 
     tracing_subscriber::registry()
@@ -139,7 +128,7 @@ fn switch_sqlx_prepared_queries(path: &Path, db: &Mode) -> anyhow::Result<()> {
     // Empty base folder
     // TODO: Do a check on source folder for expected files
     // TODO: DO a check on base folder if it exists for the expected files
-    
+
     todo!()
 }
 

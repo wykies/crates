@@ -4,7 +4,7 @@ members = [
   "crates/chat-app-client",
   "crates/chat-app-server",
   "crates/db-types",
-  "crates/plugin-chat",
+  "crates/plugin-chat", "crates/switch-db-lib",
   "crates/tracked-cancellations",
   "crates/ws-auth",
   "crates/wykies-client-core",
