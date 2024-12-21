@@ -5,7 +5,8 @@
 ignore = [
   # "RUSTSEC-0000-0000",
 
-  # Advisory about a vulnerability in rsa, we don't have any public facing usage so disabling the notifications until a fix is available
-  # Advisory includes a link to the work in progress https://github.com/RustCrypto/RSA/pull/394
-  "RUSTSEC-2023-0071",
+  # TODO 3: Check if fixes are available for advisories
+
+  # Haven't been able to find the tracking issue for this but we don't try to access any user supplied urls
+  "RUSTSEC-2024-0421",
 ]
