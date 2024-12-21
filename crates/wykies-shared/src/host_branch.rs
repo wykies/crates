@@ -58,10 +58,17 @@ impl TryFrom<actix_web::dev::ConnectionInfo> for HostId {
     type Error = anyhow::Error;
 
     fn try_from(value: actix_web::dev::ConnectionInfo) -> Result<Self, Self::Error> {
-        Ok(match value.peer_addr() {
-            Some(x) => x.to_string().try_into().context("invalid host_id")?,
-            None => bail!("No 'peer_addr' found"),
-        })
+        // Prefer real ip even though it is not safe to use for security because we are not using it for security
+        // just for pre-screening traffic to increase the threshold required to do a DOS
+
+        let addr = if let Some(realip_remote_addr) = value.realip_remote_addr() {
+            realip_remote_addr
+        } else if let Some(peer_addr) = value.peer_addr() {
+            peer_addr
+        } else {
+            bail!("No 'peer_addr' found");
+        };
+        addr.to_string().try_into().context("invalid host_id")
     }
 }
 

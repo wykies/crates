@@ -6,6 +6,7 @@
     "getrandom",
     "HOSTBRANCH",
     "LASTVAL",
+    "realip",
     "ringbuffer",
     "Ronacher",
     "zbus"
