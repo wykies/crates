@@ -15,13 +15,13 @@ use crate::DisplayablePage;
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 // TODO 2: Make chat page to show by default
-#[derive(Debug, Default, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct ChatApp {
     #[serde(skip)]
     login_page: Option<UiLogin>,
     data_shared: DataShared,
-    active_pages: Vec<UiPage>, // TODO 1: Open chat page by default
+    active_pages: Vec<UiPage>,
     shortcuts: Shortcuts,
 }
 
@@ -423,4 +423,15 @@ fn do_organize_pages(ui: &mut egui::Ui) {
 #[inline]
 pub fn wake_fn(ctx: egui::Context) -> impl WakeFn {
     move || ctx.request_repaint()
+}
+
+impl Default for ChatApp {
+    fn default() -> Self {
+        Self {
+            login_page: Default::default(),
+            data_shared: Default::default(),
+            active_pages: vec![UiPage::new_page_with_unique_number::<UiChat>(0)], // Preload with a chat page
+            shortcuts: Default::default(),
+        }
+    }
 }
