@@ -62,6 +62,8 @@ fn main() -> anyhow::Result<()> {
     switch_rust_analyzer(&path, &cli.mode).context("failed to switch rust analyzer")?;
     switch_sqlx(&path, &cli.mode).context("failed to switch sqlx")?;
     switch_port(&path, &cli.mode).context("failed to switch db port")?;
+    // switch_sqlx_prepared_queries(&path, &cli.mode)
+    //     .context("failed to switch sqlx prepared queries")?;
     println!("Switch completed to: {}", cli.mode);
     Ok(())
 }
@@ -126,6 +128,19 @@ fn switch_port(path: &Path, db: &Mode) -> anyhow::Result<()> {
         "Switch to ",
         FileType::Toml.to_comment_slice(),
     )
+}
+
+/// Deletes and replaces the base sqlx folder with the appropriate source folder
+///
+/// NB: Expects only files that start with "query" and have a json extension
+fn switch_sqlx_prepared_queries(path: &Path, db: &Mode) -> anyhow::Result<()> {
+    let sqlx_base_name = ".sqlx";
+    let source_path = path.join(format!("{sqlx_base_name}_{db}"));
+    // Empty base folder
+    // TODO: Do a check on source folder for expected files
+    // TODO: DO a check on base folder if it exists for the expected files
+    
+    todo!()
 }
 
 fn do_switch<P: std::fmt::Debug + AsRef<Path>>(
@@ -198,4 +213,3 @@ fn ensure_line_commenting<'a>(
         }
     }
 }
-
