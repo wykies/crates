@@ -16,13 +16,7 @@ rand = { workspace = true, features = ["std_rng"] }
 secrecy.workspace = true
 serde.workspace = true
 serde-aux.workspace = true
-sqlx = { workspace = true, features = [
-  "runtime-tokio",
-  "macros",
-  "mysql",
-  "chrono",
-  "migrate",
-] }
+sqlx = { workspace = true, features = ["runtime-tokio", "macros", "mysql", "chrono", "migrate"] }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
 tracing.workspace = true
 tracing-actix-web.workspace = true
@@ -58,5 +52,6 @@ cookie-session = [
   "actix-session/cookie-session",
 ]
 disable-cors = ["dep:actix-cors"]
+load-config-from-workspace-root = []
 
 # TODO 5: Implement SessionStore with postgres backing to as alternative to cookies only https://docs.rs/actix-session/latest/actix_session/storage/trait.SessionStore.html
