@@ -167,8 +167,12 @@ impl ChatDbWriter {
             return Ok(());
         }
 
+        #[cfg(feature = "mysql")]
         let mut query_builder: QueryBuilder<Db> =
             QueryBuilder::new("INSERT INTO `chat` (`Author`, `Timestamp`, `Content`) ");
+        #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+        let mut query_builder: QueryBuilder<Db> =
+            QueryBuilder::new("INSERT INTO chat (author, unix_timestamp, content) ");
 
         query_builder.push_values(self.buffer.drain(..), |mut b, im| {
             b.push_bind::<String>(im.author.into())

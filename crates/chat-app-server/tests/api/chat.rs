@@ -148,5 +148,5 @@ async fn load_history() {
     }
 }
 
-// TODO 4: Add a test for load_more chat messages
-// TODO 4: Add test for saving to DB
+// TODO 4: Add a test for load_more chat messages (Would need to overflow the server cache buffer)
+// TODO 4: Add test for saving to DB (overflow save buffer qty as time would take too long)
