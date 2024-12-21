@@ -51,7 +51,14 @@ async fn main() -> anyhow::Result<()> {
         .await
         .expect("failed to initialize API Server");
 
-    let (mut join_set, cancellation_tracker, _) = start_servers(api_server_builder).await;
+    let addr = wykies_server::get_socket_address(
+        &api_server_builder
+            .api_server_init_bundle
+            .configuration
+            .application,
+    )
+    .context("failed to get socket address")?;
+    let (mut join_set, cancellation_tracker, _) = start_servers(api_server_builder, addr).await;
     let join_outcome = join_set.join_next().await.context("no tasks in join set")?;
     report_exit(join_outcome);
 

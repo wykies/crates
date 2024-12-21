@@ -20,6 +20,7 @@ pub struct CustomConfiguration {
 
 pub async fn start_servers(
     api_server_builder: ApiServerBuilder<CustomConfiguration>,
+    addr: std::net::SocketAddr,
 ) -> (
     JoinSet<(&'static str, Result<anyhow::Result<()>, JoinError>)>,
     CancellationTracker,
@@ -61,7 +62,7 @@ pub async fn start_servers(
 
     // Finalize Server
     let (api_server, cancellation_tacker, port) = api_server_builder
-        .build_runnable_api_server(open_resources, protected_resources)
+        .build_runnable_api_server(addr, open_resources, protected_resources)
         .await
         .expect("failed to finalize API Server");
 

@@ -81,7 +81,14 @@ async fn start_server_in_background(
     let api_server_builder = ApiServerBuilder::new(api_server_init_bundle, db_pool)
         .await
         .expect("Failed to build application.");
-    let (join_set, _cancellation_tracker, port) = start_servers(api_server_builder).await;
+    let addr = wykies_server::get_socket_address(
+        &api_server_builder
+            .api_server_init_bundle
+            .configuration
+            .application,
+    )
+    .expect("failed to get socket address");
+    let (join_set, _cancellation_tracker, port) = start_servers(api_server_builder, addr).await;
     // Leak the JoinSet so the server doesn't get shutdown
     forget(join_set);
     port

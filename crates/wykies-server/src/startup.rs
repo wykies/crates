@@ -1,5 +1,6 @@
 use crate::{
     authentication::{validate_user_access, LoginAttemptLimit},
+    configuration::ApplicationSettings,
     get_configuration,
     routes::{
         branch_create, branch_list, change_password, health_check, host_branch_pair_lookup,
@@ -21,7 +22,11 @@ use actix_web::{
 use anyhow::Context as _;
 use secrecy::ExposeSecret as _;
 use serde::de::DeserializeOwned;
-use std::{future::Future, net::TcpListener};
+use std::{
+    future::Future,
+    net::{SocketAddr, TcpListener},
+    str::FromStr,
+};
 use tracing::{info, instrument};
 use tracing_actix_web::TracingLogger;
 use tracked_cancellations::{CancellationTracker, TrackedCancellationToken};
@@ -115,6 +120,7 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
     #[instrument(err(Debug), skip_all)]
     pub async fn build_runnable_api_server<FOpen, FProtected>(
         self,
+        addr: std::net::SocketAddr,
         open_resource: FOpen,
         protected_resource: FProtected,
     ) -> anyhow::Result<(RunnableApiServer, CancellationTracker, u16)>
@@ -157,11 +163,13 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
             redis_store
         };
 
-        let listener = get_listener(&configuration).context("failed to bind listener")?;
+        let listener = TcpListener::bind(addr)
+            .with_context(|| format!("failed to bind to address: {}", addr))?;
         let port = listener
             .local_addr()
             .context("failed to get local address of listener")?
             .port();
+        info!(?port, "Port assigned to the server is {port}");
 
         let server = HttpServer::new(move || {
             let app = App::new();
@@ -273,25 +281,17 @@ pub fn get_db_connection_pool(database_config: &DatabaseSettings) -> DbPool {
         .connect_lazy_with(database_config.with_db())
 }
 
-fn get_listener<T: Clone>(configuration: &Configuration<T>) -> anyhow::Result<TcpListener> {
-    let address = format!(
-        "{}:{}",
-        configuration.application.host, configuration.application.port
-    );
+pub fn get_socket_address(app_config: &ApplicationSettings) -> anyhow::Result<SocketAddr> {
+    let address = format!("{}:{}", app_config.host, app_config.port);
     info!("Server address is: {address}");
     println!("Server status page address is: http://{address}/status"); // Provides feedback on stdout that server is starting
     println!("Client app being served at http://{address}/",);
     #[cfg(debug_assertions)]
     println!(
         "To avoid CORS issues during testing use this link http://localhost:{}/",
-        configuration.application.port
+        app_config.port
     );
-    let listener = TcpListener::bind(&address)
-        .with_context(|| format!("failed to bind to address: {address}"))?;
-    let port = listener
-        .local_addr()
-        .context("failed to access local address")?
-        .port();
-    info!(?port, "Port assigned to the server is {port}");
-    Ok(listener)
+    let result = SocketAddr::from_str(&address)
+        .with_context(|| format!("failed to parse address: {address}"))?;
+    Ok(result)
 }

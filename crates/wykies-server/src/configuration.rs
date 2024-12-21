@@ -23,6 +23,7 @@ pub struct ApplicationSettings {
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
     pub host: String,
+    // TODO 2: Look into if this field is used for removal
     pub base_url: String,
     pub hmac_secret: SecretString,
 }
