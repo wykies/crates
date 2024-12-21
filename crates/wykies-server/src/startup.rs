@@ -44,7 +44,7 @@ pub trait ServerTask {
 }
 
 /// Bundles the information used to start a server
-pub struct ApiServerInit<T: Clone> {
+pub struct ApiServerInitBundle<T: Clone> {
     pub cancellation_token: TrackedCancellationToken,
     pub cancellation_tracker: CancellationTracker,
     pub configuration: Configuration<T>,
@@ -76,16 +76,16 @@ pub fn initialize_tracing<Sink, D, N>(
 
 pub struct RunnableApiServer(actix_web::dev::Server);
 
-impl<T> ApiServerInit<T>
+impl<T> ApiServerInitBundle<T>
 where
     T: Clone + DeserializeOwned,
 {
     /// Does the initial prep before starting to build the server
-    pub fn new() -> ApiServerInit<T> {
+    pub fn new() -> ApiServerInitBundle<T> {
         let (cancellation_token, cancellation_tracker) = TrackedCancellationToken::new();
         let configuration = get_configuration::<T>().expect("failed to read configuration.");
 
-        ApiServerInit {
+        ApiServerInitBundle {
             cancellation_token,
             cancellation_tracker,
             configuration,

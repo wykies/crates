@@ -4,7 +4,7 @@ use chat_app_server::startup::{start_servers, CustomConfiguration};
 use tokio::task::JoinError;
 use tracing::{error, info};
 use wykies_server::initialize_tracing;
-use wykies_server::{cancel_remaining_tasks, ApiServerBuilder, ApiServerInit};
+use wykies_server::{cancel_remaining_tasks, ApiServerBuilder, ApiServerInitBundle};
 use wykies_shared::telemetry;
 
 #[cfg(feature = "shuttle")]
@@ -20,11 +20,11 @@ async fn actix_web(
         .await
         .expect("Migrations failed");
 
-    let ApiServerInit::<CustomConfiguration> {
+    let ApiServerInitBundle::<CustomConfiguration> {
         cancellation_token,
         cancellation_tracker,
         configuration,
-    } = ApiServerInit::new();
+    } = ApiServerInitBundle::new();
 
     // let api_server_builder = ApiServerBuilder::new(&configuration, db_pool)
     //     .await
@@ -41,15 +41,17 @@ async fn actix_web(
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // Prep to start building server
+
+    use wykies_server::get_db_connection_pool;
     let (file, path) = telemetry::create_trace_file("chat-app-server")
         .context("failed to create file for traces")?;
+    initialize_tracing("chat_app_server", "info", file);
     println!("Traces being written to: {path:?}");
-    let ApiServerInit::<CustomConfiguration> {
+    let ApiServerInitBundle::<CustomConfiguration> {
         cancellation_token,
         cancellation_tracker,
         configuration,
-    } = ApiServerInit::new_with_tracing_init("chat_app_server", "info", file);
-
+    } = ApiServerInitBundle::new();
     let db_pool = get_db_connection_pool(&configuration.database);
 
     let api_server_builder = ApiServerBuilder::new(&configuration, db_pool)

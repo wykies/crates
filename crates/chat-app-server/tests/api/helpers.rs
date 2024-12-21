@@ -5,7 +5,7 @@ use std::{
 };
 use tracked_cancellations::TrackedCancellationToken;
 use wykies_client_core::LoginOutcome;
-use wykies_server::{ApiServerBuilder, Configuration};
+use wykies_server::{get_db_connection_pool, ApiServerBuilder, Configuration};
 use wykies_server_test_helper::{
     build_test_app, port_to_test_address, spawn_app_without_host_branch_stored_before_migration,
     store_host_branch, TestUser,
@@ -66,11 +66,12 @@ async fn do_migrations(connection_pool: &DbPool) {
 }
 
 async fn start_server_in_background(configuration: &Configuration<CustomConfiguration>) -> u16 {
-    // Create tokens to be able to start server
+    // Prepare to start server
     let (cancellation_token, _) = TrackedCancellationToken::new();
+    let db_pool = get_db_connection_pool(&configuration.database);
 
     // Launch the application as a background task
-    let server_builder = ApiServerBuilder::new(configuration)
+    let server_builder = ApiServerBuilder::new(configuration, db_pool)
         .await
         .expect("Failed to build application.");
     let application_port = server_builder
