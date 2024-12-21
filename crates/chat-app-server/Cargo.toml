@@ -11,6 +11,7 @@ description = "Server for Demo Chat App"
 actix-web.workspace = true
 anyhow.workspace = true
 plugin-chat = { workspace = true, features = ["server_only"] }
+secrecy.workspace = true
 serde.workspace = true
 shuttle-runtime = { workspace = true }
 shuttle-shared-db = { workspace = true, optional = true, features = ["postgres", "sqlx"] }

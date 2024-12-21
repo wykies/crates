@@ -1,6 +1,6 @@
+use anyhow::Context as _;
 use chat_app_server::startup::CustomConfiguration;
 use chat_app_server::startup::ShuttleService;
-
 use wykies_server::initialize_tracing;
 use wykies_server::{ApiServerBuilder, ApiServerInitBundle};
 
@@ -8,7 +8,10 @@ use wykies_server::{ApiServerBuilder, ApiServerInitBundle};
 #[cfg(all(feature = "shuttle", not(feature = "standalone")))]
 #[shuttle_runtime::main]
 async fn main(
-    #[shuttle_shared_db::Postgres] db_pool: sqlx::PgPool,
+    #[shuttle_shared_db::Postgres(
+        local_uri = "postgres://db_user:{secrets.DB_PASSWORD}@localhost:5432/chat_demo"
+    )]
+    db_pool: sqlx::PgPool,
     #[shuttle_runtime::Secrets] secrets: shuttle_runtime::SecretStore,
 ) -> Result<ShuttleService, shuttle_runtime::Error> {
     initialize_tracing("chat_app_server", "info", std::io::stdout);
@@ -18,18 +21,20 @@ async fn main(
         .await
         .expect("Migrations failed");
 
-    let api_server_init_bundle = ApiServerInitBundle::<CustomConfiguration>::new();
+    let mut api_server_init_bundle = ApiServerInitBundle::<CustomConfiguration>::new();
+    api_server_init_bundle.configuration.application.hmac_secret =
+        secrecy::SecretBox::from(secrets.get("HMAC").context("hmac secret was not found")?);
     let api_server_builder = ApiServerBuilder::new(api_server_init_bundle, db_pool)
         .await
         .expect("failed to initialize API Server");
 
+    tracing::info!("Setup Completed");
     Ok(ShuttleService(api_server_builder))
 }
 
 #[cfg(feature = "standalone")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    use anyhow::Context as _;
     use shuttle_runtime::Service as _;
 
     let (file, path) = wykies_shared::telemetry::create_trace_file("chat-app-server")

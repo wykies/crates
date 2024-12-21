@@ -1,12 +1,12 @@
 redis_uri = "redis://127.0.0.1:6379"
 [application]
-port = "8789"                                                                       # W = 87, Y = 89
+port = "8789" # W = 87, Y = 89
 host = "0.0.0.0"
 hmac_secret = "super-long-and-secret-random-key-needed-to-verify-message-integrity"
 [database]
 host = "127.0.0.1"
-# port = 3306        # Switch to Standalone
-port = 5432                 # Switch to Shuttle
+# port = 3306 # Switch to Standalone
+port = 5432 # Switch to Shuttle
 username = "db_user"
 password = "password"
 database_name = "chat_demo"
