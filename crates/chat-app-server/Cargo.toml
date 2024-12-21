@@ -12,7 +12,6 @@ actix-web.workspace = true
 anyhow.workspace = true
 plugin-chat = { workspace = true, features = ["server_only"] }
 serde.workspace = true
-shuttle-actix-web = { workspace = true, optional = true }
 shuttle-runtime = { workspace = true }
 shuttle-shared-db = { workspace = true, optional = true, features = ["postgres", "sqlx"] }
 sqlx = { workspace = true, features = ["tls-rustls"] }
@@ -43,7 +42,6 @@ standalone = [
 ]
 shuttle = [
   # Runs the app in the shuttle mode (Uses postgres and cookie's only for sessions)
-  "dep:shuttle-actix-web",
   "dep:shuttle-shared-db",
   "postgres",
   "wykies-server/cookie-session",

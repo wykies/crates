@@ -42,6 +42,7 @@
 #![warn(unused_crate_dependencies)]
 
 mod warning_suppress {
+    use shuttle_shared_db as _; // Use in main
     use sqlx as _; // Needed to enable TLS
 }
 

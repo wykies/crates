@@ -1,17 +1,16 @@
-use actix_web::web::ServiceConfig;
-use anyhow::Context;
 use chat_app_server::startup::CustomConfiguration;
 use chat_app_server::startup::ShuttleService;
-use shuttle_runtime::Service;
-use wykies_server::initialize_tracing;
-use wykies_shared::telemetry;
 
-#[cfg(feature = "shuttle")]
+use wykies_server::initialize_tracing;
+use wykies_server::{ApiServerBuilder, ApiServerInitBundle};
+
+// Includes the not standalone for when all features are enabled by CI
+#[cfg(all(feature = "shuttle", not(feature = "standalone")))]
 #[shuttle_runtime::main]
-async fn actix_web(
+async fn main(
     #[shuttle_shared_db::Postgres] db_pool: sqlx::PgPool,
     #[shuttle_runtime::Secrets] secrets: shuttle_runtime::SecretStore,
-) -> shuttle_actix_web::ShuttleActixWeb<impl FnOnce(&mut ServiceConfig) + Send + Clone + 'static> {
+) -> Result<ShuttleService, shuttle_runtime::Error> {
     initialize_tracing("chat_app_server", "info", std::io::stdout);
 
     sqlx::migrate!("./migrations_pg")
@@ -19,29 +18,21 @@ async fn actix_web(
         .await
         .expect("Migrations failed");
 
-    let ApiServerInitBundle::<CustomConfiguration> {
-        cancellation_token,
-        cancellation_tracker,
-        configuration,
-    } = ApiServerInitBundle::new();
+    let api_server_init_bundle = ApiServerInitBundle::<CustomConfiguration>::new();
+    let api_server_builder = ApiServerBuilder::new(api_server_init_bundle, db_pool)
+        .await
+        .expect("failed to initialize API Server");
 
-    // let api_server_builder = ApiServerBuilder::new(&configuration, db_pool)
-    //     .await
-    //     .expect("failed to initialize API Server");
-
-    let config = move |cfg: &mut ServiceConfig| {
-        // cfg.service(hello_world);
-    };
-
-    Ok(config.into())
+    Ok(ShuttleService(api_server_builder))
 }
 
-#[cfg(not(feature = "shuttle"))]
+#[cfg(feature = "standalone")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    use wykies_server::{ApiServerBuilder, ApiServerInitBundle};
+    use anyhow::Context as _;
+    use shuttle_runtime::Service as _;
 
-    let (file, path) = telemetry::create_trace_file("chat-app-server")
+    let (file, path) = wykies_shared::telemetry::create_trace_file("chat-app-server")
         .context("failed to create file for traces")?;
     initialize_tracing("chat_app_server", "info", file);
     println!("Traces being written to: {path:?}");
