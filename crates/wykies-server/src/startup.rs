@@ -261,6 +261,11 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
         .listen(listener)
         .context("Failed to bind HTTP Server to listener")?
         .run();
+        info!(
+            version = env!("CARGO_PKG_VERSION"),
+            "API Server prepared to be run at version {}",
+            env!("CARGO_PKG_VERSION")
+        );
         Ok((RunnableApiServer(server), cancellation_tracker, port))
     }
 }
