@@ -2,3 +2,13 @@ name = "chat-app-demo"
 
 [deploy]
 deny_dirty = true
+include = [
+  "crates/chat-app-server/app/*",
+  "crates/chat-app-server/configuration/*",
+]
+
+[build]
+assets = [
+  "crates/chat-app-server/app/*",
+  "crates/chat-app-server/configuration/*",
+]
