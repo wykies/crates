@@ -12,3 +12,9 @@ assets = [
   "crates/chat-app-server/app/*",
   "crates/chat-app-server/configuration/*",
 ]
+
+# Shuttle deployment notes:
+# - Do a trunk build in release mode
+# - Switch to Shuttle Mode
+# - Prepare sqlx queries for offline mode
+# - Commit (to prevent dirty and give deployment a name)
