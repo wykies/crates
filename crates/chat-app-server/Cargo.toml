@@ -46,7 +46,7 @@ shuttle = [
   "dep:shuttle-shared-db",
   "postgres",
   "wykies-server/cookie-session",
-  "wykies-server/load-config-from-workspace-root",
+  "wykies-server/running-from-workspace-root",
 ]
 mysql = [
   "plugin-chat/mysql",

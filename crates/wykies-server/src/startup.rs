@@ -202,6 +202,12 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
 
             // TODO 4: Look into session expiration https://docs.rs/actix-session/latest/actix_session/config/struct.SessionMiddlewareBuilder.html
 
+            let front_end_folder = if cfg!(feature = "running-from-workspace-root") {
+                "./crates/chat-app-server/app/"
+            } else {
+                "./app/"
+            };
+
             app.wrap(SessionMiddleware::new(session_store, secret_key.clone()))
                 .wrap(TracingLogger::default())
                 .service(
@@ -246,7 +252,7 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
                 .route("/branches", web::get().to(branch_list))
                 .route("/health_check", web::get().to(health_check))
                 .route("/status", web::get().to(status))
-                .service(actix_files::Files::new("/", "./app/").index_file("index.html"))
+                .service(actix_files::Files::new("/", front_end_folder).index_file("index.html"))
                 .app_data(db_pool.clone())
                 .app_data(login_attempt_limit.clone())
                 .app_data(websocket_auth_manager.clone())

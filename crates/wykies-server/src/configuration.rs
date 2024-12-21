@@ -82,7 +82,7 @@ impl DatabaseSettings {
 pub fn get_configuration<T: Clone + DeserializeOwned>(
 ) -> Result<Configuration<T>, config::ConfigError> {
     let base_path = std::env::current_dir().expect("failed to determine the current directory");
-    #[cfg(feature = "load-config-from-workspace-root")]
+    #[cfg(feature = "running-from-workspace-root")]
     let base_path = base_path.join("crates/chat-app-server");
 
     // Note do not try to move configuration folder to root because it will make

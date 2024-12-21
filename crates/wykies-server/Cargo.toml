@@ -52,6 +52,6 @@ cookie-session = [
   "actix-session/cookie-session",
 ]
 disable-cors = ["dep:actix-cors"]
-load-config-from-workspace-root = []
+running-from-workspace-root = []
 
 # TODO 5: Implement SessionStore with postgres backing to as alternative to cookies only https://docs.rs/actix-session/latest/actix_session/storage/trait.SessionStore.html
