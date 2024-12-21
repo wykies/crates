@@ -41,9 +41,13 @@
 
 #![warn(unused_crate_dependencies)]
 
+#[cfg(feature = "shuttle")]
+mod shuttle_only_and_only_used_in_main {
+    use shuttle_shared_db as _;
+}
+
 mod warning_suppress {
     use secrecy as _; // Used in main
-    use shuttle_shared_db as _; // Use in main
     use sqlx as _; // Needed to enable TLS
 }
 
