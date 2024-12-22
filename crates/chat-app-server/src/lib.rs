@@ -5,7 +5,6 @@
 //!     - Switch Rust Analyzer by uncommenting the marked line in settings.json (Mark: Switch to ...)
 //!     - Switch sqlx by uncommenting the marked line in .env (Mark: Switch to ...)
 //!     - Will need to disable offline mode for sqlx if using postgres because we are committing the mysql prepared sqlx files
-//!     - Change DB port in the base.tom (Mark: Switch to ...)
 //!     - Use marked job in bacon (Mark: To test ...)
 //!     - Ensure correct database is available (restart container or run matching init script)
 //! - For variable length fields in the database we restrict in the code to
