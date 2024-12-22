@@ -112,7 +112,7 @@ jobs:
         run: |
           cargo sqlx prepare --check --workspace -- --bins --tests --no-default-features --features postgres,standalone
       - name: Run tests
-        run: cargo test
+        run: cargo test --package chat-app-server --no-default-features --features standalone,postgres
 
   fmt:
     name: Rustfmt
