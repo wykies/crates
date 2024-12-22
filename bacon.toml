@@ -137,7 +137,7 @@ command = [
 need_stdout = false
 
 # To test Standalone mode
-[jobs.test-chat-server-standalone]
+[jobs.test-chat-server-standalone-mysql]
 command = [
   "cargo",
   "test",
@@ -147,14 +147,14 @@ command = [
   "chat-app-server",
   "--no-default-features",
   "--features",
-  "standalone",
+  "standalone,mysql",
   "--",
   "--color",
   "always",
 ]
 need_stdout = true
 
-[jobs.test-chat-server-standalone-trace]
+[jobs.test-chat-server-standalone-mysql-trace]
 command = [
   "cargo",
   "test",
@@ -164,7 +164,7 @@ command = [
   "chat-app-server",
   "--no-default-features",
   "--features",
-  "standalone",
+  "standalone,mysql",
   "--",
   "--color",
   "always",
@@ -173,7 +173,7 @@ need_stdout = true
 env.TEST_LOG = "true"
 
 # To test Shuttle mode
-[jobs.test-chat-server-shuttle]
+[jobs.test-chat-server-standalone-pg]
 command = [
   "cargo",
   "test",
@@ -183,14 +183,14 @@ command = [
   "chat-app-server",
   "--no-default-features",
   "--features",
-  "shuttle",
+  "standalone,postgres",
   "--",
   "--color",
   "always",
 ]
 need_stdout = true
 
-[jobs.test-chat-server-shuttle-trace]
+[jobs.test-chat-server-standalone-pg-trace]
 command = [
   "cargo",
   "test",
@@ -200,7 +200,7 @@ command = [
   "chat-app-server",
   "--no-default-features",
   "--features",
-  "shuttle",
+  "standalone,postgres",
   "--",
   "--color",
   "always",
@@ -231,8 +231,8 @@ i = "job:include-ignored"
 alt-t = "job:test-trace"
 alt-q = "job:check" # Provides a way to do a quick check without including clippy like I normally want
 w = "job:check-wasm-client"
-s = "job:test-chat-server-standalone"
-alt-s = "job:test-chat-server-standalone-trace"
-p = "job:test-chat-server-shuttle"
-alt-p = "job:test-chat-server-shuttle-trace"
+s = "job:test-chat-server-standalone-mysql"
+alt-s = "job:test-chat-server-standalone-mysql-trace"
+p = "job:test-chat-server-standalone-pg"
+alt-p = "job:test-chat-server-standalone-pg-trace"
 v = "job:check-shuttle"
