@@ -75,20 +75,8 @@ jobs:
         run: cargo fmt --check
 
   clippy:
-    name: Clippy
-    
-    runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql:latest
-        env:
-          MYSQL_USER: db_user
-          MYSQL_PASSWORD: password
-          MYSQL_DATABASE: chat_demo
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_ROOT_HOST: "%"
-        ports:
-          - 3306:3306
+    name: Clippy (Standalone)
+    runs-on: ubuntu-latest   
     steps:
       - uses: wykies/checkout@main
         with:
@@ -96,6 +84,8 @@ jobs:
       - uses: wykies/setup-rust-toolchain@main
         with:
           components: clippy
+      - name: Load sqlx query files for standalone version
+        run: ./scripts/copy_sqlx_queries.sh Standalone
       - name: Linting
         run: cargo clippy --all-features -- -D warnings
   wasm:
