@@ -123,39 +123,36 @@ fn switch_port(path: &Path, mode: &Mode) -> anyhow::Result<()> {
 ///
 /// NB: Expects only files that start with "query" and have a json extension
 fn switch_sqlx_prepared_queries(path: &Path, mode: &Mode) -> anyhow::Result<()> {
-    let dest_folder_name = ".sqlx";
-    let source_folder_name = format!("{dest_folder_name}_{mode}");
-    let dest_path = path
-        .join(dest_folder_name)
+    let dst_folder_name = ".sqlx";
+    let src_folder_name = format!("{dst_folder_name}_{mode}");
+    let dst_path = path.join(dst_folder_name).canonicalize().with_context(|| {
+        format!("failed to canonicalize destination sqlx folder: {dst_folder_name:?}")
+    })?;
+    let src_path = path
+        .join(&src_folder_name)
         .canonicalize()
         .with_context(|| {
-            format!("failed to canonicalize destination sqlx folder: {dest_folder_name:?}")
-        })?;
-    let source_path = path
-        .join(&source_folder_name)
-        .canonicalize()
-        .with_context(|| {
-            format!("failed to canonicalize source sqlx folder: {source_folder_name:?}")
+            format!("failed to canonicalize source sqlx folder: {src_folder_name:?}")
         })?;
 
     // Empty out the base folder
     for file in
-        fs::read_dir(&dest_path).with_context(|| format!("failed to read dir: {dest_path:?}"))?
+        fs::read_dir(&dst_path).with_context(|| format!("failed to read dir: {dst_path:?}"))?
     {
         let path = file.context("failed to read file")?.path();
         check_expected_query_filename(&path)?;
         fs::remove_file(&path).with_context(|| format!("failed to remove file: {path:?}"))?;
     }
 
-    // Copy over the files from the source folder
-    for file in fs::read_dir(&source_path)
-        .with_context(|| format!("failed to read dir: {source_path:?}"))?
+    // Copy over the files from the src folder
+    for file in
+        fs::read_dir(&src_path).with_context(|| format!("failed to read dir: {src_path:?}"))?
     {
         let path = file.context("failed to read file")?.path();
         check_expected_query_filename(&path)?;
         fs::copy(
             &path,
-            dest_path.join(
+            dst_path.join(
                 path.file_name()
                     .context("no filename? how did it reach here?")?,
             ),
