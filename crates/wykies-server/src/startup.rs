@@ -284,9 +284,9 @@ impl ServerTask for RunnableApiServer {
 #[instrument(skip_all)]
 pub fn get_db_connection_pool(database_config: &DatabaseSettings) -> DbPool {
     #[cfg(feature = "mysql")]
-    info!("DB in use is MySql");
+    info!("DB in set is MySql on port: {}", database_config.port);
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
-    info!("DB in use is Postgres");
+    info!("DB in set is Postgres on port: {}", database_config.port);
 
     DbPoolOptions::new()
         .acquire_timeout(const_config::server::DB_ACQUIRE_TIMEOUT.into())
