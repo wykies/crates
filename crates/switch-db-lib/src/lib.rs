@@ -125,7 +125,11 @@ fn switch_port(path: &Path, mode: &Mode) -> anyhow::Result<()> {
 fn switch_sqlx_prepared_queries(path: &Path, mode: &Mode) -> anyhow::Result<()> {
     let dst_folder_name = ".sqlx";
     let src_folder_name = format!("{dst_folder_name}_{mode}");
-    let dst_path = path.join(dst_folder_name).canonicalize().with_context(|| {
+    let dst_path = path.join(dst_folder_name);
+    if !dst_path.exists() {
+        fs::create_dir(&dst_path).context("failed to create target folder: {dst_folder_name:?}")?;
+    }
+    let dst_path = dst_path.canonicalize().with_context(|| {
         format!("failed to canonicalize destination sqlx folder: {dst_folder_name:?}")
     })?;
     let src_path = path
