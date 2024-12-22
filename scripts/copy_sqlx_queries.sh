@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-# Intended for use in CI where rust scripts are not supported on stable yet to only copy the sqlx folder
-# Expected to be run from the root of the repo.
-# CAUTION: This script deletes files
+# Was intended for CI where rust scripts are not allowed but decided to just
+# use `cargo run`` instead of maintaining two files and because I also needed
+# to switch the .env file and there was beginning to be too much duplication
 
 set -e
 
