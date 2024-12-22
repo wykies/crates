@@ -33,6 +33,11 @@ pub struct DatabaseSettings {
     pub username: String,
     pub password: SecretString,
     #[serde(deserialize_with = "deserialize_number_from_string")]
+    #[cfg_attr(feature = "mysql", serde(rename = "port_mysql"))]
+    #[cfg_attr(
+        all(not(feature = "mysql"), feature = "postgres"),
+        serde(rename = "port_mysql")
+    )]
     pub port: u16,
     pub host: String,
     pub database_name: String,
