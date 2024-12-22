@@ -1,4 +1,4 @@
-use anyhow::Context;
+use anyhow::{bail, Context};
 use clap::{Parser, ValueEnum};
 use std::{
     borrow::Cow,
@@ -123,13 +123,65 @@ fn switch_port(path: &Path, mode: &Mode) -> anyhow::Result<()> {
 ///
 /// NB: Expects only files that start with "query" and have a json extension
 fn switch_sqlx_prepared_queries(path: &Path, mode: &Mode) -> anyhow::Result<()> {
-    let sqlx_base_name = ".sqlx";
-    let source_path = path.join(format!("{sqlx_base_name}_{mode}"));
-    // Empty base folder
-    // TODO: Do a check on source folder for expected files
-    // TODO: DO a check on base folder if it exists for the expected files
+    let dest_folder_name = ".sqlx";
+    let source_folder_name = format!("{dest_folder_name}_{mode}");
+    let dest_path = path
+        .join(dest_folder_name)
+        .canonicalize()
+        .with_context(|| {
+            format!("failed to canonicalize destination sqlx folder: {dest_folder_name:?}")
+        })?;
+    let source_path = path
+        .join(&source_folder_name)
+        .canonicalize()
+        .with_context(|| {
+            format!("failed to canonicalize source sqlx folder: {source_folder_name:?}")
+        })?;
 
-    todo!()
+    // Empty out the base folder
+    for file in
+        fs::read_dir(&dest_path).with_context(|| format!("failed to read dir: {dest_path:?}"))?
+    {
+        let path = file.context("failed to read file")?.path();
+        check_expected_query_filename(&path)?;
+        fs::remove_file(&path).with_context(|| format!("failed to remove file: {path:?}"))?;
+    }
+
+    // Copy over the files from the source folder
+    for file in fs::read_dir(&source_path)
+        .with_context(|| format!("failed to read dir: {source_path:?}"))?
+    {
+        let path = file.context("failed to read file")?.path();
+        check_expected_query_filename(&path)?;
+        fs::copy(
+            &path,
+            dest_path.join(
+                path.file_name()
+                    .context("no filename? how did it reach here?")?,
+            ),
+        )
+        .with_context(|| format!("failed to remove file: {path:?}"))?;
+    }
+
+    Ok(())
+}
+
+fn check_expected_query_filename(path: &Path) -> anyhow::Result<()> {
+    if !path.is_file() {
+        bail!("Only expected files but found something else at {path:?}");
+    }
+    if !path
+        .file_name()
+        .with_context(|| format!("found a 'file' with no filename? -> {path:?}"))?
+        .to_string_lossy()
+        .starts_with("query")
+    {
+        bail!("expected all the query files to start with 'query' but found: {path:?}");
+    }
+    if path.extension().map(|x| x.to_str().unwrap_or_default()) != Some("json") {
+        bail!("only expected json query files but found: {path:?}");
+    }
+    Ok(())
 }
 
 fn do_switch<P: std::fmt::Debug + AsRef<Path>>(
