@@ -36,7 +36,7 @@ pub struct DatabaseSettings {
     #[cfg_attr(feature = "mysql", serde(rename = "port_mysql"))]
     #[cfg_attr(
         all(not(feature = "mysql"), feature = "postgres"),
-        serde(rename = "port_mysql")
+        serde(rename = "port_postgres")
     )]
     pub port: u16,
     pub host: String,
