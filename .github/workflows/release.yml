@@ -22,6 +22,6 @@ jobs:
       - uses: wykies/checkout@main
       - uses: wykies/setup-rust-toolchain@main
       - name: Load sqlx query files for standalone version
-        run: ./scripts/copy_sqlx_queries.sh Standalone
+        run: cargo run --bin switch-db -- standalone
       - name: Run Release Compile
         run: cargo check --all-features --release

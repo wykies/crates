@@ -57,8 +57,8 @@ jobs:
           sudo apt-get install mysql-client -y
           cd crates/chat-app-server && SKIP_DOCKER=true ./scripts/init_db_mysql.sh
       - name: Load sqlx query files for mysql
-        run: ./scripts/copy_sqlx_queries.sh mysql
-      - name: Check sqlx prepared queries are is up-to-date
+        run: cargo run --bin switch-db -- standalone
+      - name: Check sqlx prepared queries for mysql are is up-to-date
         run: |
           cargo sqlx prepare --check --workspace -- --bins --tests --all-features
       - name: Run tests
@@ -106,8 +106,8 @@ jobs:
       - name: Migrate database
         run: |
           cd crates/chat-app-server && SKIP_DOCKER=true ./scripts/init_db_pg.sh
-      - name: Load sqlx query files for mysql
-        run: ./scripts/copy_sqlx_queries.sh postgres
+      - name: Load sqlx query files for postgres
+        run: cargo run --bin switch-db -- shuttle
       - name: Check sqlx prepared queries for postgres are is up-to-date
         run: |
           cargo sqlx prepare --check --workspace -- --bins --tests --no-default-features --features postgres,standalone
@@ -139,7 +139,7 @@ jobs:
         with:
           components: clippy
       - name: Load sqlx query files for standalone version
-        run: ./scripts/copy_sqlx_queries.sh Standalone
+        run: cargo run --bin switch-db -- standalone
       - name: Linting
         run: cargo clippy --all-features -- -D warnings
   wasm:
