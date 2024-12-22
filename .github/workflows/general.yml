@@ -17,7 +17,6 @@ on:
 env:
   CARGO_TERM_COLOR: always
   SQLX_VERSION: 0.8.2 # When changing ensure the cache is invalidated
-  SQLX_FEATURES: "rustls,mysql,postgres"
   APP_USER: db_user
   APP_USER_PWD: password
   APP_DB_NAME: chat_demo
@@ -50,7 +49,7 @@ jobs:
         run:
           cargo install sqlx-cli
             --version=${{ env.SQLX_VERSION }}
-            --features ${{ env.SQLX_FEATURES }}
+            --features rustls,mysql
             --no-default-features
             --locked
       - name: Migrate database
@@ -90,7 +89,7 @@ jobs:
         run:
           cargo install sqlx-cli
             --version=${{ env.SQLX_VERSION }}
-            --features ${{ env.SQLX_FEATURES }}
+            --features rustls,postgres
             --no-default-features
             --locked
       - name: Create app user in Postgres
@@ -109,7 +108,7 @@ jobs:
           cd crates/chat-app-server && SKIP_DOCKER=true ./scripts/init_db_pg.sh
       - name: Load sqlx query files for mysql
         run: ./scripts/copy_sqlx_queries.sh postgres
-      - name: Check sqlx prepared queries are is up-to-date
+      - name: Check sqlx prepared queries for postgres are is up-to-date
         run: |
           cargo sqlx prepare --check --workspace -- --bins --tests --no-default-features --features postgres,standalone
       - name: Run tests
