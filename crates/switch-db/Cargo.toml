@@ -1,5 +1,5 @@
 [package]
-name = "switch-db-lib"
+name = "switch-db"
 version = "0.1.0"
 edition = "2021"
 
