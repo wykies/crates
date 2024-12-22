@@ -16,20 +16,23 @@ on:
       - develop
 env:
   CARGO_TERM_COLOR: always
-  SQLX_VERSION: 0.7.4 # When changing ensure the cache is invalidated
-  SQLX_FEATURES: "rustls,mysql"
+  SQLX_VERSION: 0.7.4 # When changing ensure the cache is invalidated # TODO 1: upgrade sqlx version
+  SQLX_FEATURES: "rustls,mysql,postgres"
+  APP_USER: db_user
+  APP_USER_PWD: password
+  APP_DB_NAME: chat_demo
 
 jobs:
-  test:
+  test_stand_alone_mysql:
     name: Test (Standalone MySQL)
     runs-on: ubuntu-latest
     services:
       mysql:
-        image: mysql:latest
+        image: mysql
         env:
-          MYSQL_USER: db_user
-          MYSQL_PASSWORD: password
-          MYSQL_DATABASE: chat_demo
+          MYSQL_USER: ${{ env.APP_USER }}
+          MYSQL_PASSWORD: ${{ env.APP_USER_PWD }}
+          MYSQL_DATABASE: ${{ env.APP_DB_NAME }}
           MYSQL_ROOT_PASSWORD: password
           MYSQL_ROOT_HOST: "%"
         ports:
@@ -59,6 +62,56 @@ jobs:
       - name: Check sqlx prepared queries are is up-to-date
         run: |
           cargo sqlx prepare --check --workspace -- --bins --tests --all-features
+      - name: Run tests
+        run: cargo test
+        
+  test_stand_alone_postgres:
+    name: Test (Standalone Postgres)
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+    steps:
+      - uses: wykies/checkout@main
+        with:
+          submodules: recursive
+      - uses: wykies/setup-rust-toolchain@main
+      - name: Install sqlx-cli
+        run:
+          cargo install sqlx-cli
+            --version=${{ env.SQLX_VERSION }}
+            --features ${{ env.SQLX_FEATURES }}
+            --no-default-features
+            --locked
+      - name: Create app user in Postgres
+        run: |
+          sudo apt-get install postgresql-client
+
+          # Create the application user
+          CREATE_QUERY="CREATE USER ${APP_USER} WITH PASSWORD '${APP_USER_PWD}';"
+          PGPASSWORD="password" psql -U "postgres" -h "localhost" -c "${CREATE_QUERY}"
+
+          # Grant create db privileges to the app user
+          GRANT_QUERY="ALTER USER ${APP_USER} CREATEDB;"
+          PGPASSWORD="password" psql -U "postgres" -h "localhost" -c "${GRANT_QUERY}"    
+      - name: Migrate database
+        run: |
+          cd crates/chat-app-server && SKIP_DOCKER=true ./scripts/init_db_pg.sh
+      - name: Load sqlx query files for mysql
+        run: ./scripts/copy_sqlx_queries.sh postgres
+      - name: Check sqlx prepared queries are is up-to-date
+        run: |
+          cargo sqlx prepare --check --workspace -- --bins --tests --no-default-features --features postgres,standalone
       - name: Run tests
         run: cargo test
 

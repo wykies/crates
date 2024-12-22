@@ -1,11 +1,14 @@
 {
   "cSpell.words": [
     "Armin",
+    "CREATEDB",
     "filehash",
     "Freepik",
     "getrandom",
     "HOSTBRANCH",
     "LASTVAL",
+    "PGPASSWORD",
+    "psql",
     "realip",
     "ringbuffer",
     "Ronacher",
