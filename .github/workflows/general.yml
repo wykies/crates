@@ -16,7 +16,7 @@ on:
       - develop
 env:
   CARGO_TERM_COLOR: always
-  SQLX_VERSION: 0.7.4 # When changing ensure the cache is invalidated # TODO 1: upgrade sqlx version
+  SQLX_VERSION: 0.8.2 # When changing ensure the cache is invalidated
   SQLX_FEATURES: "rustls,mysql,postgres"
   APP_USER: db_user
   APP_USER_PWD: password
