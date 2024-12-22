@@ -51,8 +51,8 @@ pub fn run() -> anyhow::Result<()> {
     switch_rust_analyzer(&path, &cli.mode).context("failed to switch rust analyzer")?;
     switch_sqlx(&path, &cli.mode).context("failed to switch sqlx")?;
     switch_port(&path, &cli.mode).context("failed to switch db port")?;
-    // switch_sqlx_prepared_queries(&path, &cli.mode)
-    //     .context("failed to switch sqlx prepared queries")?;
+    switch_sqlx_prepared_queries(&path, &cli.mode)
+        .context("failed to switch sqlx prepared queries")?;
     println!("Switch completed to: {}", cli.mode);
     Ok(())
 }
@@ -92,28 +92,28 @@ impl Display for Mode {
     }
 }
 
-fn switch_rust_analyzer(path: &Path, db: &Mode) -> anyhow::Result<()> {
+fn switch_rust_analyzer(path: &Path, mode: &Mode) -> anyhow::Result<()> {
     do_switch(
         path.join(".vscode/settings.json"),
-        db,
+        mode,
         "Switch to ",
         FileType::Json.to_comment_slice(),
     )
 }
 
-fn switch_sqlx(path: &Path, db: &Mode) -> anyhow::Result<()> {
+fn switch_sqlx(path: &Path, mode: &Mode) -> anyhow::Result<()> {
     do_switch(
         path.join("crates/chat-app-server/.env"),
-        db,
+        mode,
         "Switch to ",
         FileType::DotEnv.to_comment_slice(),
     )
 }
 
-fn switch_port(path: &Path, db: &Mode) -> anyhow::Result<()> {
+fn switch_port(path: &Path, mode: &Mode) -> anyhow::Result<()> {
     do_switch(
         path.join("crates/chat-app-server/configuration/base.toml"),
-        db,
+        mode,
         "Switch to ",
         FileType::Toml.to_comment_slice(),
     )
@@ -122,9 +122,9 @@ fn switch_port(path: &Path, db: &Mode) -> anyhow::Result<()> {
 /// Deletes and replaces the base sqlx folder with the appropriate source folder
 ///
 /// NB: Expects only files that start with "query" and have a json extension
-fn switch_sqlx_prepared_queries(path: &Path, db: &Mode) -> anyhow::Result<()> {
+fn switch_sqlx_prepared_queries(path: &Path, mode: &Mode) -> anyhow::Result<()> {
     let sqlx_base_name = ".sqlx";
-    let source_path = path.join(format!("{sqlx_base_name}_{db}"));
+    let source_path = path.join(format!("{sqlx_base_name}_{mode}"));
     // Empty base folder
     // TODO: Do a check on source folder for expected files
     // TODO: DO a check on base folder if it exists for the expected files
