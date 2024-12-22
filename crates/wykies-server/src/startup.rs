@@ -249,6 +249,7 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
                 )
                 .configure(open_resource.clone())
                 .route("/login", web::post().to(login))
+                // TODO 1: Add an endpoint to give the version
                 .route("/branches", web::get().to(branch_list))
                 .route("/health_check", web::get().to(health_check))
                 .route("/status", web::get().to(status))
