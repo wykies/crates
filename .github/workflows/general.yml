@@ -21,7 +21,7 @@ env:
 
 jobs:
   test:
-    name: Test
+    name: Test (Standalone MySQL)
     runs-on: ubuntu-latest
     services:
       mysql:
@@ -54,6 +54,8 @@ jobs:
         run: |
           sudo apt-get install mysql-client -y
           cd crates/chat-app-server && SKIP_DOCKER=true ./scripts/init_db_mysql.sh
+      - name: Load sqlx query files for mysql
+        run: ./scripts/copy_sqlx_queries.sh mysql
       - name: Check sqlx prepared queries are is up-to-date
         run: |
           cargo sqlx prepare --check --workspace -- --bins --tests --all-features
