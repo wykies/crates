@@ -22,4 +22,4 @@ jobs:
       - uses: wykies/checkout@main
       - uses: wykies/setup-rust-toolchain@main
       - name: Run Release Compile
-        run: ./scripts/switch_db.rs standalone && cargo check --all-features --release
+        run: ./scripts/copy_sqlx_queries.sh Standalone && cargo check --all-features --release
