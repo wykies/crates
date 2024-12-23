@@ -28,7 +28,7 @@ pub fn run() -> anyhow::Result<()> {
 
     info!("Switching to {}", cli.mode);
     cli.root = cli.root.canonicalize()?;
-    debug!(?cli); //TODO 1: Test how this looks
+    debug!(?cli);
     check_version_control(&cli.root, &cli.check_version_control)
         .context("failed version control check")?;
     switch_rust_analyzer(&cli).context("failed to switch rust analyzer")?;
