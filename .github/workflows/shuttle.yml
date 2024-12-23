@@ -23,10 +23,15 @@ jobs:
     steps:
       - uses: wykies/checkout@main
       - uses: wykies/setup-rust-toolchain@main
+        with:
+          target: wasm32-unknown-unknown
+      - uses: taiki-e/install-action@main
+        with:
+          tool: binstall
       - name: Load sqlx query files for shuttle version
         run: cargo run --bin switch-db -- --no-edit-only-copy shuttle
       - name: Install Trunk
-        run: cargo install --locked trunk
+        run: cargo binstall trunk
       - name: Build client
         run: ./scripts/build_chat_client.sh
       - name: Include git diff for debug
