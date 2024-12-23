@@ -25,6 +25,6 @@ jobs:
         with:
           components: clippy
       - name: Load sqlx query files for shuttle version
-        run: cargo run --bin switch-db --no-edit-only-copy shuttle
+        run: cargo run --bin switch-db -- --no-edit-only-copy shuttle
       - name: Linting
         run: cargo clippy --package chat-app-server --no-default-features --features shuttle -- -D warnings
