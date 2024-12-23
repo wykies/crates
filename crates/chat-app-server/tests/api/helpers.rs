@@ -78,9 +78,10 @@ async fn start_server_in_background(
         configuration,
     };
 
-    let api_server_builder = ApiServerBuilder::new(api_server_init_bundle, db_pool)
-        .await
-        .expect("Failed to build application.");
+    let api_server_builder =
+        ApiServerBuilder::new(api_server_init_bundle, db_pool, env!("CARGO_PKG_VERSION"))
+            .await
+            .expect("Failed to build application.");
     let addr = wykies_server::get_socket_address(
         &api_server_builder
             .api_server_init_bundle

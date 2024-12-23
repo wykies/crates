@@ -17,7 +17,7 @@ use actix_session::SessionMiddleware;
 use actix_web::{
     middleware::from_fn,
     web::{self, ServiceConfig},
-    App, HttpServer,
+    App, HttpResponse, HttpServer,
 };
 use anyhow::Context as _;
 use secrecy::ExposeSecret as _;
@@ -61,6 +61,7 @@ where
 {
     pub db_pool: DbPool,
     pub api_server_init_bundle: ApiServerInitBundle<T>,
+    pkg_version: &'static str,
 }
 
 /// Initializes Tracing
@@ -110,10 +111,12 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
     pub async fn new(
         api_server_init_bundle: ApiServerInitBundle<T>,
         db_pool: DbPool,
+        pkg_version: &'static str,
     ) -> anyhow::Result<Self> {
         Ok(Self {
             db_pool,
             api_server_init_bundle,
+            pkg_version,
         })
     }
 
@@ -150,6 +153,7 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
                 .expose_secret()
                 .as_bytes(),
         );
+        let pkg_version = self.pkg_version;
 
         #[cfg(feature = "redis-session-rustls")]
         let session_store = {
@@ -248,11 +252,14 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
                         ),
                 )
                 .configure(open_resource.clone())
-                .route("/login", web::post().to(login))
-                // TODO 1: Add an endpoint to give the version
                 .route("/branches", web::get().to(branch_list))
                 .route("/health_check", web::get().to(health_check))
+                .route("/login", web::post().to(login))
                 .route("/status", web::get().to(status))
+                .route(
+                    "/version",
+                    web::get().to(|| async { HttpResponse::Ok().body(pkg_version.to_string()) }),
+                )
                 .service(actix_files::Files::new("/", front_end_folder).index_file("index.html"))
                 .app_data(db_pool.clone())
                 .app_data(login_attempt_limit.clone())
@@ -264,8 +271,7 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
         .run();
         info!(
             version = env!("CARGO_PKG_VERSION"),
-            "API Server prepared to be run at version {}",
-            env!("CARGO_PKG_VERSION")
+            "API Server prepared to be run at version {}", pkg_version
         );
         Ok((RunnableApiServer(server), cancellation_tracker, port))
     }

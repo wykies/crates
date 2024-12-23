@@ -44,9 +44,10 @@ async fn main() -> anyhow::Result<()> {
     let api_server_init_bundle = ApiServerInitBundle::<CustomConfiguration>::new();
     let db_pool =
         wykies_server::get_db_connection_pool(&api_server_init_bundle.configuration.database);
-    let api_server_builder = ApiServerBuilder::new(api_server_init_bundle, db_pool)
-        .await
-        .expect("failed to initialize API Server");
+    let api_server_builder =
+        ApiServerBuilder::new(api_server_init_bundle, db_pool, env!("CARGO_PKG_VERSION"))
+            .await
+            .expect("failed to initialize API Server");
 
     let addr = wykies_server::get_socket_address(
         &api_server_builder
