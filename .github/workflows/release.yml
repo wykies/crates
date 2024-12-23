@@ -28,4 +28,4 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name != 'push'
     steps:
-      - run: echo Skipped because event name is ${{github.event_name}}
+      - run: echo Skipped github context is ${{github}}
