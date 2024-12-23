@@ -1222,7 +1222,7 @@ dependencies = [
 
 [[package]]
 name = "chat-app-server"
-version = "0.1.0"
+version = "0.1.1-dev"
 dependencies = [
  "actix-web",
  "anyhow",
@@ -7757,7 +7757,7 @@ dependencies = [
 
 [[package]]
 name = "wykies-server"
-version = "0.1.1"
+version = "0.1.0"
 dependencies = [
  "actix-cors",
  "actix-files",
