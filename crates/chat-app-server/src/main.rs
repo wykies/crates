@@ -24,9 +24,10 @@ async fn main(
     let mut api_server_init_bundle = ApiServerInitBundle::<CustomConfiguration>::new();
     api_server_init_bundle.configuration.application.hmac_secret =
         secrecy::SecretBox::from(secrets.get("HMAC").context("hmac secret was not found")?);
-    let api_server_builder = ApiServerBuilder::new(api_server_init_bundle, db_pool)
-        .await
-        .expect("failed to initialize API Server");
+    let api_server_builder =
+        ApiServerBuilder::new(api_server_init_bundle, db_pool, env!("CARGO_PKG_VERSION"))
+            .await
+            .expect("failed to initialize API Server");
 
     tracing::info!("Setup Completed");
     Ok(ShuttleService(api_server_builder))
