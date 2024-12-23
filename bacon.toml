@@ -222,6 +222,20 @@ command = [
 ]
 need_stdout = false
 
+[jobs.clippy-shuttle]
+command = [
+  "cargo",
+  "clippy",
+  "--package",
+  "chat-app-server",
+  "--no-default-features",
+  "--features",
+  "shuttle",
+  "--color",
+  "always",
+]
+need_stdout = false
+
 # You may define here keybindings that would be specific to
 # a project, for example a shortcut to launch a specific job.
 # Shortcuts to internal functions (scrolling, toggling, etc.)
@@ -235,4 +249,5 @@ s = "job:test-chat-server-standalone-mysql"
 alt-s = "job:test-chat-server-standalone-mysql-trace"
 p = "job:test-chat-server-standalone-pg"
 alt-p = "job:test-chat-server-standalone-pg-trace"
-v = "job:check-shuttle"
+alt-v = "job:check-shuttle"
+v = "job:clippy-shuttle"
