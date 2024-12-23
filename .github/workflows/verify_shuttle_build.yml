@@ -1,0 +1,30 @@
+name: Verify Shuttle Build
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches:
+      - main
+
+env:
+  CARGO_TERM_COLOR: always
+      
+jobs:
+  clippy_shuttle:
+    name: Clippy (Shuttle)
+    runs-on: ubuntu-latest   
+    steps:
+      - uses: wykies/checkout@main
+        with:
+          submodules: recursive
+      - uses: wykies/setup-rust-toolchain@main
+        with:
+          components: clippy
+      - name: Load sqlx query files for shuttle version
+        run: cargo run --bin switch-db --no-edit-only-copy shuttle
+      - name: Linting
+        run: cargo clippy --package chat-app-server --no-default-features --features shuttle -- -D warnings
