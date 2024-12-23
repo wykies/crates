@@ -7,12 +7,13 @@ concurrency:
 on:
   push:
     branches:
-      - main
       - develop
   pull_request:
     types: [ opened, synchronize, reopened ]
     branches:
       - develop
+  workflow_call: 
+      
 env:
   CARGO_TERM_COLOR: always
   SQLX_VERSION: 0.8.2 # When changing ensure the cache is invalidated
