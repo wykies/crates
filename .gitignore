@@ -14,7 +14,7 @@ traces/
 Secrets*.toml
 
 # Gets created in CI and causes the shuttle deploy to fail
-trunk/ 
+trunk
 
 # We are using two separate folders for sqlx query files because we have 2 databases supported and files generated need to be moved to one of those
 .sqlx/query*.json
