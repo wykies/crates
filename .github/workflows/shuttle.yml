@@ -27,17 +27,18 @@ jobs:
           target: wasm32-unknown-unknown        
       - name: Load sqlx query files for shuttle version
         run: cargo run --bin switch-db -- --no-edit-only-copy shuttle
-      - name: Install Trunk
+      - name: Install Trunk and Cargo-Shuttle
         uses: taiki-e/install-action@main
         with:
-          tool: trunk
+          tool: trunk,cargo-shuttle
       - name: Build client
         run: ./scripts/build_chat_client.sh
       - name: Include git diff for debug
         run: git diff
       - name: Include git status for debug
         run: git status
-      - uses: shuttle-hq/deploy-action@v2
-        with:
-          shuttle-api-key: ${{ secrets.SHUTTLE_API_KEY }}
-          project-id: ${{ secrets.SHUTTLE_PROJ_ID }}
+      - name: Deploy to Shuttle
+        run: shuttle deploy --id ${{ secrets.SHUTTLE_PROJ_ID }}
+        env:
+          SHUTTLE_API_KEY: ${{ secrets.SHUTTLE_API_KEY }}
+        shell: bash
