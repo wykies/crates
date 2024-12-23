@@ -22,14 +22,21 @@ jobs:
         run: wget -qO- https://github.com/thedodd/trunk/releases/latest/download/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
       - name: Build client
         run: ./scripts/build_chat_client.sh
+      - name: Install cargo-binstall to install shuttle cli
+        run: curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+        shell: bash
+      - name: Install cargo-shuttle
+        run: cargo binstall -y --locked cargo-shuttle
+        shell: bash    
       - name: Include git diff for debug
         run: git diff
       - name: Include git status for debug
         run: git status
-      - uses: shuttle-hq/deploy-action@v2
-        with:
-          shuttle-api-key: ${{ secrets.SHUTTLE_API_KEY }}
-          project-id: ${{ secrets.SHUTTLE_PROJ_ID }}
+      - name: Deploy to Shuttle
+        run: shuttle deploy --id ${{ secrets.SHUTTLE_PROJ_ID }}
+        env:
+          SHUTTLE_API_KEY: ${{ secrets.SHUTTLE_API_KEY }}
+        shell: bash
   on-failure:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' && github.ref == 'refs/heads/main' }}
