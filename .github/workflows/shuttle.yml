@@ -16,11 +16,10 @@ jobs:
     steps:
       - name: Download and install Trunk binary
         run: wget -qO- https://github.com/thedodd/trunk/releases/latest/download/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
-      - run: echo would have been deployed
-    #   - uses: shuttle-hq/deploy-action@v2
-    #     with:
-    #       shuttle-api-key: ${{ secrets.SHUTTLE_API_KEY }}
-    #       project-id: ${{ secrets.SHUTTLE_PROJ_ID }}
+      - uses: shuttle-hq/deploy-action@v2
+        with:
+          shuttle-api-key: ${{ secrets.SHUTTLE_API_KEY }}
+          project-id: ${{ secrets.SHUTTLE_PROJ_ID }}
   on-failure:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'failure' && github.ref == 'refs/heads/main' }}
