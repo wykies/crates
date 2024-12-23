@@ -1,4 +1,4 @@
-name: Rust
+name: Tests and formatting
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
