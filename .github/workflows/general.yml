@@ -141,6 +141,7 @@ jobs:
         run: cargo run --bin switch-db -- standalone
       - name: Linting
         run: cargo clippy --all-features -- -D warnings
+        
   wasm:
     name: Clippy WASM
     runs-on: ubuntu-latest
