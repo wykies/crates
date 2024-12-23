@@ -21,4 +21,12 @@ pub struct Cli {
 
     #[clap(flatten)]
     pub check_version_control: CheckOptions,
+
+    /// Causes the program to fail if it needs to edit any files (copying is ok)
+    ///
+    /// This is intended for use in CI where we do not want to have dirty files
+    /// in git but copying is done to an ignored folder and that is allowed and
+    /// even desired as it doesn't exist in CI if not copied
+    #[arg(long)]
+    pub no_edit_only_copy: bool,
 }

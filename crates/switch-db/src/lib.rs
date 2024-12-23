@@ -1,5 +1,6 @@
 use anyhow::{bail, Context};
 use clap::{Parser, ValueEnum};
+use cli::Cli;
 use std::{
     borrow::Cow,
     fmt::{Display, Write as _},
@@ -18,7 +19,7 @@ use version_control_clean_check::check_version_control;
 mod cli;
 
 pub fn run() -> anyhow::Result<()> {
-    let cli = cli::Cli::parse();
+    let mut cli = Cli::parse();
 
     tracing_subscriber::registry()
         .with(fmt::layer().with_span_events(FmtSpan::ACTIVE))
@@ -26,14 +27,13 @@ pub fn run() -> anyhow::Result<()> {
         .init();
 
     info!("Switching to {}", cli.mode);
-    let path = cli.root.canonicalize()?;
-    info!(?path);
-    check_version_control(&path, &cli.check_version_control)
+    cli.root = cli.root.canonicalize()?;
+    debug!(?cli); //TODO 1: Test how this looks
+    check_version_control(&cli.root, &cli.check_version_control)
         .context("failed version control check")?;
-    switch_rust_analyzer(&path, &cli.mode).context("failed to switch rust analyzer")?;
-    switch_sqlx(&path, &cli.mode).context("failed to switch sqlx")?;
-    switch_sqlx_prepared_queries(&path, &cli.mode)
-        .context("failed to switch sqlx prepared queries")?;
+    switch_rust_analyzer(&cli).context("failed to switch rust analyzer")?;
+    switch_sqlx(&cli).context("failed to switch sqlx")?;
+    switch_sqlx_prepared_queries(&cli).context("failed to switch sqlx prepared queries")?;
     println!("Switch completed to: {}", cli.mode);
     Ok(())
 }
@@ -72,28 +72,33 @@ impl Display for Mode {
     }
 }
 
-fn switch_rust_analyzer(path: &Path, mode: &Mode) -> anyhow::Result<()> {
+fn switch_rust_analyzer(cli: &Cli) -> anyhow::Result<()> {
     do_switch(
-        path.join(".vscode/settings.json"),
-        mode,
+        cli.root.join(".vscode/settings.json"),
+        &cli.mode,
         "Switch to ",
         FileType::Json.to_comment_slice(),
+        cli.no_edit_only_copy,
     )
 }
 
-fn switch_sqlx(path: &Path, mode: &Mode) -> anyhow::Result<()> {
+fn switch_sqlx(cli: &Cli) -> anyhow::Result<()> {
     do_switch(
-        path.join("crates/chat-app-server/.env"),
-        mode,
+        cli.root.join("crates/chat-app-server/.env"),
+        &cli.mode,
         "Switch to ",
         FileType::DotEnv.to_comment_slice(),
+        cli.no_edit_only_copy,
     )
 }
 
 /// Deletes and replaces the base sqlx folder with the appropriate source folder
 ///
 /// NB: Expects only files that start with "query" and have a json extension
-fn switch_sqlx_prepared_queries(path: &Path, mode: &Mode) -> anyhow::Result<()> {
+fn switch_sqlx_prepared_queries(cli: &Cli) -> anyhow::Result<()> {
+    let Cli {
+        root: path, mode, ..
+    } = cli;
     let dst_folder_name = ".sqlx";
     let src_folder_name = format!("{dst_folder_name}_{mode}");
     let dst_path = path.join(dst_folder_name);
@@ -161,6 +166,7 @@ fn do_switch<P: std::fmt::Debug + AsRef<Path>>(
     mode: &Mode,
     mark: &str,
     comment: &str,
+    should_block_changes: bool,
 ) -> anyhow::Result<()> {
     let mut changed = false;
     let contents = fs::read_to_string(&path)
@@ -182,6 +188,9 @@ fn do_switch<P: std::fmt::Debug + AsRef<Path>>(
         writeln!(output, "{new_line}").expect("memory for string should already be allocated");
     }
     if changed {
+        if should_block_changes {
+            bail!("Changes are disallowed but a file would have been edited: {path:?}");
+        }
         let mut file = std::fs::OpenOptions::new()
             .write(true)
             .create(true)
