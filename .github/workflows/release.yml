@@ -24,9 +24,3 @@ jobs:
         run: cargo run --bin switch-db -- standalone
       - name: Run Release Compile
         run: cargo check --all-features --release
-  on-failure:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
-    steps:
-      - run: echo 'The triggering workflow failed'
-      - run: exit 1
