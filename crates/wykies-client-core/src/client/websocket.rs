@@ -72,6 +72,8 @@ async fn do_connect_ws<F: WakeFn>(
     ws_url: String,
     wake_up: F,
 ) -> anyhow::Result<WebSocketConnection> {
+    // TODO 1: Hand WebSocketAuthError::UnexpectedClient as this can happen under reasonable circumstances
+
     // Get token from response passed in
     let token = extract_token(response).await?;
 

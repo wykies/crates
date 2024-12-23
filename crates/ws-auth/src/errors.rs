@@ -5,7 +5,6 @@ use wykies_shared::host_branch::HostId;
 pub enum WebSocketAuthError {
     /// Client was not expected to be trying to connect
     #[error("Unexpected Client")]
-    // TODO 1: Get client to handle this error better as it might happen under reasonable circumstances
     UnexpectedClient {
         client_identifier: HostId,
         ws_id: WsId,
