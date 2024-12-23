@@ -173,11 +173,7 @@ pub async fn user_update(
             Some(Some(x)) => Some(x.try_into().map_err(e500)?),
             Some(None) | None => None,
         };
-        let failed_attempts: Option<i16> = diff
-            .failed_attempts
-            .map(|x| x.try_into())
-            .transpose()
-            .map_err(e500)?;
+        let failed_attempts: Option<i16> = diff.failed_attempts.map(|x| x.into());
         sqlx::query!(
             "UPDATE users SET
             display_name = CASE WHEN $1 THEN display_name ELSE $2 end,
