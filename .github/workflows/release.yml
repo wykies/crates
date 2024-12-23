@@ -16,7 +16,7 @@ jobs:
   release_compile:
     name: ReleaseCompile
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' && (github.ref == 'refs/heads/main' || github.event_name == 'pull_request')}}
+    if: ${{ github.event.workflow_run.conclusion == 'success' && github.ref == 'refs/heads/main' }}
     steps:
       - uses: wykies/checkout@main
       - uses: wykies/setup-rust-toolchain@main
