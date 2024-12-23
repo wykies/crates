@@ -1,0 +1,24 @@
+name: Ensure Shuttle Mode
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+    branches:
+      - main
+
+env:
+  CARGO_TERM_COLOR: always
+      
+jobs:
+  check_mode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wykies/checkout@main
+      - uses: wykies/setup-rust-toolchain@main
+      - name: Test that code is set in shuttle mode
+        run: cargo run --bin switch-db -- --no-edit-only-copy shuttle
+      
