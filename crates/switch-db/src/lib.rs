@@ -5,7 +5,7 @@ use std::{
     fmt::{Display, Write as _},
     fs,
     io::Write as _,
-    path::{Path, PathBuf},
+    path::Path,
 };
 use tracing::{debug, info};
 use tracing_subscriber::{
@@ -13,30 +13,12 @@ use tracing_subscriber::{
     prelude::*,
     EnvFilter,
 };
-use version_control_clean_check::{check_version_control, CheckOptions};
+use version_control_clean_check::check_version_control;
 
-/// Designed to switch between working on the different modes
-///
-/// - `Root` is expected to point to the root of the repo
-/// - Makes changes immediately so might result in partial switch
-/// - Splits the line based on the mark and comments out the line if the following text does not start with the mode or uncomments if it does
-/// - Comments or Uncomment SQLX_OFFLINE depending on mode
-#[derive(Parser, Clone, Eq, PartialEq, Ord, PartialOrd, Debug, Default)]
-#[command(author, version, about)]
-struct Cli {
-    #[arg(value_enum)]
-    mode: Mode,
-
-    /// Specify the root directory or uses current directory if not provided
-    #[arg(value_name = "FOLDER", long, default_value = ".")]
-    root: PathBuf,
-
-    #[clap(flatten)]
-    check_version_control: CheckOptions,
-}
+mod cli;
 
 pub fn run() -> anyhow::Result<()> {
-    let cli = Cli::parse();
+    let cli = cli::Cli::parse();
 
     tracing_subscriber::registry()
         .with(fmt::layer().with_span_events(FmtSpan::ACTIVE))
