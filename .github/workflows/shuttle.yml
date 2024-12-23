@@ -14,6 +14,10 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.ref == 'refs/heads/main' }}
     steps:
+      - uses: wykies/checkout@main
+      - uses: wykies/setup-rust-toolchain@main
+      - name: Load sqlx query files for standalone version
+        run: cargo run --bin switch-db -- standalone
       - name: Download and install Trunk binary
         run: wget -qO- https://github.com/thedodd/trunk/releases/latest/download/trunk-x86_64-unknown-linux-gnu.tar.gz | tar -xzf-
       - uses: shuttle-hq/deploy-action@v2
