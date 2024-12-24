@@ -79,3 +79,4 @@ opt-level = 2 # fast and small wasm
 # https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html#testing-a-bugfix
 [patch.crates-io]
 reqwest = { git = "https://github.com/c-git/reqwest.git", branch = "wasm-cookies" }
+shuttle-runtime = { git = "https://github.com/shuttle-hq/shuttle" }
