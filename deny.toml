@@ -12,7 +12,4 @@ ignore = [
 
   # Haven't been able to find the tracking issue for this but we don't try to access any user supplied urls
   "RUSTSEC-2024-0421",
-
-  # Will remove this one I pull proc-macro-error out of shuttle
-  "RUSTSEC-2024-0370",
 ]
