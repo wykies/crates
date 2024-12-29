@@ -125,19 +125,19 @@ impl ChatApp {
         // Load previous app state (if any).
         // Note that you must enable the `persistence` feature for this to work.
         if let Some(storage) = cc.storage {
-            info!("Storage found. Loading...");
+            info!("Storage found. Loading App State...");
             match eframe::get_value(storage, eframe::APP_KEY) {
                 Some(value) => {
-                    info!("Loaded succeeded");
+                    info!("App state loading succeeded");
                     value
                 }
                 None => {
-                    warn!("Load failed");
+                    warn!("App state loading failed, error message logged by egui at debug level (so probably lost)");
                     Default::default()
                 }
             }
         } else {
-            info!("No storage found");
+            info!("Unable to load app state, no storage found");
             Default::default()
         }
     }
