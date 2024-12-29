@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.94"
-clap = { version = "4.5.23", features = ["derive", "wrap_help"] }
-tracing = "0.1.41"
-tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-version-control-clean-check = { version = "0.1.4", features = ["clap"] }
+anyhow.workspace = true
+clap = { workspace = true, features = ["derive", "wrap_help"] }
+tracing.workspace = true
+tracing-subscriber = { workspace = true, features = ["env-filter"] }
+version-control-clean-check = { workspace = true, features = ["clap"] }
