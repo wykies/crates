@@ -1,5 +1,5 @@
 use futures::channel::oneshot;
-use tracing::{error, info};
+use tracing::error;
 
 #[derive(Debug)]
 pub struct AwaitingType<T>(pub oneshot::Receiver<anyhow::Result<T>>);
@@ -64,9 +64,9 @@ impl<T> DataState<T> {
                 Some(outcome_result) => match outcome_result {
                     Ok(data) => DataState::Present(data),
                     Err(e) => {
-                        let msg = format!("error: {e}");
-                        info!(msg);
-                        DataState::Failed(msg)
+                        let err_msg = format!("error: {e}");
+                        error!(err_msg, "Error response received instead of the data");
+                        DataState::Failed(err_msg)
                     }
                 },
                 None => {
@@ -77,9 +77,9 @@ impl<T> DataState<T> {
                 }
             },
             Err(e) => {
-                let msg = format!("Error receiving on channel. Error: {e:?}");
-                error!(msg);
-                DataState::Failed(msg)
+                let err_msg = format!("Error receiving on channel. Error: {e:?}");
+                error!(err_msg, "Error receiving on channel");
+                DataState::Failed(err_msg)
             }
         })
     }
