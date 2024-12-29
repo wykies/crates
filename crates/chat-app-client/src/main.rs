@@ -36,7 +36,6 @@ fn main() -> eframe::Result<()> {
 // When compiling to web using trunk
 #[cfg(target_arch = "wasm32")]
 fn main() {
-    // TODO 4: Look into dark mode not working in WASM
     use eframe::wasm_bindgen::JsCast as _;
 
     // Redirect `log` message to `console.log` and friends:
