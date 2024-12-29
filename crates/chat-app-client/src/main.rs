@@ -16,10 +16,14 @@ fn main() -> eframe::Result<()> {
     chat_app_client::background_worker::start_background_worker(rt); // This is also needed to prevent the runtime from stopping
 
     let native_options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default().with_icon(
-            eframe::icon_data::from_png_bytes(&include_bytes!("../assets/icon-256.png")[..])
-                .expect("failed to load png from bytes"),
-        ),
+        viewport: egui::ViewportBuilder::default()
+            // TODO 4: Fix default size of chat client
+            .with_inner_size([400.0, 300.0])
+            .with_min_inner_size([300.0, 220.0])
+            .with_icon(
+                eframe::icon_data::from_png_bytes(&include_bytes!("../assets/icon-256.png")[..])
+                    .expect("Failed to load icon"),
+            ),
         ..Default::default()
     };
     eframe::run_native(
@@ -29,7 +33,7 @@ fn main() -> eframe::Result<()> {
     )
 }
 
-// when compiling to web using trunk.
+// When compiling to web using trunk
 #[cfg(target_arch = "wasm32")]
 fn main() {
     // TODO 4: Look into dark mode not working in WASM
@@ -60,6 +64,7 @@ fn main() {
             )
             .await;
 
+        // Remove the loading text and spinner:
         if let Some(loading_text) = document.get_element_by_id("loading_text") {
             match start_result {
                 Ok(_) => {
