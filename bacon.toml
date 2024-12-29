@@ -1,125 +1,75 @@
 # This is a configuration file for the bacon tool
 #
-# Bacon repository: https://github.com/Canop/bacon
 # Complete help on configuration: https://dystroy.org/bacon/config/
-# You can also check bacon's own bacon.toml file
-#  as an example: https://github.com/Canop/bacon/blob/main/bacon.toml
 
-default_job = "check"
+default_job = "clippy-all"
 
-[jobs.check]
-command = ["cargo", "check", "--color", "always"]
-need_stdout = false
-
-[jobs.check-all]
-command = [
-  "cargo",
-  "check",
-  "--all-features",
-  "--all-targets",
-  "--color",
-  "always",
-]
-need_stdout = false
-
-[jobs.clippy]
-command = [
-  "cargo",
-  "clippy",
-  "--all-features",
-  "--all-targets",
-  "--color",
-  "always",
-]
-need_stdout = false
-
-# This job lets you run
-# - all tests: bacon test
-# - a specific test: bacon test -- config::test_default_files
-# - the tests of a package: bacon test -- -- -p config
-[jobs.test]
-command = [
-  "cargo",
-  "test",
-  "--color",
-  "always",
-  "--",
-  "--color",
-  "always",
-]
-need_stdout = true
-
-[jobs.test-all]
-command = [
-  "cargo",
-  "test",
-  "--all-features",
-  "--color",
-  "always",
-  "--",
-  "--color",
-  "always",
-]
-need_stdout = true
-
-[jobs.doc]
-command = ["cargo", "doc", "--color", "always", "--no-deps"]
-need_stdout = false
-
-# If the doc compiles, then it opens in your browser and bacon switches
-# to the previous job
-[jobs.doc-open]
-command = ["cargo", "doc", "--color", "always", "--no-deps", "--open"]
-need_stdout = false
-on_success = "back" # so that we don't open the browser at each change
-
-# You can run your application and have the result displayed in bacon,
-# *if* it makes sense for this crate.
-# Don't forget the `--color always` part or the errors won't be
-# properly parsed.
-# If your program never stops (eg a server), you may set `background`
-# to false to have the cargo run output immediately displayed instead
-# of waiting for program's end.
-[jobs.run]
+[jobs.run-server-standalone-mysql]
 command = [
   "cargo",
   "run",
-  "--color",
-  "always",
-  # put launch parameters for your program behind a `--` separator
+  "--bin",
+  "chat-app-server",
+  "--no-default-features",
+  "--features",
+  "standalone,mysql,running-from-workspace-root",
 ]
 need_stdout = true
 allow_warnings = true
-background = true
+background = false
+on_change_strategy = "kill_then_restart"
 
-# This parameterized job runs the example of your choice, as soon
-# as the code compiles.
-# Call it as
-#    bacon ex -- my-example
-[jobs.ex]
-command = ["cargo", "run", "--color", "always", "--example"]
+[jobs.run-server-standalone-postgres]
+command = [
+  "cargo",
+  "run",
+  "--bin",
+  "chat-app-server",
+  "--no-default-features",
+  "--features",
+  "standalone,postgres,running-from-workspace-root",
+]
 need_stdout = true
 allow_warnings = true
+background = false
+on_change_strategy = "kill_then_restart"
+
+[jobs.run-server-shuttle]
+command = [
+  "shuttle",
+  "run",
+]
+need_stdout = true
+allow_warnings = true
+background = false
+on_change_strategy = "kill_then_restart"
+
+[jobs.run-client-egui]
+command = [
+  "cargo",
+  "run",
+  "--bin",
+  "chat-app-client",
+  "--all-features",
+]
+need_stdout = true
+allow_warnings = true
+background = false
+on_change_strategy = "kill_then_restart"
 
 [jobs.include-ignored]
 command = [
   "cargo",
   "test",
-  "--all-features",
-  "--all-targets",
-  "--color",
-  "always",
   "--",
   "--include-ignored",
-  "--color",
-  "always",
 ]
 need_stdout = true
 background = false
 env.TEST_LOG = "true"
 
 [jobs.test-trace]
-command = ["cargo", "test", "--color", "always", "--", "--color", "always"]
+command = ["cargo", "test"]
 need_stdout = true
 env.TEST_LOG = "true"
 
@@ -129,28 +79,20 @@ command = [
   "check",
   "--target",
   "wasm32-unknown-unknown",
-  "--color",
-  "always",
   "--package",
   "chat-app-client",
 ]
 need_stdout = false
 
-# To test Standalone mode
 [jobs.test-chat-server-standalone-mysql]
 command = [
   "cargo",
   "test",
-  "--color",
-  "always",
   "--package",
   "chat-app-server",
   "--no-default-features",
   "--features",
   "standalone,mysql",
-  "--",
-  "--color",
-  "always",
 ]
 need_stdout = true
 
@@ -158,16 +100,11 @@ need_stdout = true
 command = [
   "cargo",
   "test",
-  "--color",
-  "always",
   "--package",
   "chat-app-server",
   "--no-default-features",
   "--features",
   "standalone,mysql",
-  "--",
-  "--color",
-  "always",
 ]
 need_stdout = true
 env.TEST_LOG = "true"
@@ -177,16 +114,11 @@ env.TEST_LOG = "true"
 command = [
   "cargo",
   "test",
-  "--color",
-  "always",
   "--package",
   "chat-app-server",
   "--no-default-features",
   "--features",
   "standalone,postgres",
-  "--",
-  "--color",
-  "always",
 ]
 need_stdout = true
 
@@ -194,16 +126,11 @@ need_stdout = true
 command = [
   "cargo",
   "test",
-  "--color",
-  "always",
   "--package",
   "chat-app-server",
   "--no-default-features",
   "--features",
   "standalone,postgres",
-  "--",
-  "--color",
-  "always",
 ]
 need_stdout = true
 env.TEST_LOG = "true"
@@ -217,8 +144,6 @@ command = [
   "--no-default-features",
   "--features",
   "shuttle",
-  "--color",
-  "always",
 ]
 need_stdout = false
 
@@ -231,23 +156,20 @@ command = [
   "--no-default-features",
   "--features",
   "shuttle",
-  "--color",
-  "always",
 ]
 need_stdout = false
 
-# You may define here keybindings that would be specific to
-# a project, for example a shortcut to launch a specific job.
-# Shortcuts to internal functions (scrolling, toggling, etc.)
-# should go in your personal global prefs.toml file instead.
 [keybindings]
-i = "job:include-ignored"
 alt-t = "job:test-trace"
-alt-q = "job:check" # Provides a way to do a quick check without including clippy like I normally want
-w = "job:check-wasm-client"
-s = "job:test-chat-server-standalone-mysql"
-alt-s = "job:test-chat-server-standalone-mysql-trace"
+e = "job:run-client-egui"
+i = "job:include-ignored"
 p = "job:test-chat-server-standalone-pg"
 alt-p = "job:test-chat-server-standalone-pg-trace"
-alt-v = "job:check-shuttle"
+r = "job:run-server-standalone-mysql"
+alt-r = "job:run-server-standalone-postgres"
+ctrl-r = "job:run-server-shuttle"
+s = "job:test-chat-server-standalone-mysql"
+alt-s = "job:test-chat-server-standalone-mysql-trace"
 v = "job:clippy-shuttle"
+alt-v = "job:check-shuttle"
+w = "job:check-wasm-client"
