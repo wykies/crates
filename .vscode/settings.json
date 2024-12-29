@@ -26,7 +26,7 @@
       "password": "password"
     }
   ],
-  // "rust-analyzer.cargo.features": ["shuttle"], // Switch to Shuttle
-  "rust-analyzer.cargo.features": ["standalone", "mysql"], // Switch to Standalone
+  "rust-analyzer.cargo.features": ["shuttle"], // Switch to Shuttle
+  // "rust-analyzer.cargo.features": ["standalone", "mysql"], // Switch to Standalone
   "rust-analyzer.cargo.noDefaultFeatures": true
 }
