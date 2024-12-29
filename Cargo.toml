@@ -72,6 +72,7 @@ wykies-server = { version = "*", path = "crates/wykies-server", default-features
 wykies-server-test-helper = { version = "*", path = "crates/wykies-server-test-helper" }
 wykies-shared = { version = "*", path = "crates/wykies-shared" }
 wykies-time = { version = "*", path = "crates/wykies-time" }
+version-control-clean-check = "0.1.4"
 
 [profile.release]
 opt-level = 2 # fast and small wasm
