@@ -5338,7 +5338,7 @@ dependencies = [
  "rmp-serde",
  "serde",
  "serde_json",
- "shuttle-common 0.49.0 (git+https://github.com/shuttle-hq/shuttle)",
+ "shuttle-common",
  "tokio",
  "tokio-tungstenite 0.20.1",
  "url",
@@ -5354,30 +5354,6 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.91",
-]
-
-[[package]]
-name = "shuttle-common"
-version = "0.49.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9f167b3f5fd96e6c7465e85c17267daef7c364da5b8f0c24f4027cf829343e9d"
-dependencies = [
- "anyhow",
- "chrono",
- "comfy-table",
- "crossterm 0.27.0",
- "http 0.2.12",
- "semver",
- "serde",
- "serde_json",
- "strum 0.26.3",
- "thiserror 2.0.9",
- "tracing",
- "tracing-subscriber",
- "typeshare",
- "url",
- "uuid",
- "zeroize",
 ]
 
 [[package]]
@@ -5418,7 +5394,7 @@ dependencies = [
  "futures-core",
  "prost",
  "prost-types",
- "shuttle-common 0.49.0 (git+https://github.com/shuttle-hq/shuttle)",
+ "shuttle-common",
  "tonic",
 ]
 
@@ -5434,9 +5410,9 @@ dependencies = [
  "serde_json",
  "shuttle-api-client",
  "shuttle-codegen",
- "shuttle-common 0.49.0 (git+https://github.com/shuttle-hq/shuttle)",
+ "shuttle-common",
  "shuttle-proto",
- "shuttle-service 0.49.0 (git+https://github.com/shuttle-hq/shuttle)",
+ "shuttle-service",
  "strfmt",
  "tokio",
  "tokio-stream",
@@ -5448,26 +5424,12 @@ dependencies = [
 [[package]]
 name = "shuttle-service"
 version = "0.49.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22ba454b13e4e29b5b892a62c334360a571de5a25c936283416c94328427dd57"
-dependencies = [
- "anyhow",
- "async-trait",
- "serde",
- "shuttle-common 0.49.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "strfmt",
- "thiserror 2.0.9",
-]
-
-[[package]]
-name = "shuttle-service"
-version = "0.49.0"
 source = "git+https://github.com/shuttle-hq/shuttle#52525c106601c2363ee35f1626dc6d912c87ec6d"
 dependencies = [
  "anyhow",
  "async-trait",
  "serde",
- "shuttle-common 0.49.0 (git+https://github.com/shuttle-hq/shuttle)",
+ "shuttle-common",
  "strfmt",
  "thiserror 2.0.9",
 ]
@@ -5475,14 +5437,13 @@ dependencies = [
 [[package]]
 name = "shuttle-shared-db"
 version = "0.49.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aeb87f86f196570fb30c87fac722c78cd8852e63a570722c4f579d8acc0fb8d6"
+source = "git+https://github.com/shuttle-hq/shuttle#52525c106601c2363ee35f1626dc6d912c87ec6d"
 dependencies = [
  "async-trait",
  "diesel-async",
  "serde",
  "serde_json",
- "shuttle-service 0.49.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "shuttle-service",
  "sqlx",
 ]
 
