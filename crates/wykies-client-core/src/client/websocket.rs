@@ -89,6 +89,7 @@ async fn do_connect_ws<F: WakeFn>(
     Ok(result)
 }
 
+#[tracing::instrument(ret, err(Debug))]
 async fn wait_for_connection_to_open(conn: &mut WebSocketConnection) -> anyhow::Result<()> {
     let event = loop {
         if let Some(m) = conn.rx.try_recv() {
