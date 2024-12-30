@@ -162,7 +162,7 @@ impl Client {
         let (tx, rx) = oneshot::channel();
         let on_done = move |resp: reqwest::Result<reqwest::Response>| async {
             let msg = process_json_body(resp).await;
-            tx.send(msg).expect("failed to send oneshot msg");
+            tx.send(msg).expect("failed to send oneshot msg"); // TODO 2: Remove this expect kills the wasm runtime
             ui_notify();
         };
         self.initiate_request(path_spec, args, on_done);
