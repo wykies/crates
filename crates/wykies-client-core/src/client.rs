@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Context};
 use closure_traits::{ChannelCallBack, ChannelCallBackOutput};
 use futures::channel::oneshot;
-use reqwest::{Method, StatusCode};
+use reqwest_cross::reqwest::{self, Method, StatusCode};
 use secrecy::ExposeSecret as _;
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
@@ -322,6 +322,8 @@ impl<T> UiCallBack for T where T: 'static + Send + FnOnce() {}
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod closure_traits {
+    use reqwest_cross::reqwest;
+
     pub trait ChannelCallBack<O>:
         'static + Send + FnOnce(reqwest::Result<reqwest::Response>) -> O
     {
@@ -336,6 +338,8 @@ pub mod closure_traits {
 
 #[cfg(target_arch = "wasm32")]
 pub mod closure_traits {
+    use reqwest_cross::reqwest;
+
     pub trait ChannelCallBack<O>:
         'static + FnOnce(reqwest::Result<reqwest::Response>) -> O
     {

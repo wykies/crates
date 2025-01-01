@@ -12,7 +12,7 @@ db-types = { workspace = true, optional = true }
 egui.workspace = true
 ewebsock.workspace = true
 rand = { workspace = true, features = ["std_rng"] }
-reqwest.workspace = true
+reqwest-cross.workspace = true
 ron.workspace = true
 secrecy.workspace = true
 serde.workspace = true
@@ -36,12 +36,12 @@ static_assertions.workspace = true
 [features]
 default = []
 server_only = [
-    "dep:sqlx",
-    "dep:db-types",
+  "dep:sqlx",
+  "dep:db-types",
 ] # Used to control things only the server should create
 client_only = [] # Used to control things only the client should create
 mysql = ["sqlx/mysql", "db-types/mysql"] # Enables conversion from mysql types
 postgres = [
-    "sqlx/postgres",
-    "db-types/postgres",
+  "sqlx/postgres",
+  "db-types/postgres",
 ] # Enables conversion from postgres types

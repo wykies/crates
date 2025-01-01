@@ -881,7 +881,7 @@ dependencies = [
  "rustversion",
  "serde",
  "sync_wrapper 0.1.2",
- "tower",
+ "tower 0.4.13",
  "tower-layer",
  "tower-service",
 ]
@@ -4587,7 +4587,7 @@ dependencies = [
  "once_cell",
  "socket2",
  "tracing",
- "windows-sys 0.59.0",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -4787,8 +4787,8 @@ dependencies = [
 
 [[package]]
 name = "reqwest"
-version = "0.12.9"
-source = "git+https://github.com/c-git/reqwest.git?branch=wasm-cookies#f2a359aaaa839a17493dd2831e4b315020494b4c"
+version = "0.12.12"
+source = "git+https://github.com/c-git/reqwest.git?branch=wasm-cookies#708580653bc6ba520aa658a5149685ed93986057"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -4819,6 +4819,7 @@ dependencies = [
  "sync_wrapper 1.0.2",
  "tokio",
  "tokio-rustls 0.26.1",
+ "tower 0.5.2",
  "tower-service",
  "url",
  "wasm-bindgen",
@@ -4830,13 +4831,11 @@ dependencies = [
 
 [[package]]
 name = "reqwest-cross"
-version = "0.4.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "504978d1be19bfa25a1ea221e9002ece42ce9fa37d694c6909bc3f16b0a262bb"
+version = "0.5.0-dev"
 dependencies = [
  "futures",
  "js-sys",
- "reqwest 0.12.9",
+ "reqwest 0.12.12",
  "tokio",
  "wasm-bindgen-futures",
  "web-sys",
@@ -5376,7 +5375,7 @@ dependencies = [
  "serde_json",
  "strum 0.26.3",
  "thiserror 2.0.9",
- "tower",
+ "tower 0.4.13",
  "tracing",
  "tracing-opentelemetry",
  "tracing-subscriber",
@@ -6368,7 +6367,7 @@ dependencies = [
  "prost",
  "tokio",
  "tokio-stream",
- "tower",
+ "tower 0.4.13",
  "tower-layer",
  "tower-service",
  "tracing",
@@ -6392,6 +6391,21 @@ dependencies = [
  "tower-layer",
  "tower-service",
  "tracing",
+]
+
+[[package]]
+name = "tower"
+version = "0.5.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d039ad9159c98b70ecfd540b2573b97f7f52c3e8d9f8ad57a24b916a536975f9"
+dependencies = [
+ "futures-core",
+ "futures-util",
+ "pin-project-lite",
+ "sync_wrapper 1.0.2",
+ "tokio",
+ "tower-layer",
+ "tower-service",
 ]
 
 [[package]]
@@ -7663,7 +7677,6 @@ dependencies = [
  "ewebsock",
  "futures",
  "getrandom",
- "reqwest 0.12.9",
  "reqwest-cross",
  "secrecy",
  "serde",
@@ -7728,7 +7741,7 @@ dependencies = [
  "egui",
  "ewebsock",
  "rand",
- "reqwest 0.12.9",
+ "reqwest-cross",
  "ron",
  "rstest",
  "secrecy",

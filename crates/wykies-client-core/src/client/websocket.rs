@@ -3,6 +3,7 @@ use std::fmt::Debug;
 use anyhow::{bail, Context as _};
 use ewebsock::WsEvent;
 use futures::channel::oneshot;
+use reqwest_cross::reqwest;
 use wykies_shared::{
     const_config::path::{PathSpec, PATH_WS_PREFIX},
     token::AuthToken,

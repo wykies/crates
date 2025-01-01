@@ -8,7 +8,6 @@ description = "Stores the functionality common between Clients"
 [dependencies]
 anyhow.workspace = true
 futures.workspace = true
-reqwest.workspace = true
 reqwest-cross = { workspace = true, features = ["yield_now"] }
 secrecy.workspace = true
 serde.workspace = true

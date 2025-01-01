@@ -1,4 +1,4 @@
-use reqwest::Method;
+use reqwest_cross::reqwest::{self, Method};
 
 #[derive(Debug, Clone)]
 pub struct PathSpec {
