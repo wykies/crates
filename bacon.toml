@@ -173,6 +173,13 @@ command = [
 ]
 need_stdout = false
 
+# If the doc compiles, then it opens in your browser and bacon switches
+# to the previous job
+[jobs.doc-open]
+command = ["cargo", "doc", "--document-private-items", "--no-deps", "--open"]
+need_stdout = false
+on_success = "back" # so that we don't open the browser at each change
+
 [keybindings]
 alt-t = "job:test-trace"
 e = "job:run-client-egui"
