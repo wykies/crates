@@ -14,14 +14,13 @@ pub enum DataState<T> {
 }
 
 impl<T> DataState<T> {
-    /// Attempts to load the data
-    ///
+    /// Attempts to load the data and displays appropriate UI if applicable.
     /// Some branches lead to no UI being displayed, in particular when the data
-    /// is received or an error is received If a ui is passed then spinners
-    /// and error messages will show as applicable
+    /// is received or an error is received. If a ui is passed then spinners and
+    /// error messages will show as applicable.
     ///
     /// Note: F needs to return AwaitingType<T> and not T because it needs to be
-    /// able to be pending and T is not
+    /// able to be pending if T is not ready
     ///
     /// # PANIC
     /// Panics if the data is already present
