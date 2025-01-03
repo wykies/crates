@@ -16,12 +16,12 @@ pub enum DataState<T> {
 impl<T> DataState<T> {
     /// Attempts to load the data and displays appropriate UI if applicable.
     /// Some branches lead to no UI being displayed, in particular when the data
-    /// is received or an error is received. If a ui is passed then spinners and
-    /// error messages will show as applicable.
+    /// or an error is received (On the expectation it will show next frame).
+    /// When in an error state the error messages will show as applicable.
     ///
     /// If a `retry_msg` is provided then it overrides the default
     ///
-    /// Note see [`Self::gets`] for more info.
+    /// Note see [`Self::get`] for more info.
     pub fn egui_get<F>(&mut self, ui: &mut egui::Ui, retry_msg: Option<&str>, fetch_fn: F)
     where
         F: FnOnce() -> AwaitingType<T>,
@@ -52,8 +52,8 @@ impl<T> DataState<T> {
 
     /// Attempts to load the data.
     ///
-    /// Note: F needs to return AwaitingType<T> and not T because it needs to be
-    /// able to be pending if T is not ready.
+    /// Note: F needs to return `AwaitingType<T>` and not T because it needs to
+    /// be able to be pending if T is not ready.
     pub fn get<F>(&mut self, fetch_fn: F)
     where
         F: FnOnce() -> AwaitingType<T>,

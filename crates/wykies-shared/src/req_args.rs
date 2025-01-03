@@ -14,7 +14,7 @@ pub mod api;
 /// This struct exits because serde_json cannot round trip all types
 ///
 /// Specifically the problem the we ran into was not being able to do
-/// Option<Option<T>> https://github.com/serde-rs/json/issues/1096
+/// `Option<Option<T>>` <https://github.com/serde-rs/json/issues/1096>
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct RonWrapper {
     data_as_ron_str: String,
