@@ -24,8 +24,9 @@ pub mod client {
     /// there is user activity we will use this as a measure to determine when
     /// there is user activity
     pub const CLIENT_TICKS_PER_SECOND_FOR_ACTIVE: usize = 5;
-    // TODO 4: Add a timeout for while awaiting a response. This shouldn't be needed but during testing, got stuck in at the login prompt more than once
-    // pub const AWAITING_RESPONSE_TIMEOUT: Seconds = Seconds::new(10);
+    // TODO 4: Add a timeout for while awaiting a response. This happened a few
+    //          times during remote testing
+    // pub const AWAITING_RESPONSE_TIMEOUT: Seconds = Seconds::new(30);
 
     pub mod user_edit {
         use super::Seconds;

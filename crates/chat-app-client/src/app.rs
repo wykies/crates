@@ -441,10 +441,11 @@ pub fn wake_fn(ctx: egui::Context) -> impl WakeFn {
 
 impl Default for ChatApp {
     fn default() -> Self {
+        // Preload `active_pages` with a chat page
         Self {
             login_page: Default::default(),
             data_shared: Default::default(),
-            active_pages: vec![UiPage::new_page_with_unique_number::<UiChat>(0)], // Preload with a chat page
+            active_pages: vec![UiPage::new_page_with_unique_number::<UiChat>(0)],
             shortcuts: Default::default(),
         }
     }

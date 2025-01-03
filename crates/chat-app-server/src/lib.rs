@@ -1,12 +1,16 @@
 //! # Notable design decisions (notes)
 //! Using this area to document important design decisions made for ease of
 //! reference and discoverability
-//! - Switching working on Standalone or Shuttle Versions (see also switch_chat_server_db in the `scripts` folder)
-//!     - Switch Rust Analyzer by uncommenting the marked line in settings.json (Mark: Switch to ...)
-//!     - Switch sqlx by uncommenting the marked line in .env (Mark: Switch to ...)
-//!     - Will need to disable offline mode for sqlx if using postgres because we are committing the mysql prepared sqlx files
+//! - Switching working on Standalone or Shuttle Versions (see `scripts` folder)
+//!     - Switch Rust Analyzer by uncommenting the marked line in settings.json
+//!       (Mark: Switch to ...)
+//!     - Switch sqlx by uncommenting the marked line in .env (Mark: Switch to
+//!       ...)
+//!     - Will need to disable offline mode for sqlx if using postgres because
+//!       we are committing the mysql prepared sqlx files
 //!     - Use marked job in bacon (Mark: To test ...)
-//!     - Ensure correct database is available (restart container or run matching init script)
+//!     - Ensure correct database is available (restart container or run
+//!       matching init script)
 //! - For variable length fields in the database we restrict in the code to
 //!   number of bytes not characters because our common case will be to use
 //!   ascii anyway and checking number of bytes is cheaper and will work all

@@ -58,8 +58,9 @@ impl TryFrom<actix_web::dev::ConnectionInfo> for HostId {
     type Error = anyhow::Error;
 
     fn try_from(value: actix_web::dev::ConnectionInfo) -> Result<Self, Self::Error> {
-        // Prefer real ip even though it is not safe to use for security because we are not using it for security
-        // just for pre-screening traffic to increase the threshold required to do a DOS
+        // Prefer real ip even though it is not safe to use for security because we are
+        // not using it for security just for pre-screening traffic to increase
+        // the threshold required to do a DOS
 
         let addr = if let Some(realip_remote_addr) = value.realip_remote_addr() {
             realip_remote_addr

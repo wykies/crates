@@ -134,7 +134,8 @@ pub async fn user_update(
     pool: web::Data<DbPool>,
     wrapped: web::Json<RonWrapper>,
 ) -> actix_web::Result<actix_web::HttpResponse> {
-    // TODO 2: Ensure there is a test that assigns a role, changes a role and removes a role
+    // TODO 2: Ensure there is a test that assigns a role, changes a role and
+    //          removes a role
     let pool: &DbPool = &pool;
     let diff: UserMetadataDiff = wrapped
         .deserialize()
