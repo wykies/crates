@@ -35,7 +35,7 @@ impl NewUserInfo {
                 None
             }
             DataState::AwaitingResponse(rx) => {
-                if let Some(new_state) = DataState::await_data(None, rx) {
+                if let Some(new_state) = DataState::await_data(rx) {
                     self.save_status = new_state;
                 }
                 Some(SaveState::Ongoing)

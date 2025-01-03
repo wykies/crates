@@ -50,7 +50,7 @@ impl DisplayablePage for UiChat {
                 .show(ui, connection)
         } else {
             let ctx = ui.ctx().clone();
-            self.data_state.get(Some(ui), Some("Reconnect"), || {
+            self.data_state.egui_get(ui, Some("Reconnect"), || {
                 AwaitingType(
                     data_shared
                         .client

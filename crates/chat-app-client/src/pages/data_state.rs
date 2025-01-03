@@ -19,45 +19,68 @@ impl<T> DataState<T> {
     /// is received or an error is received. If a ui is passed then spinners and
     /// error messages will show as applicable.
     ///
-    /// Note: F needs to return AwaitingType<T> and not T because it needs to be
-    /// able to be pending if T is not ready
+    /// If a `retry_msg` is provided then it overrides the default
     ///
-    /// # PANIC
-    /// Panics if the data is already present
-    pub fn get<F>(&mut self, ui: Option<&mut egui::Ui>, retry_msg: Option<&str>, fetch_fn: F)
+    /// Note see [`Self::gets`] for more info.
+    pub fn egui_get<F>(&mut self, ui: &mut egui::Ui, retry_msg: Option<&str>, fetch_fn: F)
     where
         F: FnOnce() -> AwaitingType<T>,
     {
         match self {
             DataState::None => {
-                if let Some(ui) = ui {
-                    ui.spinner();
-                }
-                let rx = fetch_fn();
-                *self = DataState::AwaitingResponse(rx);
+                ui.spinner();
+                self.get(fetch_fn);
             }
             DataState::AwaitingResponse(rx) => {
-                if let Some(new_state) = Self::await_data(ui, rx) {
+                if let Some(new_state) = Self::await_data(rx) {
                     *self = new_state;
+                } else {
+                    ui.spinner();
                 }
             }
             DataState::Present(_data) => {
-                // Panic because only reason I can think of that code got here is that there is
-                // a bug in the calling code
-                panic!("precondition not satisfied: Data is already present")
+                // Does nothing as data is already present
             }
             DataState::Failed(e) => {
-                if let Some(ui) = ui {
-                    ui.colored_label(ui.visuals().error_fg_color, format!("Request failed: {e}"));
-                    if ui.button(retry_msg.unwrap_or("Retry Request")).clicked() {
-                        *self = DataState::default();
-                    }
+                ui.colored_label(ui.visuals().error_fg_color, format!("Request failed: {e}"));
+                if ui.button(retry_msg.unwrap_or("Retry Request")).clicked() {
+                    *self = DataState::default();
                 }
             }
         }
     }
 
-    pub fn await_data(ui: Option<&mut egui::Ui>, rx: &mut AwaitingType<T>) -> Option<Self> {
+    /// Attempts to load the data.
+    ///
+    /// Note: F needs to return AwaitingType<T> and not T because it needs to be
+    /// able to be pending if T is not ready.
+    pub fn get<F>(&mut self, fetch_fn: F)
+    where
+        F: FnOnce() -> AwaitingType<T>,
+    {
+        match self {
+            DataState::None => {
+                let rx = fetch_fn();
+                *self = DataState::AwaitingResponse(rx);
+            }
+            DataState::AwaitingResponse(rx) => {
+                if let Some(new_state) = Self::await_data(rx) {
+                    *self = new_state;
+                }
+            }
+            DataState::Present(_data) => {
+                // Does nothing data is already present
+            }
+            DataState::Failed(_e) => {
+                // Have no way to let the user know there is an error nothing we
+                // can do here
+            }
+        }
+    }
+
+    /// Checks to see if the data is ready and if it is returns a new [`Self`]
+    /// otherwise None
+    pub fn await_data(rx: &mut AwaitingType<T>) -> Option<Self> {
         Some(match rx.0.try_recv() {
             Ok(recv_opt) => match recv_opt {
                 Some(outcome_result) => match outcome_result {
@@ -69,9 +92,6 @@ impl<T> DataState<T> {
                     }
                 },
                 None => {
-                    if let Some(ui) = ui {
-                        ui.spinner();
-                    }
                     return None;
                 }
             },

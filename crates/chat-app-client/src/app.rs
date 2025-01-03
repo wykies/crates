@@ -436,6 +436,7 @@ fn do_organize_pages(ui: &mut egui::Ui) {
 
 #[inline]
 pub fn wake_fn(ctx: egui::Context) -> impl WakeFn {
+    // TODO 1: Move into reqwest-cross
     move || ctx.request_repaint()
 }
 

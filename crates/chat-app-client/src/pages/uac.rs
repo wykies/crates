@@ -145,7 +145,7 @@ impl DisplayablePage for UiUAC {
             });
         } else {
             let ctx = ui.ctx().clone();
-            self.data_state.get(Some(ui), None, || {
+            self.data_state.egui_get(ui, None, || {
                 AwaitingType(data_shared.client.list_users_and_roles(wake_fn(ctx)))
             });
         }
@@ -648,7 +648,7 @@ fn get_save_outcome(save_status: &mut DataState<()>) -> Option<SaveState> {
             None
         }
         DataState::AwaitingResponse(rx) => {
-            if let Some(new_state) = DataState::await_data(None, rx) {
+            if let Some(new_state) = DataState::await_data(rx) {
                 *save_status = new_state;
             }
             Some(SaveState::Ongoing)

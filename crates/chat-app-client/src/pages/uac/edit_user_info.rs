@@ -71,7 +71,7 @@ impl EditUserInfo {
     pub fn load_user_info(&mut self, ui: &mut egui::Ui, client_core: &Client) {
         if !self.edit_user.is_present() {
             self.load_time = Some(Timestamp::now());
-            self.edit_user.get(Some(ui), Some("Clear Error"), || {
+            self.edit_user.egui_get(ui, Some("Clear Error"), || {
                 AwaitingType(client_core.get_user(self.original_user.username.clone(), || {}))
             });
         }

@@ -110,8 +110,10 @@ impl DisplayablePage for UiChangePassword {
             match &mut self.data_state {
                 DataState::None => self.show_controls(ui, data_shared),
                 DataState::AwaitingResponse(rx) => {
-                    if let Some(new_state) = DataState::await_data(Some(ui), rx) {
+                    if let Some(new_state) = DataState::await_data(rx) {
                         self.data_state = new_state;
+                    } else {
+                        ui.spinner();
                     }
                 }
                 DataState::Present(()) => {
