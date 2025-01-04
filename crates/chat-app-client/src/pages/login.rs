@@ -1,63 +1,33 @@
 use super::{change_password::UiChangePassword, DisplayablePage};
 use crate::{app::wake_fn, ui_helpers::ui_password_edit, DataShared};
-use futures::channel::oneshot;
-use reqwest_cross::DataState;
+use reqwest_cross::{Awaiting, DataState};
 use secrecy::{ExposeSecret, SecretString};
 use std::fmt::Debug;
-use tracing::{error, info};
+use tracing::info;
 use wykies_client_core::LoginOutcome;
-use wykies_shared::{internal_error, req_args::LoginReqArgs};
+use wykies_shared::req_args::LoginReqArgs;
 
 #[derive(Debug)]
 pub struct UiLogin {
     password: SecretString,
-    login_attempt_status: LoginAttemptStatus,
+    login_attempt_status: DataState<LoginOutcome>,
     password_change_page: Option<UiChangePassword>,
-}
-
-type AwaitingType = oneshot::Receiver<anyhow::Result<LoginOutcome>>;
-
-// TODO 5: Try to replace this with DataState<LoginAttemptResult>
-#[derive(Default)]
-enum LoginAttemptStatus {
-    #[default]
-    NotAttempted,
-    AwaitingResponse(AwaitingType),
-    Failed(String),
-    Success,
-    SuccessForcePassChange,
-    ResendWithBranch,
-}
-
-impl Debug for LoginAttemptStatus {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::NotAttempted => write!(f, "NotAttempted"),
-            Self::AwaitingResponse(_) => write!(f, "AwaitingResponse"),
-            Self::Failed(e) => f.debug_tuple("Failed").field(e).finish(),
-            Self::Success => write!(f, "Success"),
-            Self::SuccessForcePassChange => write!(f, "SuccessForcePassChange"),
-            Self::ResendWithBranch => write!(f, "ResendWithBranch"),
-        }
-    }
-}
-
-impl LoginAttemptStatus {
-    fn is_allowed_to_login(&self) -> bool {
-        match self {
-            LoginAttemptStatus::NotAttempted
-            | LoginAttemptStatus::Failed(_)
-            | LoginAttemptStatus::ResendWithBranch => true,
-            LoginAttemptStatus::AwaitingResponse(_)
-            | LoginAttemptStatus::Success
-            | LoginAttemptStatus::SuccessForcePassChange => false,
-        }
-    }
 }
 
 impl UiLogin {
     fn is_password_set(&self) -> bool {
         !self.password.expose_secret().is_empty()
+    }
+
+    fn is_login_state_allowed_to_login(&self) -> bool {
+        match self.login_attempt_status.as_ref() {
+            DataState::None
+            | DataState::Failed(_)
+            | DataState::Present(LoginOutcome::RetryWithBranchSet) => true,
+            DataState::AwaitingResponse(_)
+            | DataState::Present(LoginOutcome::ForcePasswordChange)
+            | DataState::Present(LoginOutcome::Success) => false,
+        }
     }
 
     fn login_prompt(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared) {
@@ -85,13 +55,13 @@ impl UiLogin {
 
     fn check_login_attempt_status(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared) {
         match &mut self.login_attempt_status {
-            LoginAttemptStatus::NotAttempted => {
+            DataState::None => {
                 // No special UI needed
             }
-            LoginAttemptStatus::SuccessForcePassChange => {
+            DataState::Present(LoginOutcome::ForcePasswordChange) => {
                 // Handled at the start of the update loop
             }
-            LoginAttemptStatus::Success => {
+            DataState::Present(LoginOutcome::Success) => {
                 if data_shared.is_logged_in() {
                     debug_assert!(
                         data_shared.is_screen_locked(),
@@ -103,52 +73,29 @@ impl UiLogin {
                 }
                 ui.ctx().request_repaint(); // Repaint with new value
             }
-            LoginAttemptStatus::ResendWithBranch => {
+            DataState::Present(LoginOutcome::RetryWithBranchSet) => {
                 ui.label("Please select the branch to set");
                 // TODO 4: Add ui to choose branch (branch_to_set 1) Two
                 //          reminders to mark locations
             }
-            LoginAttemptStatus::AwaitingResponse(rx) => match rx.try_recv() {
-                Ok(recv_opt) => match recv_opt {
-                    Some(outcome_result) => match outcome_result {
-                        Ok(outcome) => {
-                            info!("login outcome from client-core: {outcome:?}");
-                            self.login_attempt_status = match outcome {
-                                LoginOutcome::Success => LoginAttemptStatus::Success,
-                                LoginOutcome::ForcePasswordChange => {
-                                    LoginAttemptStatus::SuccessForcePassChange
-                                }
-                                LoginOutcome::RetryWithBranchSet => {
-                                    LoginAttemptStatus::ResendWithBranch
-                                }
-                            };
-                            info!(
-                                "login_attempt_status changed to: {:?}",
-                                self.login_attempt_status
-                            );
-                            // Repaint with new value
-                            ui.ctx().request_repaint();
-                        }
-                        Err(e) => {
-                            info!("error returned from core-client: {e:?}");
-                            self.login_attempt_status = LoginAttemptStatus::Failed(e.to_string())
-                        }
-                    },
-                    None => {
-                        ui.spinner();
-                    }
-                },
-                Err(e) => {
-                    error!("Error receiving on channel. Canceled: {e:?}");
-                    self.login_attempt_status = LoginAttemptStatus::Failed(internal_error!(e));
+            DataState::AwaitingResponse(rx) => {
+                if let Some(new_state) = DataState::await_data(rx) {
+                    info!(
+                        ?new_state,
+                        "Response received for login attempt. New state is: {new_state:?}"
+                    );
+                    self.login_attempt_status = new_state;
+                    ui.ctx().request_repaint();
+                } else {
+                    ui.spinner();
                 }
-            },
-            LoginAttemptStatus::Failed(e) => {
-                let err_msg = format!("Login attempt failed: {e}");
+            }
+            DataState::Failed(e) => {
                 ui.separator();
+                let err_msg = format!("Login attempt failed: {e}");
                 ui.colored_label(ui.visuals().error_fg_color, err_msg);
                 if ui.button("Clear error status").clicked() {
-                    self.login_attempt_status = LoginAttemptStatus::NotAttempted;
+                    self.login_attempt_status = DataState::None;
                 }
                 ui.separator();
             }
@@ -159,7 +106,7 @@ impl UiLogin {
         egui::CentralPanel::default().show(ctx, |ui| {
             if matches!(
                 self.login_attempt_status,
-                LoginAttemptStatus::SuccessForcePassChange,
+                DataState::Present(LoginOutcome::ForcePasswordChange),
             ) {
                 let password_page = self.password_change_page.get_or_insert_with(|| {
                     UiChangePassword::new_with_heading(
@@ -168,7 +115,7 @@ impl UiLogin {
                 });
                 password_page.show(ui, data_shared);
                 if matches!(password_page.data_state, DataState::Present(())) {
-                    self.login_attempt_status = LoginAttemptStatus::Success;
+                    self.login_attempt_status = DataState::Present(LoginOutcome::Success);
                 }
             } else {
                 ui.vertical_centered(|ui| {
@@ -204,7 +151,7 @@ impl UiLogin {
         );
 
         let rx = data_shared.client.login(args, wake_fn(ui.ctx().clone()));
-        self.login_attempt_status = LoginAttemptStatus::AwaitingResponse(rx);
+        self.login_attempt_status = DataState::AwaitingResponse(Awaiting(rx));
     }
 }
 
@@ -219,7 +166,5 @@ impl Default for UiLogin {
 }
 
 fn is_allowed_to_login(data: &UiLogin, username: &str) -> bool {
-    !username.is_empty()
-        && data.is_password_set()
-        && data.login_attempt_status.is_allowed_to_login()
+    !username.is_empty() && data.is_password_set() && data.is_login_state_allowed_to_login()
 }

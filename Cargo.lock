@@ -1205,7 +1205,6 @@ dependencies = [
  "egui",
  "egui_extras",
  "ewebsock",
- "futures",
  "log",
  "plugin-chat",
  "reqwest-cross",

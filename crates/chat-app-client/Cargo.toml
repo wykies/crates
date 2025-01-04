@@ -16,7 +16,6 @@ eframe = { workspace = true, features = [ # put all features on their own line
 ] }
 egui.workspace = true
 egui_extras.workspace = true
-futures.workspace = true
 plugin-chat = { workspace = true, features = ["client_only"] }
 reqwest-cross = { workspace = true, features = ["egui"] }
 secrecy.workspace = true
