@@ -4587,7 +4587,7 @@ dependencies = [
  "once_cell",
  "socket2",
  "tracing",
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -4832,6 +4832,7 @@ dependencies = [
 [[package]]
 name = "reqwest-cross"
 version = "0.5.0-dev"
+source = "git+https://github.com/c-git/reqwest-cross?branch=develop#4239db96b4b5f5ebbdd8f1afcb085914fe26e2aa"
 dependencies = [
  "anyhow",
  "document-features",
