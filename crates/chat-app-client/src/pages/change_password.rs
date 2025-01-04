@@ -1,4 +1,5 @@
 use egui::{Button, Context};
+use reqwest_cross::{Awaiting, DataState};
 use secrecy::{ExposeSecret as _, SecretString};
 use wykies_shared::{
     const_config::path::PATH_API_CHANGE_PASSWORD, req_args::api::ChangePasswordReqArgs,
@@ -7,10 +8,7 @@ use wykies_shared::{
 
 use crate::{app::wake_fn, displayable_page_common, ui_helpers::ui_password_edit};
 
-use super::{
-    data_state::{AwaitingType, DataState},
-    DisplayablePage,
-};
+use super::DisplayablePage;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 #[serde(default)]
@@ -46,7 +44,7 @@ impl UiChangePassword {
             },
             wake_fn(ctx),
         );
-        self.data_state = DataState::AwaitingResponse(AwaitingType(rx));
+        self.data_state = DataState::AwaitingResponse(Awaiting(rx));
     }
 
     fn show_controls(&mut self, ui: &mut egui::Ui, data_shared: &mut crate::DataShared) {

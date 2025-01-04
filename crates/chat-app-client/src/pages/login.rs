@@ -1,6 +1,7 @@
-use super::{change_password::UiChangePassword, data_state::DataState, DisplayablePage};
+use super::{change_password::UiChangePassword, DisplayablePage};
 use crate::{app::wake_fn, ui_helpers::ui_password_edit, DataShared};
 use futures::channel::oneshot;
+use reqwest_cross::DataState;
 use secrecy::{ExposeSecret, SecretString};
 use std::fmt::Debug;
 use tracing::{error, info};
@@ -14,9 +15,9 @@ pub struct UiLogin {
     password_change_page: Option<UiChangePassword>,
 }
 
-// TODO 5: See if we should replace this type with the one in data_shared
 type AwaitingType = oneshot::Receiver<anyhow::Result<LoginOutcome>>;
 
+// TODO 5: Try to replace this with DataState<LoginAttemptResult>
 #[derive(Default)]
 enum LoginAttemptStatus {
     #[default]

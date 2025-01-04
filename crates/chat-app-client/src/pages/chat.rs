@@ -2,11 +2,9 @@ use std::fmt::Debug;
 
 use crate::{app::wake_fn, displayable_page_common};
 
-use super::{
-    data_state::{AwaitingType, DataState},
-    DisplayablePage,
-};
+use super::DisplayablePage;
 use frontend::FrontEnd;
+use reqwest_cross::{Awaiting, DataState};
 use wykies_client_core::WebSocketConnection;
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, uac::get_required_permissions};
 
@@ -51,7 +49,7 @@ impl DisplayablePage for UiChat {
         } else {
             let ctx = ui.ctx().clone();
             self.data_state.egui_get(ui, Some("Reconnect"), || {
-                AwaitingType(
+                Awaiting(
                     data_shared
                         .client
                         .ws_connect(PATH_WS_TOKEN_CHAT, wake_fn(ctx)),

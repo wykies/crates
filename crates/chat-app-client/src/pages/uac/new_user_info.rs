@@ -1,9 +1,8 @@
 use anyhow::Context;
+use reqwest_cross::{Awaiting, DataState};
 use secrecy::SecretString;
 use wykies_client_core::Client;
 use wykies_shared::{id::DbId, req_args::api::admin::user::NewUserReqArgs};
-
-use crate::pages::data_state::{AwaitingType, DataState};
 
 use super::SaveState;
 
@@ -50,9 +49,9 @@ impl NewUserInfo {
         match self.try_into_req_args() {
             Ok(req_args) => {
                 self.save_status =
-                    DataState::AwaitingResponse(AwaitingType(client_core.new_user(req_args, || {})))
+                    DataState::AwaitingResponse(Awaiting(client_core.new_user(req_args, || {})))
             }
-            Err(e) => self.save_status = DataState::Failed(e.to_string()),
+            Err(e) => self.save_status = DataState::Failed(e.into()),
         }
     }
 

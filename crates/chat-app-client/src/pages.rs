@@ -2,7 +2,6 @@ use crate::DataShared;
 
 pub mod change_password;
 pub mod chat;
-pub mod data_state;
 pub mod egui_settings;
 pub mod login;
 mod macros;

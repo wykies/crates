@@ -1,5 +1,6 @@
 use super::{get_save_outcome, SaveState};
-use crate::pages::data_state::{AwaitingType, DataState};
+use anyhow::anyhow;
+use reqwest_cross::{Awaiting, DataState};
 use wykies_client_core::Client;
 use wykies_shared::internal_error;
 use wykies_shared::{
@@ -72,7 +73,7 @@ impl EditUserInfo {
         if !self.edit_user.is_present() {
             self.load_time = Some(Timestamp::now());
             self.edit_user.egui_get(ui, Some("Clear Error"), || {
-                AwaitingType(client_core.get_user(self.original_user.username.clone(), || {}))
+                Awaiting(client_core.get_user(self.original_user.username.clone(), || {}))
             });
         }
     }
@@ -103,7 +104,7 @@ impl EditUserInfo {
     /// NOTE: Expects to only be called if there are changes
     pub fn save(&mut self, ui: &mut egui::Ui, client_core: &Client) {
         let Some((org_user, edit_user)) = self.org_user_and_edit_user(ui, client_core) else {
-            self.save_status = DataState::Failed("Failed to get user edits".to_string());
+            self.save_status = DataState::Failed("Failed to get user edits".into());
             return;
         };
 
@@ -111,17 +112,18 @@ impl EditUserInfo {
             Ok(opt) => match opt {
                 Some(diff) => diff,
                 None => {
-                    self.save_status = DataState::Failed(internal_error!("No changes found"));
+                    self.save_status =
+                        DataState::Failed(anyhow!(internal_error!("No changes found")).into());
                     return;
                 }
             },
             Err(e) => {
-                self.save_status = DataState::Failed(internal_error!(e.to_string()));
+                self.save_status = DataState::Failed(internal_error!(e.to_string()).into());
                 return;
             }
         };
         self.save_status =
-            DataState::AwaitingResponse(AwaitingType(client_core.update_user(diff, || {})));
+            DataState::AwaitingResponse(Awaiting(client_core.update_user(diff, || {})));
     }
 
     /// Returns None if no save is ongoing

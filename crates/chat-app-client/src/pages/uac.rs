@@ -1,7 +1,4 @@
-use super::{
-    data_state::{AwaitingType, DataState},
-    DisplayablePage,
-};
+use super::DisplayablePage;
 use crate::{
     app::wake_fn,
     displayable_page_common,
@@ -12,6 +9,7 @@ use egui::Button;
 use egui_extras::{Column, TableBuilder};
 use new_user_info::NewUserInfo;
 use pass_reset_user_info::PassResetUserInfo;
+use reqwest_cross::{Awaiting, DataState};
 use secrecy::ExposeSecret;
 use std::ops::ControlFlow;
 use wykies_client_core::Client;
@@ -146,7 +144,7 @@ impl DisplayablePage for UiUAC {
         } else {
             let ctx = ui.ctx().clone();
             self.data_state.egui_get(ui, None, || {
-                AwaitingType(data_shared.client.list_users_and_roles(wake_fn(ctx)))
+                Awaiting(data_shared.client.list_users_and_roles(wake_fn(ctx)))
             });
         }
     }

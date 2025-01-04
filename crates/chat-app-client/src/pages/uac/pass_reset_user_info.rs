@@ -1,7 +1,6 @@
+use reqwest_cross::{Awaiting, DataState};
 use wykies_client_core::Client;
 use wykies_shared::{req_args::api::admin::user::PasswordResetReqArgs, uac::UserMetadata};
-
-use crate::pages::data_state::{AwaitingType, DataState};
 
 use super::{get_save_outcome, SaveState};
 
@@ -28,7 +27,7 @@ impl PassResetUserInfo {
     }
 
     pub(crate) fn save(&mut self, client_core: &Client) {
-        self.save_status = DataState::AwaitingResponse(AwaitingType(
+        self.save_status = DataState::AwaitingResponse(Awaiting(
             client_core.reset_password(self.data.clone(), || {}),
         ))
     }

@@ -1208,6 +1208,7 @@ dependencies = [
  "futures",
  "log",
  "plugin-chat",
+ "reqwest-cross",
  "secrecy",
  "serde",
  "serde_json",
@@ -4833,10 +4834,15 @@ dependencies = [
 name = "reqwest-cross"
 version = "0.5.0-dev"
 dependencies = [
+ "anyhow",
+ "document-features",
+ "egui",
  "futures",
  "js-sys",
  "reqwest 0.12.12",
+ "thiserror 2.0.9",
  "tokio",
+ "tracing",
  "wasm-bindgen-futures",
  "web-sys",
 ]
