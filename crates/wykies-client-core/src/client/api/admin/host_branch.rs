@@ -1,4 +1,4 @@
-use futures::channel::oneshot;
+use reqwest_cross::oneshot;
 use wykies_shared::{
     const_config::path::{
         PATH_API_ADMIN_HOSTBRANCH_LIST, PATH_API_ADMIN_HOSTBRANCH_SET, PATH_API_HOSTBRANCH_LOOKUP,

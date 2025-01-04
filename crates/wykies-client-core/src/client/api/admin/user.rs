@@ -1,4 +1,4 @@
-use futures::channel::oneshot;
+use reqwest_cross::oneshot;
 use secrecy::ExposeSecret;
 use wykies_shared::{
     const_config::path::{

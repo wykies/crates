@@ -1,6 +1,6 @@
 use anyhow::{anyhow, Context};
 use closure_traits::{ChannelCallBack, ChannelCallBackOutput};
-use futures::channel::oneshot;
+use reqwest_cross::oneshot;
 use reqwest_cross::reqwest::{self, Method, StatusCode};
 use secrecy::ExposeSecret as _;
 use std::fmt::Debug;

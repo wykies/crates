@@ -1,4 +1,4 @@
-use futures::channel::oneshot;
+use reqwest_cross::oneshot;
 use wykies_shared::{
     const_config::path::{
         PATH_API_ADMIN_ROLE, PATH_API_ADMIN_ROLE_ASSIGN, PATH_API_ADMIN_ROLE_CREATE,

@@ -1,4 +1,4 @@
-use futures::channel::oneshot;
+use reqwest_cross::oneshot;
 use wykies_shared::{
     branch::BranchDraft, const_config::path::PATH_API_ADMIN_BRANCH_CREATE, id::DbId,
 };

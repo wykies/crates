@@ -1,4 +1,4 @@
-use futures::channel::oneshot;
+use reqwest_cross::oneshot;
 use secrecy::ExposeSecret as _;
 use wykies_shared::{
     const_config::path::{PATH_API_CHANGE_PASSWORD, PATH_API_LOGOUT},
