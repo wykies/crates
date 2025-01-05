@@ -1,4 +1,5 @@
-use reqwest_cross::oneshot;
+use crate::{client::DUMMY_ARGUMENT, Client};
+use reqwest_cross::{oneshot, UiCallBack};
 use wykies_shared::{
     const_config::path::{
         PATH_API_ADMIN_HOSTBRANCH_LIST, PATH_API_ADMIN_HOSTBRANCH_SET, PATH_API_HOSTBRANCH_LOOKUP,
@@ -6,11 +7,6 @@ use wykies_shared::{
     host_branch::HostBranchPair,
     id::DbId,
     req_args::api::admin::host_branch,
-};
-
-use crate::{
-    client::{UiCallBack, DUMMY_ARGUMENT},
-    Client,
 };
 
 impl Client {

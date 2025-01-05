@@ -19,7 +19,7 @@ mod client;
 
 pub use client::{
     websocket::{WakeFn, WebSocketConnection},
-    Client, LoginOutcome, UiCallBack, DUMMY_ARGUMENT,
+    Client, LoginOutcome, DUMMY_ARGUMENT,
 };
 
 #[cfg(feature = "expose_internal")]

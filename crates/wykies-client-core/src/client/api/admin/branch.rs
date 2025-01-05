@@ -1,9 +1,8 @@
-use reqwest_cross::oneshot;
+use crate::Client;
+use reqwest_cross::{oneshot, UiCallBack};
 use wykies_shared::{
     branch::BranchDraft, const_config::path::PATH_API_ADMIN_BRANCH_CREATE, id::DbId,
 };
-
-use crate::{client::UiCallBack, Client};
 
 impl Client {
     #[tracing::instrument(skip(ui_notify))]

@@ -1,4 +1,5 @@
-use reqwest_cross::oneshot;
+use crate::Client;
+use reqwest_cross::{oneshot, UiCallBack};
 use wykies_shared::{
     const_config::path::{
         PATH_API_ADMIN_ROLE, PATH_API_ADMIN_ROLE_ASSIGN, PATH_API_ADMIN_ROLE_CREATE,
@@ -7,8 +8,6 @@ use wykies_shared::{
     req_args::api::admin::role::{self, AssignReqArgs},
     uac::{Role, RoleDraft},
 };
-
-use crate::{client::UiCallBack, Client};
 
 impl Client {
     #[tracing::instrument(skip(ui_notify))]

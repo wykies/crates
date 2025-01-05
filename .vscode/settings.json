@@ -12,6 +12,7 @@
     "realip",
     "ringbuffer",
     "Ronacher",
+    "wakeup",
     "zbus"
   ],
   "sqltools.connections": [

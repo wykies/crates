@@ -1,4 +1,5 @@
-use reqwest_cross::oneshot;
+use crate::{client::DUMMY_ARGUMENT, Client};
+use reqwest_cross::{oneshot, UiCallBack};
 use secrecy::ExposeSecret;
 use wykies_shared::{
     const_config::path::{
@@ -10,11 +11,6 @@ use wykies_shared::{
         RonWrapper,
     },
     uac::{ListUsersRoles, UserMetadata, UserMetadataDiff, Username},
-};
-
-use crate::{
-    client::{UiCallBack, DUMMY_ARGUMENT},
-    Client,
 };
 
 impl Client {

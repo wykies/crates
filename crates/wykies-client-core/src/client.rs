@@ -1,11 +1,10 @@
 use anyhow::{anyhow, Context};
-use closure_traits::{ChannelCallBack, ChannelCallBackOutput};
-use reqwest_cross::oneshot;
-use reqwest_cross::reqwest::{self, Method, StatusCode};
+use reqwest_cross::reqwest::{self, Method, RequestBuilder, StatusCode};
+use reqwest_cross::{fetch, fetch_plus, oneshot, UiCallBack};
 use secrecy::ExposeSecret as _;
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
-use tracing::info;
+use tracing::{info, warn};
 use wykies_shared::uac::LoginResponse;
 use wykies_shared::{
     branch::Branch,
@@ -102,21 +101,17 @@ impl Client {
         args: LoginReqArgs,
         ui_notify: F,
     ) -> oneshot::Receiver<anyhow::Result<LoginOutcome>> {
-        let (tx, rx) = oneshot::channel();
         let args = serde_json::json!({
             "username": args.username,
             "password": args.password.expose_secret(),
             "branch_to_set": args.branch_to_set,
         });
+        let req = self.create_request_builder(PATH_LOGIN, &args);
         let client = self.clone();
-        let on_done = move |resp: reqwest::Result<reqwest::Response>| async {
-            let msg = process_login(resp, client).await;
-            tx.send(msg).expect("failed to send oneshot msg");
-            ui_notify();
+        let response_handler = move |resp: reqwest::Result<reqwest::Response>| async {
+            process_login(resp, client).await
         };
-
-        self.initiate_request(PATH_LOGIN, &args, on_done);
-        rx
+        fetch_plus(req, response_handler, ui_notify)
     }
 
     #[tracing::instrument(skip(ui_notify))]
@@ -127,25 +122,22 @@ impl Client {
         self.send_request_expect_empty(PATH_HEALTH_CHECK, &DUMMY_ARGUMENT, ui_notify)
     }
 
-    #[tracing::instrument(skip(args, on_done))]
+    #[tracing::instrument(skip(args))]
     // WARNING: Must skip args as it my contain sensitive info and "safe" versions
     // would usually already be logged by the caller
-    fn initiate_request<T, F, O>(&self, path_spec: PathSpec, args: &T, on_done: F)
+    fn create_request_builder<T>(&self, path_spec: PathSpec, args: &T) -> RequestBuilder
     where
         T: serde::Serialize + Debug,
-        F: ChannelCallBack<O>,
-        O: ChannelCallBackOutput,
     {
         let is_get_method = path_spec.method == Method::GET;
-        let mut request = self
+        let request = self
             .api_client
             .request(path_spec.method, self.path_to_url(path_spec.path));
-        request = if is_get_method {
+        if is_get_method {
             request.query(&args)
         } else {
             request.json(&args)
-        };
-        reqwest_cross::fetch(request, on_done)
+        }
     }
 
     fn send_request_expect_json<F, T, U>(
@@ -159,14 +151,10 @@ impl Client {
         F: UiCallBack,
         U: Send + std::fmt::Debug + serde::de::DeserializeOwned + 'static,
     {
-        let (tx, rx) = oneshot::channel();
-        let on_done = move |resp: reqwest::Result<reqwest::Response>| async {
-            let msg = process_json_body(resp).await;
-            tx.send(msg).expect("failed to send oneshot msg"); // TODO 2: Remove this expect kills the wasm runtime
-            ui_notify();
-        };
-        self.initiate_request(path_spec, args, on_done);
-        rx
+        let req = self.create_request_builder(path_spec, args);
+        let response_handler =
+            move |resp: reqwest::Result<reqwest::Response>| async { process_json_body(resp).await };
+        fetch_plus(req, response_handler, ui_notify)
     }
 
     #[cfg(feature = "expose_internal")]
@@ -194,21 +182,19 @@ impl Client {
         T: serde::Serialize + std::fmt::Debug,
         F: UiCallBack,
     {
-        let (tx, rx) = oneshot::channel();
-        let on_done = move |resp: reqwest::Result<reqwest::Response>| async {
-            let msg = process_empty(resp).await;
-            tx.send(msg).expect("failed to send oneshot msg");
-            ui_notify();
-        };
-        self.initiate_request(path_spec, args, on_done);
-        rx
+        let req = self.create_request_builder(path_spec, args);
+        let response_handler =
+            move |resp: reqwest::Result<reqwest::Response>| async { process_empty(resp).await };
+        fetch_plus(req, response_handler, ui_notify)
     }
 
+    /// Sends the request but only logs the response
     fn send_request_no_wait<T>(&self, path_spec: PathSpec, args: &T)
     where
         T: serde::Serialize + std::fmt::Debug,
     {
-        self.initiate_request(path_spec, args, |resp| async {
+        let req = self.create_request_builder(path_spec, args);
+        fetch(req, |resp| async {
             match resp {
                 Ok(resp) => info!(
                     resp_status_code = resp.status().to_string(),
@@ -323,39 +309,4 @@ fn extract_response(
     let response = response.context("failed to send request")?;
     let status = response.status();
     Ok((response, status))
-}
-
-pub trait UiCallBack: 'static + Send + FnOnce() {}
-impl<T> UiCallBack for T where T: 'static + Send + FnOnce() {}
-
-#[cfg(not(target_arch = "wasm32"))]
-pub mod closure_traits {
-    use reqwest_cross::reqwest;
-
-    pub trait ChannelCallBack<O>:
-        'static + Send + FnOnce(reqwest::Result<reqwest::Response>) -> O
-    {
-    }
-    impl<T, O> ChannelCallBack<O> for T where
-        T: 'static + Send + FnOnce(reqwest::Result<reqwest::Response>) -> O
-    {
-    }
-    pub trait ChannelCallBackOutput: futures::Future<Output = ()> + Send {}
-    impl<T> ChannelCallBackOutput for T where T: futures::Future<Output = ()> + Send {}
-}
-
-#[cfg(target_arch = "wasm32")]
-pub mod closure_traits {
-    use reqwest_cross::reqwest;
-
-    pub trait ChannelCallBack<O>:
-        'static + FnOnce(reqwest::Result<reqwest::Response>) -> O
-    {
-    }
-    impl<T, O> ChannelCallBack<O> for T where
-        T: 'static + FnOnce(reqwest::Result<reqwest::Response>) -> O
-    {
-    }
-    pub trait ChannelCallBackOutput: futures::Future<Output = ()> {}
-    impl<T> ChannelCallBackOutput for T where T: futures::Future<Output = ()> {}
 }

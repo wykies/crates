@@ -2,6 +2,7 @@ use std::fmt::Debug;
 
 use anyhow::{bail, Context as _};
 use ewebsock::WsEvent;
+use reqwest_cross::fetch_plus;
 use reqwest_cross::oneshot;
 use reqwest_cross::reqwest;
 use wykies_shared::{
@@ -20,24 +21,23 @@ pub struct WebSocketConnection {
     pub rx: ewebsock::WsReceiver,
 }
 
-pub trait WakeFn: Fn() + Send + Sync + 'static {}
-impl<T> WakeFn for T where T: Fn() + Send + Sync + 'static {}
+pub trait WakeFn: Fn() + Send + Sync + 'static + Clone {}
+impl<T> WakeFn for T where T: Fn() + Send + Sync + 'static + Clone {}
 
 impl Client {
     #[tracing::instrument(skip(wake_up))]
-    pub fn ws_connect<F: WakeFn>(
+    pub fn ws_connect<F: WakeFn + Clone>(
         &self,
         path_spec: PathSpec,
         wake_up: F,
     ) -> oneshot::Receiver<anyhow::Result<WebSocketConnection>> {
-        let (tx, rx) = oneshot::channel();
         let ws_url = self.ws_url_from(&path_spec);
-        let on_done = move |resp: reqwest::Result<reqwest::Response>| async {
-            let result = do_connect_ws(resp, ws_url, wake_up).await;
-            tx.send(result).expect("failed to send oneshot msg");
+        let req = self.create_request_builder(path_spec, &DUMMY_ARGUMENT);
+        let ui_notify = wake_up.clone();
+        let response_handler = move |resp: reqwest::Result<reqwest::Response>| async {
+            do_connect_ws(resp, ws_url, wake_up).await
         };
-        self.initiate_request(path_spec, &DUMMY_ARGUMENT, on_done);
-        rx
+        fetch_plus(req, response_handler, ui_notify)
     }
 
     /// Appends `path` onto the base websocket url

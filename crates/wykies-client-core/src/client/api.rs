@@ -1,11 +1,10 @@
-use reqwest_cross::oneshot;
+use crate::Client;
+use reqwest_cross::{oneshot, UiCallBack};
 use secrecy::ExposeSecret as _;
 use wykies_shared::{
     const_config::path::{PATH_API_CHANGE_PASSWORD, PATH_API_LOGOUT},
     req_args::api::ChangePasswordReqArgs,
 };
-
-use crate::{client::UiCallBack, Client};
 
 pub mod admin;
 

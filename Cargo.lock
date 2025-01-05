@@ -4832,7 +4832,7 @@ dependencies = [
 [[package]]
 name = "reqwest-cross"
 version = "0.5.0-dev"
-source = "git+https://github.com/c-git/reqwest-cross?branch=develop#4239db96b4b5f5ebbdd8f1afcb085914fe26e2aa"
+source = "git+https://github.com/c-git/reqwest-cross?branch=develop#eb443c5db4eb4139b4dd1b76a0121560a80ad117"
 dependencies = [
  "anyhow",
  "document-features",
@@ -7681,7 +7681,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "ewebsock",
- "futures",
  "getrandom",
  "reqwest-cross",
  "secrecy",
