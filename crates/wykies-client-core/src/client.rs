@@ -208,7 +208,15 @@ impl Client {
     where
         T: serde::Serialize + std::fmt::Debug,
     {
-        self.initiate_request(path_spec, args, |_| async {});
+        self.initiate_request(path_spec, args, |resp| async {
+            match resp {
+                Ok(resp) => info!(
+                    resp_status_code = resp.status().to_string(),
+                    "ignored response received and it was Ok"
+                ),
+                Err(err_msg) => warn!(?err_msg, "ignored response received and it was an Err"),
+            }
+        });
     }
 
     #[tracing::instrument(ret)]
