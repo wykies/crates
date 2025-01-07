@@ -77,8 +77,10 @@ impl ClientInner {
 impl Client {
     #[tracing::instrument(name = "NEW CLIENT-CORE")]
     pub fn new(server_address: String) -> Self {
-        let api_client = reqwest::Client::builder()
-            .cookie_store(true)
+        let api_client_builder = reqwest::Client::builder();
+        #[cfg(not(target_arch = "wasm32"))]
+        let api_client_builder = api_client_builder.cookie_store(true);
+        let api_client = api_client_builder
             .build()
             .expect("Unable to create reqwest client");
         Self {
