@@ -143,9 +143,10 @@ impl DisplayablePage for UiUAC {
             });
         } else {
             let ctx = ui.ctx().clone();
-            self.data_state.egui_get(ui, None, || {
+            let can_make_progress = self.data_state.egui_get(ui, None, || {
                 Awaiting(data_shared.client.list_users_and_roles(wake_fn(ctx)))
             });
+            debug_assert!(can_make_progress.is_able_to_make_progress());
         }
     }
 }

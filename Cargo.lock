@@ -4763,7 +4763,8 @@ dependencies = [
 [[package]]
 name = "reqwest"
 version = "0.12.12"
-source = "git+https://github.com/c-git/reqwest.git?branch=wasm-cookies#708580653bc6ba520aa658a5149685ed93986057"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "43e734407157c3c2034e0258f5e4473ddb361b1e85f95a66690d67264d7cd1da"
 dependencies = [
  "base64 0.22.1",
  "bytes",
@@ -4806,8 +4807,9 @@ dependencies = [
 
 [[package]]
 name = "reqwest-cross"
-version = "0.5.0-dev"
-source = "git+https://github.com/c-git/reqwest-cross?branch=develop#341f7fbc4b4d29b70b5aa1f80b45e493c84c0b28"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f1410a6e030caed40a75979137b50e40facd268da4d447efc48349bce983ac18"
 dependencies = [
  "anyhow",
  "document-features",

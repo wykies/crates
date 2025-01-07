@@ -72,9 +72,10 @@ impl EditUserInfo {
     pub fn load_user_info(&mut self, ui: &mut egui::Ui, client_core: &Client) {
         if !self.edit_user.is_present() {
             self.load_time = Some(Timestamp::now());
-            self.edit_user.egui_get(ui, Some("Clear Error"), || {
+            let can_make_progress = self.edit_user.egui_get(ui, Some("Clear Error"), || {
                 Awaiting(client_core.get_user(self.original_user.username.clone(), || {}))
             });
+            debug_assert!(can_make_progress.is_able_to_make_progress());
         }
     }
 
