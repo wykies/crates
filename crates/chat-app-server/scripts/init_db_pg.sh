@@ -30,6 +30,7 @@ then
   fi
   CONTAINER_NAME="postgres_$(date '+%s')"
   # Launch postgres using Docker
+  echo "Container ID is:"
   docker run \
       --env POSTGRES_USER=${SUPERUSER} \
       --env POSTGRES_PASSWORD=${SUPERUSER_PWD} \

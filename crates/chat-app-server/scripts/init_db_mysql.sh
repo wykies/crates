@@ -36,6 +36,7 @@ then
     exit 1
   fi
   # Launch mysql using Docker (Root needed for testing to create databases, database only used for testing)
+  echo "Container ID is:"
   docker run \
       -e MYSQL_USER=${DB_USER} \
       -e MYSQL_PASSWORD=${DB_PASSWORD} \

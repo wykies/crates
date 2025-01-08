@@ -11,6 +11,7 @@ if [[ -n $RUNNING_CONTAINER ]]; then
 fi
 
 # Launch Redis using Docker
+echo "Container ID is:"
 docker run \
     -p "6379:6379" \
     -d \
