@@ -98,10 +98,10 @@ pub async fn start_servers(
     (result, cancellation_tacker, port)
 }
 
-pub struct ShuttleService(pub ApiServerBuilder<CustomConfiguration>);
+pub struct AppService(pub ApiServerBuilder<CustomConfiguration>);
 
 #[async_trait]
-impl shuttle_runtime::Service for ShuttleService {
+impl shuttle_runtime::Service for AppService {
     async fn bind(self, addr: std::net::SocketAddr) -> Result<(), shuttle_runtime::Error> {
         let (mut join_set, cancellation_tracker, _) = start_servers(self.0, addr).await;
         let join_outcome = join_set.join_next().await.context("no tasks in join set")?;

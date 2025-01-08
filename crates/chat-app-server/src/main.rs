@@ -1,6 +1,6 @@
 use anyhow::Context as _;
 use chat_app_server::startup::CustomConfiguration;
-use chat_app_server::startup::ShuttleService;
+use chat_app_server::startup::AppService;
 use wykies_server::initialize_tracing;
 use wykies_server::{ApiServerBuilder, ApiServerInitBundle};
 
@@ -13,7 +13,7 @@ async fn main(
     )]
     db_pool: sqlx::PgPool,
     #[shuttle_runtime::Secrets] secrets: shuttle_runtime::SecretStore,
-) -> Result<ShuttleService, shuttle_runtime::Error> {
+) -> Result<AppService, shuttle_runtime::Error> {
     initialize_tracing("chat_app_server", "info", std::io::stdout);
 
     sqlx::migrate!("./migrations_pg")
@@ -30,7 +30,7 @@ async fn main(
             .expect("failed to initialize API Server");
 
     tracing::info!("Setup Completed");
-    Ok(ShuttleService(api_server_builder))
+    Ok(AppService(api_server_builder))
 }
 
 #[cfg(feature = "standalone")]
@@ -58,7 +58,7 @@ async fn main() -> anyhow::Result<()> {
     )
     .context("failed to get socket address")?;
 
-    ShuttleService(api_server_builder)
+    AppService(api_server_builder)
         .bind(addr)
         .await
         .context("service runtime error")
