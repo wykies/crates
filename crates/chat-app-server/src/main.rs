@@ -1,6 +1,6 @@
 use anyhow::Context as _;
-use chat_app_server::startup::CustomConfiguration;
 use chat_app_server::startup::AppService;
+use chat_app_server::startup::CustomConfiguration;
 use wykies_server::initialize_tracing;
 use wykies_server::{ApiServerBuilder, ApiServerInitBundle};
 
