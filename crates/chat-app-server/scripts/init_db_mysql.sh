@@ -44,7 +44,7 @@ then
       -e MYSQL_ROOT_HOST=% \
       -p "${DB_PORT}":3306 \
       -d \
-      --name "mysql_$(date '+%s')" \
+      --name "mysql_${DB_NAME}_$(date '+%s')" \
       mysql
       # TODO 4: Increase number of connections for testing
 fi
