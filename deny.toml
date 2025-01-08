@@ -10,6 +10,6 @@ ignore = [
   # PR https://github.com/RustCrypto/RSA/pull/394
   "RUSTSEC-2023-0071",
 
-  # Haven't been able to find the tracking issue for this but we don't try to access any user supplied urls
+  # Fix is in the pipeline in Shuttle PR https://github.com/shuttle-hq/shuttle/pull/1928
   "RUSTSEC-2024-0421",
 ]
