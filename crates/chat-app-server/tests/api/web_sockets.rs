@@ -26,7 +26,7 @@ async fn rejected_without_requesting_token() {
         format!("{:?}", response),
         format!(
             "{:?}",
-            WsEvent::Error("HTTP error: 400 Bad Request".to_string())
+            WsEvent::Error("HTTP error: 418 I'm a teapot".to_string())
         )
     );
 }

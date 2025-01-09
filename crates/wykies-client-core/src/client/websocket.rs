@@ -5,6 +5,7 @@ use ewebsock::WsEvent;
 use reqwest_cross::fetch_plus;
 use reqwest_cross::oneshot;
 use reqwest_cross::reqwest;
+use tracing::warn;
 use wykies_shared::{
     const_config::path::{PathSpec, PATH_WS_PREFIX},
     token::AuthToken,
@@ -73,9 +74,6 @@ async fn do_connect_ws<F: WakeFn>(
     ws_url: String,
     wake_up: F,
 ) -> anyhow::Result<WebSocketConnection> {
-    // TODO 1: Hand WebSocketAuthError::UnexpectedClient as this can happen under
-    //          reasonable circumstances
-
     // Get token from response passed in
     let token = extract_token(response).await?;
 
@@ -100,10 +98,27 @@ async fn wait_for_connection_to_open(conn: &mut WebSocketConnection) -> anyhow::
             reqwest_cross::yield_now().await;
         }
     };
-    if matches!(event, WsEvent::Opened) {
-        Ok(())
-    } else {
-        bail!("expected first event to be opened but got {event:?}")
+
+    let base_err_msg = "expected first websocket event to be opened but instead got a";
+
+    match event {
+        WsEvent::Opened => Ok(()),
+        WsEvent::Message(ws_message) => {
+            bail!("{base_err_msg} message: {ws_message:?}")
+        }
+        WsEvent::Error(err_msg) => {
+            // Using I'm A Tea Pot as unable to send more detailed error back
+            if err_msg.contains("418") {
+                // Using I'm a teapot to communicate it's an Unexpected Client as we can only get the status code
+                warn!("UnexpectedClient");
+                bail!("Server Reported Expected Connection (This may happen sometimes but should not happen very often)")
+            } else {
+                bail!("{base_err_msg}n error: {err_msg}")
+            }
+        }
+        WsEvent::Closed => {
+            bail!("{base_err_msg} Closed event")
+        }
     }
 }
 

@@ -28,8 +28,10 @@ pub mod conversions {
     impl actix_web::error::ResponseError for WebSocketAuthError {
         fn status_code(&self) -> StatusCode {
             match self {
-                WebSocketAuthError::UnexpectedClient { .. } => StatusCode::UNAUTHORIZED,
-                WebSocketAuthError::InvalidToken { .. } => StatusCode::FORBIDDEN,
+                // Using I'm a tea pot because unable to get more than the error code on the client
+                // and want to give a better error message
+                WebSocketAuthError::UnexpectedClient { .. } => StatusCode::IM_A_TEAPOT,
+                WebSocketAuthError::InvalidToken { .. } => StatusCode::UNAUTHORIZED,
                 WebSocketAuthError::FailedToStartSession(_) => StatusCode::INTERNAL_SERVER_ERROR,
                 WebSocketAuthError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             }
