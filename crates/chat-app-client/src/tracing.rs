@@ -1,6 +1,6 @@
 #[cfg(not(target_arch = "wasm32"))]
 pub fn init(cli: &super::cli::Cli) -> anyhow::Result<()> {
-    use anyhow::bail;
+    use anyhow::{bail, Context};
     use wykies_shared::telemetry;
 
     fn init_to_file() -> anyhow::Result<()> {
