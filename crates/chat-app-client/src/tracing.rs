@@ -11,7 +11,12 @@ pub fn init(cli: &super::cli::Cli) -> anyhow::Result<()> {
         // Start logging to file
         match telemetry::init_subscriber(subscriber) {
             Ok(_) => {
-                println!("Tracing started to file {filename:?}");
+                println!(
+                    "Traces being written to: {:?}",
+                    filename
+                        .canonicalize()
+                        .context("trace file canonicalization failed")?
+                );
                 Ok(())
             }
             Err(e) => {
