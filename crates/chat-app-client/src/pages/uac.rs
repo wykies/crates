@@ -124,7 +124,7 @@ impl DisplayablePage for UiUAC {
 
             egui::CentralPanel::default().show_inside(ui, |ui| {
                 if self.user_op.has_changes() {
-                    // Reduce risk of accident data loss by changing user
+                    // Reduce risk of accidental data loss by changing user
                     ui.disable();
                 }
                 ui.horizontal_wrapped(|ui| {
