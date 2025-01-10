@@ -1,8 +1,7 @@
-use std::fmt::Display;
-
 use anyhow::bail;
 use chrono::NaiveDate;
 use egui::WidgetText;
+use std::fmt::Display;
 
 use crate::{errors::ConversionError, id::DbId};
 

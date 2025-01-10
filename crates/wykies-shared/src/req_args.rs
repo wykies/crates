@@ -11,13 +11,19 @@ use std::fmt::Debug;
 
 pub mod api;
 
-/// This struct exits because serde_json cannot round trip all types
+/// This struct exists because serde_json cannot round trip all types
 ///
 /// Specifically the problem the we ran into was not being able to do
 /// `Option<Option<T>>` <https://github.com/serde-rs/json/issues/1096>
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct RonWrapper {
     data_as_ron_str: String,
+}
+
+/// This struct exists because "[reqwest's] top-level serializer supports only maps and structs"
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct EnumWrapper<T: Debug> {
+    pub inner: T,
 }
 
 #[derive(serde::Deserialize, Clone)]
