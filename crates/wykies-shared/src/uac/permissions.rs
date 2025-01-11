@@ -49,6 +49,7 @@ pub enum Permission {
     ViewStockInfo,
     RunReports,
     Settings,
+    #[deprecated]
     NonCurrentDate,
 
     //Overrides
