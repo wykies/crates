@@ -174,6 +174,20 @@ impl Client {
         self.send_request_expect_json(path_spec, args, ui_notify)
     }
 
+    #[cfg(feature = "expose_internal")]
+    pub fn expose_internal_send_request_expect_empty<F, T>(
+        &self,
+        path_spec: PathSpec,
+        args: &T,
+        ui_notify: F,
+    ) -> oneshot::Receiver<anyhow::Result<()>>
+    where
+        T: serde::Serialize + std::fmt::Debug,
+        F: UiCallBack,
+    {
+        self.send_request_expect_empty(path_spec, args, ui_notify)
+    }
+
     fn send_request_expect_empty<F, T>(
         &self,
         path_spec: PathSpec,
