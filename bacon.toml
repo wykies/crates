@@ -35,49 +35,28 @@ background = false
 on_change_strategy = "kill_then_restart"
 
 [jobs.run-server-shuttle]
-command = [
-  "shuttle",
-  "run",
-]
+command = ["shuttle", "run"]
 need_stdout = true
 allow_warnings = true
 background = false
 on_change_strategy = "kill_then_restart"
 
 [jobs.run-client-egui]
-command = [
-  "cargo",
-  "run",
-  "--bin",
-  "chat-app-client",
-  "--all-features",
-]
+command = ["cargo", "run", "--bin", "chat-app-client", "--all-features"]
 need_stdout = true
 allow_warnings = true
 background = false
 on_change_strategy = "kill_then_restart"
 
 [jobs.run-client-egui-release]
-command = [
-  "cargo",
-  "run",
-  "-r",
-  "--bin",
-  "chat-app-client",
-  "--all-features",
-]
+command = ["cargo", "run", "-r", "--bin", "chat-app-client", "--all-features"]
 need_stdout = true
 allow_warnings = true
 background = false
 on_change_strategy = "kill_then_restart"
 
 [jobs.include-ignored]
-command = [
-  "cargo",
-  "test",
-  "--",
-  "--include-ignored",
-]
+command = ["cargo", "test", "--", "--include-ignored"]
 need_stdout = true
 background = false
 env.TEST_LOG = "true"
