@@ -81,7 +81,7 @@ impl UiChangePassword {
         }
     }
 
-    pub(crate) fn new_with_heading<S: Into<String>>(heading_text: S) -> Self {
+    pub fn new_with_heading<S: Into<String>>(heading_text: S) -> Self {
         Self {
             heading_text: Some(heading_text.into()),
             ..Default::default()

@@ -49,7 +49,7 @@ pub struct DataShared {
 impl DataShared {
     /// Doesn't do anything if the client does not have user info
     #[instrument]
-    pub(crate) fn mark_login_complete(&mut self) {
+    pub fn mark_login_complete(&mut self) {
         if let Some(user_info) = self.client.user_info() {
             debug!("Updating username to {}", user_info.username);
             self.username = user_info.username.clone().into();

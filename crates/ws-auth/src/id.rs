@@ -8,7 +8,7 @@ pub struct WsId(u8);
 
 impl WsId {
     #[cfg(test)]
-    pub(crate) const TEST1: Self = Self::new(1);
+    pub const TEST1: Self = Self::new(1);
 
     pub const fn new(value: u8) -> Self {
         Self(value)

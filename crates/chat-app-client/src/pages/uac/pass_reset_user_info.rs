@@ -11,7 +11,7 @@ pub struct PassResetUserInfo {
 }
 
 impl PassResetUserInfo {
-    pub(crate) fn new(user: &UserMetadata) -> Self {
+    pub fn new(user: &UserMetadata) -> Self {
         Self {
             data: PasswordResetReqArgs {
                 username: user.username.clone(),
@@ -26,7 +26,7 @@ impl PassResetUserInfo {
         get_save_outcome(&mut self.save_status)
     }
 
-    pub(crate) fn save(&mut self, client_core: &Client) {
+    pub fn save(&mut self, client_core: &Client) {
         self.save_status = DataState::AwaitingResponse(Awaiting(
             client_core.reset_password(self.data.clone(), || {}),
         ))

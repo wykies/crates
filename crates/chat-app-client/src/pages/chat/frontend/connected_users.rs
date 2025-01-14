@@ -34,7 +34,7 @@ impl ConnectedUsers {
         }
     }
 
-    pub(crate) fn iter(&self) -> impl Iterator<Item = (&ChatUser, &u8)> {
+    pub fn iter(&self) -> impl Iterator<Item = (&ChatUser, &u8)> {
         self.users.iter()
     }
 }
