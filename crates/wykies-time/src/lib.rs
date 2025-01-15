@@ -39,6 +39,10 @@ impl Timestamp {
         self.as_local_datetime().format("%c").to_string()
     }
 
+    pub fn display_as_locale_datetime_short(&self) -> String {
+        self.as_local_datetime().format("%F %H:%M").to_string()
+    }
+
     pub fn as_utc_datetime(&self) -> chrono::DateTime<chrono::Utc> {
         chrono::DateTime::from_timestamp(self.0.try_into().unwrap(), 0)
             .expect("wow this program wasn't meant to last that long")
