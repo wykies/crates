@@ -14,7 +14,7 @@ mod lockout;
 mod pages;
 mod shortcuts;
 pub mod tracing;
-mod ui_helpers;
+pub mod ui_helpers;
 
 pub use app::{ChatApp, DataShared};
 pub use pages::DisplayablePage;
