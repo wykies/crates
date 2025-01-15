@@ -35,7 +35,7 @@ impl Timestamp {
             .into()
     }
 
-    pub fn display_as_locale_datetime(&self) -> String {
+    pub fn display_as_locale_datetime_long(&self) -> String {
         self.as_local_datetime().format("%c").to_string()
     }
 
