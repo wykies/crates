@@ -3,11 +3,12 @@ use secrecy::{ExposeSecret as _, SecretString};
 
 /// Adds convenance functions to [`egui::Ui`]
 pub trait UiHelpers {
-    fn label_truncate(&mut self, text: impl Into<WidgetText>) -> egui::Response;
+    fn label_truncate(&mut self, text: impl Into<WidgetText>) -> Response;
     fn get_text_height(&mut self) -> f32;
-    fn password_edit(&mut self, password: &mut SecretString, hint_text: &str) -> egui::Response;
-    fn checkbox_readonly_no_text(&mut self, value: bool) -> egui::Response;
+    fn password_edit(&mut self, password: &mut SecretString, hint_text: &str) -> Response;
+    fn checkbox_readonly_no_text(&mut self, value: bool) -> Response;
     fn button_escape(&mut self, text: impl Into<WidgetText>) -> bool;
+    fn was_enter_pressed(&self) -> bool;
     fn shortcut_hint_text(&mut self, hint_msg: &str, shortcut: &KeyboardShortcut) -> String;
     fn button_shortcut(
         &mut self,
@@ -44,12 +45,18 @@ impl UiHelpers for egui::Ui {
         self.add_enabled(false, Checkbox::without_text(&mut value))
     }
 
+    /// Shows a button that is bound to the escape shortcut hotkey
     fn button_escape(&mut self, text: impl Into<WidgetText>) -> bool {
         self.button_shortcut(
             text,
             "",
             &KeyboardShortcut::new(egui::Modifiers::NONE, egui::Key::Escape),
         )
+    }
+
+    /// Returns true if the enter key was pressed this frame
+    fn was_enter_pressed(&self) -> bool {
+        self.input(|i| i.key_pressed(egui::Key::Enter))
     }
 
     /// Returns true if the button is clicked or the shortcut is pressed
@@ -59,7 +66,7 @@ impl UiHelpers for egui::Ui {
     /// bypass the button when it is not showing
     fn button_shortcut(
         &mut self,
-        text: impl Into<egui::WidgetText>,
+        text: impl Into<WidgetText>,
         hint_msg: &str,
         shortcut: &KeyboardShortcut,
     ) -> bool {
