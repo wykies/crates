@@ -1204,6 +1204,7 @@ dependencies = [
  "clap",
  "eframe",
  "egui",
+ "egui-helpers",
  "egui_extras",
  "ewebsock",
  "log",
@@ -1897,6 +1898,14 @@ dependencies = [
  "profiling",
  "ron",
  "serde",
+]
+
+[[package]]
+name = "egui-helpers"
+version = "0.1.0"
+dependencies = [
+ "egui",
+ "secrecy",
 ]
 
 [[package]]

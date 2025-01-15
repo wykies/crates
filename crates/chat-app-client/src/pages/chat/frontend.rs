@@ -3,6 +3,7 @@ use connected_users::ConnectedUsers;
 use egui::{
     scroll_area::ScrollBarVisibility, Align, KeyboardShortcut, Layout, Modifiers, ScrollArea,
 };
+use egui_helpers::UiHelpers as _;
 use ewebsock::{WsEvent, WsMessage};
 use plugin_chat::{
     consts::{
@@ -297,7 +298,7 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
                                     _ => ui.visuals().text_color(),
                                 };
                                 ui.colored_label(color, format!("{im}"))
-                                    .on_hover_text(im.timestamp.display_as_locale_datetime());
+                                    .on_hover_text(im.timestamp.display_as_locale_datetime_long());
                             },
                         );
                     }

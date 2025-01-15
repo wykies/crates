@@ -1,12 +1,9 @@
 use super::DisplayablePage;
-use crate::{
-    app::wake_fn,
-    displayable_page_common,
-    ui_helpers::{get_text_height, readonly_checkbox_no_text, ui_escape_button, ui_password_edit},
-};
+use crate::{app::wake_fn, displayable_page_common};
 use edit_user_info::EditUserInfo;
 use egui::Button;
 use egui_extras::{Column, TableBuilder};
+use egui_helpers::UiHelpers;
 use new_user_info::NewUserInfo;
 use pass_reset_user_info::PassResetUserInfo;
 use reqwest_cross::{Awaiting, DataState};
@@ -206,7 +203,7 @@ fn ui_show_reset_password(
             ui.end_row();
 
             ui.label("New Password");
-            ui_password_edit(ui, &mut pass_reset_user_info.data.new_password, "");
+            ui.password_edit(&mut pass_reset_user_info.data.new_password, "");
             ui.end_row();
         });
 
@@ -224,7 +221,7 @@ fn ui_show_reset_password(
         pass_reset_user_info.save(client_core);
     }
 
-    if ui_escape_button(ui, "Cancel") {
+    if ui.escape_button("Cancel") {
         return OpResult::ResetPage;
     }
 
@@ -265,7 +262,7 @@ fn ui_show_new_user(
 
             //----------------------------------------------------------------------
             ui.label("Password");
-            ui_password_edit(ui, &mut new_user_info.password, "User's Password");
+            ui.password_edit(&mut new_user_info.password, "User's Password");
             if new_user_info.password.expose_secret().is_empty() {
                 has_errors = true;
                 ui.error_label("Required".to_string());
@@ -283,7 +280,7 @@ fn ui_show_new_user(
         new_user_info.save(client_core);
     }
 
-    if ui_escape_button(ui, "Cancel") {
+    if ui.escape_button("Cancel") {
         return OpResult::ResetPage;
     }
 
@@ -371,7 +368,7 @@ fn ui_show_edit_user(
         edit_user_info.save(ui, client_core);
     }
 
-    if ui_escape_button(ui, "Cancel") {
+    if ui.escape_button("Cancel") {
         edit_user_info.unload_user_info();
     }
 
@@ -519,7 +516,7 @@ fn ui_user_display_name(ui: &mut egui::Ui, org: Option<&DisplayName>, edit: &mut
 }
 
 fn ui_show_user_list(ui: &mut egui::Ui, data: &mut ListUsersRoles, user_op: &mut UserOp) {
-    let text_height = get_text_height(ui);
+    let text_height = ui.text_height();
     let mut table_builder = TableBuilder::new(ui)
         .striped(true)
         .resizable(true)
@@ -592,7 +589,7 @@ fn ui_show_user_list(ui: &mut egui::Ui, data: &mut ListUsersRoles, user_op: &mut
             });
             row.col(|ui| {
                 ui.vertical_centered(|ui| {
-                    readonly_checkbox_no_text(ui, user.force_pass_change);
+                    ui.readonly_checkbox_no_text(user.force_pass_change);
                 });
             });
             row.col(|ui| {
@@ -612,12 +609,12 @@ fn ui_show_user_list(ui: &mut egui::Ui, data: &mut ListUsersRoles, user_op: &mut
             });
             row.col(|ui| {
                 ui.vertical_centered(|ui| {
-                    readonly_checkbox_no_text(ui, user.enabled);
+                    ui.readonly_checkbox_no_text(user.enabled);
                 });
             });
             row.col(|ui| {
                 ui.vertical_centered(|ui| {
-                    readonly_checkbox_no_text(ui, user.locked_out);
+                    ui.readonly_checkbox_no_text(user.locked_out);
                 });
             });
             row.col(|ui| {

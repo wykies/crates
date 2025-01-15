@@ -35,6 +35,7 @@ db-types = { version = "*", path = "crates/db-types", default-features = false }
 eframe = "0.30.0"
 egui = { version = "0.30.0", default-features = false }
 egui_extras = "0.30.0"
+egui-helpers = { version = "*", path = "crates/egui-helpers" }
 ewebsock = "0.8.0"
 futures-util = "0.3.30"
 getrandom = "0.2.15"

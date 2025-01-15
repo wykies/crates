@@ -1,5 +1,6 @@
 use super::{change_password::UiChangePassword, DisplayablePage};
-use crate::{app::wake_fn, ui_helpers::ui_password_edit, DataShared};
+use crate::{app::wake_fn, DataShared};
+use egui_helpers::{ResponseHelpers, UiHelpers as _};
 use reqwest_cross::{Awaiting, DataState};
 use secrecy::{ExposeSecret, SecretString};
 use std::fmt::Debug;
@@ -37,18 +38,17 @@ impl UiLogin {
         let is_effectively_locked_out = data_shared.is_logged_in();
         let username_widget =
             egui::TextEdit::singleline(&mut data_shared.username).hint_text("Username");
-        let mut lost_focus = ui
+        let mut was_enter_pressed = ui
             .add_enabled(!is_effectively_locked_out, username_widget)
             .on_disabled_hover_text("User locked out - Only they can login")
-            .lost_focus();
+            .enter_pressed(ui);
 
-        lost_focus =
-            ui_password_edit(ui, &mut self.password, "Password").lost_focus() || lost_focus;
+        was_enter_pressed = ui
+            .password_edit(&mut self.password, "Password")
+            .enter_pressed(ui)
+            || was_enter_pressed;
 
-        if lost_focus
-            && is_allowed_to_login(self, &data_shared.username)
-            && ui.input(|i| i.key_pressed(egui::Key::Enter))
-        {
+        if was_enter_pressed && is_allowed_to_login(self, &data_shared.username) {
             self.send_login_attempt(ui, data_shared)
         }
     }

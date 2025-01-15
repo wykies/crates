@@ -1,4 +1,5 @@
 use egui::{Button, Context};
+use egui_helpers::{ResponseHelpers, UiHelpers as _};
 use reqwest_cross::{Awaiting, DataState};
 use secrecy::{ExposeSecret as _, SecretString};
 use wykies_shared::{
@@ -6,7 +7,7 @@ use wykies_shared::{
     uac::get_required_permissions,
 };
 
-use crate::{app::wake_fn, displayable_page_common, ui_helpers::ui_password_edit};
+use crate::{app::wake_fn, displayable_page_common};
 
 use super::DisplayablePage;
 
@@ -52,18 +53,22 @@ impl UiChangePassword {
         ui.add_enabled(false, egui::TextEdit::singleline(&mut data_shared.username));
 
         ui.spacing();
-        let mut lost_focus =
-            ui_password_edit(ui, &mut self.current_password, "Current Password").lost_focus();
+        let mut was_enter_pressed = ui
+            .password_edit(&mut self.current_password, "Current Password")
+            .enter_pressed(ui);
         ui.spacing();
-        lost_focus =
-            ui_password_edit(ui, &mut self.new_password, "New Password").lost_focus() || lost_focus;
+        was_enter_pressed = ui
+            .password_edit(&mut self.new_password, "New Password")
+            .enter_pressed(ui)
+            || was_enter_pressed;
         ui.spacing();
-        lost_focus = ui_password_edit(ui, &mut self.confirmation_password, "Confirm New Password")
-            .lost_focus()
-            || lost_focus;
+        was_enter_pressed = ui
+            .password_edit(&mut self.confirmation_password, "Confirm New Password")
+            .enter_pressed(ui)
+            || was_enter_pressed;
 
         let is_ready_to_send = self.is_ready_to_send();
-        if lost_focus && is_ready_to_send && ui.input(|i| i.key_pressed(egui::Key::Enter)) {
+        if was_enter_pressed && is_ready_to_send {
             should_send = true;
         }
 

@@ -245,7 +245,7 @@ impl ChatApp {
     }
 
     fn current_time(&self) -> String {
-        Timestamp::now().display_as_locale_datetime()
+        Timestamp::now().display_as_locale_datetime_long()
     }
 
     fn logout(&mut self) {
