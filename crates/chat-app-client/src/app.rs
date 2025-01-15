@@ -17,7 +17,6 @@ use crate::DisplayablePage;
 const VERSION_STR: &str = concat!("ver: ", env!("CARGO_PKG_VERSION"));
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
-// TODO 2: Make chat page to show by default
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct ChatApp {
