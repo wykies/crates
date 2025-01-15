@@ -1,4 +1,5 @@
 use egui::ScrollArea;
+use egui_helpers::UiHelpers;
 use tracing::{debug, error, instrument};
 use tracing::{info, warn};
 use wykies_client_core::WakeFn;
@@ -337,35 +338,10 @@ impl ChatApp {
     fn ui_pages_list(&mut self, ui: &mut egui::Ui) {
         ScrollArea::vertical().show(ui, |ui| {
             ui.with_layout(egui::Layout::top_down_justified(egui::Align::LEFT), |ui| {
-                if self.active_pages.is_empty() {
-                    ui.label("NO PAGES ARE ACTIVE.\nUse top menu to activate a page");
-                }
-                let mut to_deactivate = Vec::new();
-                for (i, page) in self.active_pages.iter_mut().enumerate() {
-                    let mut is_open = page.is_page_open();
-                    ui.horizontal(|ui| {
-                        let is_open_before = is_open;
-                        if ui.button("x").clicked() {
-                            to_deactivate.push(i); // Mark page for removal
-                        }
-                        if ui.toggle_value(&mut is_open, page.title()).middle_clicked() {
-                            to_deactivate.push(i); // Mark page for removal
-                        };
-                        if is_open != is_open_before {
-                            if is_open {
-                                page.open_page();
-                            } else {
-                                page.close_page();
-                            }
-                        }
-                    });
-                }
-
-                // Deactivate marked pages
-                to_deactivate.sort_unstable(); // Should already be sorted but put here because it is assumed in following loop
-                while let Some(marked_index) = to_deactivate.pop() {
-                    self.active_pages.remove(marked_index);
-                }
+                ui.removable_items_list(
+                    &mut self.active_pages,
+                    "NO PAGES ARE ACTIVE.\nUse top menu to activate a page",
+                );
 
                 ui.separator();
 

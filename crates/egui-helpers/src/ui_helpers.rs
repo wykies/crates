@@ -17,6 +17,21 @@ pub trait UiHelpers {
         hint_msg: &str,
         shortcut: &KeyboardShortcut,
     ) -> bool;
+    fn removable_items_list<T: RemovableItem>(&mut self, backing: &mut Vec<T>, empty_msg: &str);
+}
+
+/// Provides the behaviour required for the removable item list
+pub trait RemovableItem {
+    fn widget_text(&self) -> impl Into<WidgetText>;
+    fn is_enabled(&self) -> bool {
+        // Not able to be enabled by default
+        false
+    }
+
+    fn set_enabled(&mut self, value: bool) {
+        // Does nothing by default
+        _ = value;
+    }
 }
 
 impl UiHelpers for egui::Ui {
@@ -88,5 +103,37 @@ impl UiHelpers for egui::Ui {
             "{hint_msg}{space}({})",
             self.ctx().format_shortcut(shortcut)
         )
+    }
+
+    /// Adds labels with x's the left that if clicked remove the item from the backing vector
+    fn removable_items_list<T: RemovableItem>(&mut self, backing: &mut Vec<T>, empty_msg: &str) {
+        if backing.is_empty() {
+            self.label(empty_msg);
+        }
+        let mut to_deactivate = Vec::new();
+        for (i, item) in backing.iter_mut().enumerate() {
+            let mut is_enabled = item.is_enabled();
+            self.horizontal(|ui| {
+                let is_enabled_before = is_enabled;
+                if ui.button("x").clicked() {
+                    to_deactivate.push(i); // Mark page for removal
+                }
+                if ui
+                    .toggle_value(&mut is_enabled, item.widget_text())
+                    .middle_clicked()
+                {
+                    to_deactivate.push(i); // Mark page for removal
+                };
+                if is_enabled != is_enabled_before {
+                    item.set_enabled(is_enabled);
+                }
+            });
+        }
+
+        // Deactivate marked pages
+        to_deactivate.sort_unstable(); // Should already be sorted but put here because it is assumed in following loop
+        while let Some(marked_index) = to_deactivate.pop() {
+            backing.remove(marked_index);
+        }
     }
 }

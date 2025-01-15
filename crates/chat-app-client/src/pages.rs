@@ -14,6 +14,7 @@ mod private {
 
 use change_password::UiChangePassword;
 use chat::UiChat;
+use egui_helpers::RemovableItem;
 use egui_settings::UiEguiSettings;
 pub use login::UiLogin;
 use strum::{EnumIter, IntoEnumIterator};
@@ -27,6 +28,24 @@ pub enum UiPage {
     Chat(UiChat),
     EguiSetting(UiEguiSettings),
     UAC(UiUAC),
+}
+
+impl RemovableItem for UiPage {
+    fn widget_text(&self) -> impl Into<egui::WidgetText> {
+        self.title()
+    }
+
+    fn is_enabled(&self) -> bool {
+        self.is_page_open()
+    }
+
+    fn set_enabled(&mut self, value: bool) {
+        if value {
+            self.open_page();
+        } else {
+            self.close_page();
+        }
+    }
 }
 
 /// Trait for types that can be treated as pages to display
