@@ -4,13 +4,13 @@ use secrecy::{ExposeSecret as _, SecretString};
 /// Adds convenance functions to [`egui::Ui`]
 pub trait UiHelpers {
     fn label_truncate(&mut self, text: impl Into<WidgetText>) -> Response;
-    fn get_text_height(&mut self) -> f32;
+    fn text_height(&mut self) -> f32;
     fn password_edit(&mut self, password: &mut SecretString, hint_text: &str) -> Response;
-    fn checkbox_readonly_no_text(&mut self, value: bool) -> Response;
-    fn button_escape(&mut self, text: impl Into<WidgetText>) -> bool;
+    fn readonly_checkbox_no_text(&mut self, value: bool) -> Response;
+    fn escape_button(&mut self, text: impl Into<WidgetText>) -> bool;
     fn was_enter_pressed(&self) -> bool;
     fn shortcut_hint_text(&mut self, hint_msg: &str, shortcut: &KeyboardShortcut) -> String;
-    fn button_shortcut(
+    fn shortcut_button(
         &mut self,
         text: impl Into<WidgetText>,
         hint_msg: &str,
@@ -23,7 +23,7 @@ impl UiHelpers for egui::Ui {
         self.add(egui::Label::new(text).truncate())
     }
 
-    fn get_text_height(&mut self) -> f32 {
+    fn text_height(&mut self) -> f32 {
         egui::TextStyle::Body
             .resolve(self.style())
             .size
@@ -41,13 +41,13 @@ impl UiHelpers for egui::Ui {
         result
     }
 
-    fn checkbox_readonly_no_text(&mut self, mut value: bool) -> Response {
+    fn readonly_checkbox_no_text(&mut self, mut value: bool) -> Response {
         self.add_enabled(false, Checkbox::without_text(&mut value))
     }
 
     /// Shows a button that is bound to the escape shortcut hotkey
-    fn button_escape(&mut self, text: impl Into<WidgetText>) -> bool {
-        self.button_shortcut(
+    fn escape_button(&mut self, text: impl Into<WidgetText>) -> bool {
+        self.shortcut_button(
             text,
             "",
             &KeyboardShortcut::new(egui::Modifiers::NONE, egui::Key::Escape),
@@ -64,7 +64,7 @@ impl UiHelpers for egui::Ui {
     /// Note: This makes it the case that the code for both the button and the
     /// shortcut press will do the same thing and you cannot use the shortcut to
     /// bypass the button when it is not showing
-    fn button_shortcut(
+    fn shortcut_button(
         &mut self,
         text: impl Into<WidgetText>,
         hint_msg: &str,
