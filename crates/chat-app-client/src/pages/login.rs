@@ -93,7 +93,7 @@ impl UiLogin {
             DataState::Failed(e) => {
                 ui.separator();
                 let err_msg = format!("Login attempt failed: {e}");
-                ui.colored_label(ui.visuals().error_fg_color, err_msg);
+                ui.error_label(err_msg);
                 if ui.button("Clear error status").clicked() {
                     self.login_attempt_status = DataState::None;
                 }

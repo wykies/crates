@@ -119,7 +119,7 @@ impl DisplayablePage for UiChangePassword {
                     ui.label("Password Successfully Changed");
                 }
                 DataState::Failed(e) => {
-                    ui.colored_label(ui.visuals().error_fg_color, format!("Failed {e}"));
+                    ui.error_label(format!("Failed {e}"));
                     if ui.button("Try Again").clicked() {
                         self.data_state = DataState::default();
                     }

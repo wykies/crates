@@ -331,7 +331,7 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
             self.set_error_transient(internal_error!("failed to find original error to show"));
             return;
         };
-        ui.colored_label(ui.visuals().error_fg_color, msg);
+        ui.error_label(msg);
         if *is_transient {
             ui.vertical_centered(|ui| {
                 if ui.button("Clear Error Status").clicked() {

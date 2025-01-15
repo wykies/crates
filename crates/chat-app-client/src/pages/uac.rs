@@ -250,7 +250,7 @@ fn ui_show_new_user(
             ui.text_edit_singleline(&mut new_user_info.username);
             if let Err(e) = Username::try_from(new_user_info.username.clone()) {
                 has_errors = true;
-                ui.colored_label(ui.visuals().error_fg_color, e.to_string());
+                ui.error_label(e.to_string());
             }
             ui.end_row();
 
@@ -259,7 +259,7 @@ fn ui_show_new_user(
             ui.text_edit_singleline(&mut new_user_info.display_name);
             if let Err(e) = DisplayName::try_from(new_user_info.display_name.clone()) {
                 has_errors = true;
-                ui.colored_label(ui.visuals().error_fg_color, e.to_string());
+                ui.error_label(e.to_string());
             }
             ui.end_row();
 
@@ -268,7 +268,7 @@ fn ui_show_new_user(
             ui_password_edit(ui, &mut new_user_info.password, "User's Password");
             if new_user_info.password.expose_secret().is_empty() {
                 has_errors = true;
-                ui.colored_label(ui.visuals().error_fg_color, "Required".to_string());
+                ui.error_label("Required".to_string());
             }
             ui.end_row();
 
@@ -396,7 +396,7 @@ fn poll_save_outcome(outcome: Option<SaveState>, ui: &mut egui::Ui) -> ControlFl
                 });
             }
             SaveState::Failed(e) => {
-                ui.colored_label(ui.visuals().error_fg_color, e);
+                ui.error_label(e);
                 if ui.button("Clear Error").clicked() {
                     return ControlFlow::Break(OpResult::ResetPage);
                 }
