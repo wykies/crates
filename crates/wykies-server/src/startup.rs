@@ -213,7 +213,8 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
             };
 
             app.wrap(SessionMiddleware::new(session_store, secret_key.clone()))
-                // TODO 3: Spawn task to send relevant req info to DB to record endpoints used (Basic analytics)
+                // TODO 3: Spawn task to send relevant req info to DB to record endpoints used
+                // (Basic analytics)
                 .wrap(TracingLogger::default())
                 .service(
                     web::scope("/api")

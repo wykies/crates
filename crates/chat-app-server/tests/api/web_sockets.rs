@@ -4,7 +4,7 @@ use ewebsock::WsEvent;
 use wykies_client_core::{ws_expose_internal, DUMMY_ARGUMENT};
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, token::AuthToken};
 
-use crate::helpers::{ spawn_app, wait_for_message};
+use crate::helpers::{spawn_app, wait_for_message};
 
 #[tokio::test]
 async fn rejected_without_requesting_token() {

@@ -105,7 +105,8 @@ impl UiHelpers for egui::Ui {
         )
     }
 
-    /// Adds labels with x's the left that if clicked remove the item from the backing vector
+    /// Adds labels with x's the left that if clicked remove the item from the
+    /// backing vector
     fn removable_items_list<T: RemovableItem>(&mut self, backing: &mut Vec<T>, empty_msg: &str) {
         if backing.is_empty() {
             self.label(empty_msg);

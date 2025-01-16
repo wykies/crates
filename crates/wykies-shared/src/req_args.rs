@@ -20,7 +20,8 @@ pub struct RonWrapper {
     data_as_ron_str: String,
 }
 
-/// This struct exists because "[reqwest's] top-level serializer supports only maps and structs"
+/// This struct exists because "[reqwest's] top-level serializer supports only
+/// maps and structs"
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct EnumWrapper<T: Debug> {
     pub inner: T,
