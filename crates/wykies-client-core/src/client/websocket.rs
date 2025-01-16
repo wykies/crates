@@ -22,23 +22,18 @@ pub struct WebSocketConnection {
     pub rx: ewebsock::WsReceiver,
 }
 
-pub trait WakeFn: Fn() + Send + Sync + 'static + Clone {}
-impl<T> WakeFn for T where T: Fn() + Send + Sync + 'static + Clone {}
-
 impl Client {
-    #[tracing::instrument(skip(wake_up))]
-    pub fn ws_connect<F: WakeFn + Clone>(
+    #[tracing::instrument]
+    pub fn ws_connect(
         &self,
         path_spec: PathSpec,
-        wake_up: F,
     ) -> oneshot::Receiver<anyhow::Result<WebSocketConnection>> {
         let ws_url = self.ws_url_from(&path_spec);
         let req = self.create_request_builder(path_spec, &DUMMY_ARGUMENT);
-        let ui_notify = wake_up.clone();
         let response_handler = move |resp: reqwest::Result<reqwest::Response>| async {
-            do_connect_ws(resp, ws_url, wake_up).await
+            do_connect_ws(resp, ws_url).await
         };
-        fetch_plus(req, response_handler, ui_notify)
+        fetch_plus(req, response_handler, || {})
     }
 
     /// Appends `path` onto the base websocket url
@@ -68,17 +63,16 @@ impl Client {
     }
 }
 
-#[tracing::instrument(skip(wake_up))]
-async fn do_connect_ws<F: WakeFn>(
+#[tracing::instrument]
+async fn do_connect_ws(
     response: reqwest::Result<reqwest::Response>,
     ws_url: String,
-    wake_up: F,
 ) -> anyhow::Result<WebSocketConnection> {
     // Get token from response passed in
     let token = extract_token(response).await?;
 
     // Initiate connection
-    let mut result = initiate_ws_connection(ws_url, wake_up)?;
+    let mut result = initiate_ws_connection(ws_url)?;
 
     // Wait for connection to complete before sending token
     wait_for_connection_to_open(&mut result).await?;
@@ -126,11 +120,8 @@ async fn extract_token(response: reqwest::Result<reqwest::Response>) -> anyhow::
     process_json_body(response).await
 }
 
-fn initiate_ws_connection<F>(ws_url: String, wake_up: F) -> anyhow::Result<WebSocketConnection>
-where
-    F: WakeFn,
-{
-    let (tx, rx) = ewebsock::connect_with_wakeup(ws_url, Default::default(), wake_up)
+fn initiate_ws_connection(ws_url: String) -> anyhow::Result<WebSocketConnection> {
+    let (tx, rx) = ewebsock::connect(ws_url, Default::default())
         .map_err(|e| anyhow::anyhow!("{e}"))
         .context("failed to connect web socket")?;
     Ok(WebSocketConnection { tx, rx })
@@ -145,16 +136,10 @@ impl Debug for WebSocketConnection {
 #[cfg(feature = "expose_internal")]
 pub mod expose_internal {
 
-    use super::{WakeFn, WebSocketConnection};
+    use super::WebSocketConnection;
 
-    pub fn initiate_ws_connection<F>(
-        ws_url: String,
-        wake_up: F,
-    ) -> anyhow::Result<WebSocketConnection>
-    where
-        F: WakeFn,
-    {
-        super::initiate_ws_connection(ws_url, wake_up)
+    pub fn initiate_ws_connection(ws_url: String) -> anyhow::Result<WebSocketConnection> {
+        super::initiate_ws_connection(ws_url)
     }
 
     pub async fn wait_for_connection_to_open(conn: &mut WebSocketConnection) -> anyhow::Result<()> {

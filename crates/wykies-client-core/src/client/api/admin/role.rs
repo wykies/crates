@@ -1,5 +1,5 @@
 use crate::Client;
-use reqwest_cross::{oneshot, UiCallBack};
+use reqwest_cross::oneshot;
 use wykies_shared::{
     const_config::path::{
         PATH_API_ADMIN_ROLE, PATH_API_ADMIN_ROLE_ASSIGN, PATH_API_ADMIN_ROLE_CREATE,
@@ -10,31 +10,19 @@ use wykies_shared::{
 };
 
 impl Client {
-    #[tracing::instrument(skip(ui_notify))]
-    pub fn create_role<F: UiCallBack>(
-        &self,
-        args: &RoleDraft,
-        ui_notify: F,
-    ) -> oneshot::Receiver<anyhow::Result<DbId>> {
-        self.send_request_expect_json(PATH_API_ADMIN_ROLE_CREATE, args, ui_notify)
+    #[tracing::instrument]
+    pub fn create_role(&self, args: &RoleDraft) -> oneshot::Receiver<anyhow::Result<DbId>> {
+        self.send_request_expect_json(PATH_API_ADMIN_ROLE_CREATE, args)
     }
 
-    #[tracing::instrument(skip(ui_notify))]
-    pub fn get_role<F: UiCallBack>(
-        &self,
-        role_id: DbId,
-        ui_notify: F,
-    ) -> oneshot::Receiver<anyhow::Result<Role>> {
+    #[tracing::instrument]
+    pub fn get_role(&self, role_id: DbId) -> oneshot::Receiver<anyhow::Result<Role>> {
         let args = role::LookupReqArgs { role_id };
-        self.send_request_expect_json(PATH_API_ADMIN_ROLE, &args, ui_notify)
+        self.send_request_expect_json(PATH_API_ADMIN_ROLE, &args)
     }
 
-    #[tracing::instrument(skip(ui_notify))]
-    pub fn assign_role<F: UiCallBack>(
-        &self,
-        args: &AssignReqArgs,
-        ui_notify: F,
-    ) -> oneshot::Receiver<anyhow::Result<()>> {
-        self.send_request_expect_empty(PATH_API_ADMIN_ROLE_ASSIGN, args, ui_notify)
+    #[tracing::instrument]
+    pub fn assign_role(&self, args: &AssignReqArgs) -> oneshot::Receiver<anyhow::Result<()>> {
+        self.send_request_expect_empty(PATH_API_ADMIN_ROLE_ASSIGN, args)
     }
 }

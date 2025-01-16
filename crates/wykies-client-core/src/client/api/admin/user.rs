@@ -1,5 +1,5 @@
 use crate::{client::DUMMY_ARGUMENT, Client};
-use reqwest_cross::{oneshot, UiCallBack};
+use reqwest_cross::oneshot;
 use secrecy::ExposeSecret;
 use wykies_shared::{
     const_config::path::{
@@ -14,63 +14,43 @@ use wykies_shared::{
 };
 
 impl Client {
-    #[tracing::instrument(skip(ui_notify))]
-    pub fn get_user<F: UiCallBack>(
-        &self,
-        username: Username,
-        ui_notify: F,
-    ) -> oneshot::Receiver<anyhow::Result<UserMetadata>> {
+    #[tracing::instrument]
+    pub fn get_user(&self, username: Username) -> oneshot::Receiver<anyhow::Result<UserMetadata>> {
         let args = user::LookupReqArgs { username };
-        self.send_request_expect_json(PATH_API_ADMIN_USER, &args, ui_notify)
+        self.send_request_expect_json(PATH_API_ADMIN_USER, &args)
     }
 
-    #[tracing::instrument(skip(ui_notify))]
-    pub fn new_user<F: UiCallBack>(
-        &self,
-        user: NewUserReqArgs,
-        ui_notify: F,
-    ) -> oneshot::Receiver<anyhow::Result<()>> {
+    #[tracing::instrument]
+    pub fn new_user(&self, user: NewUserReqArgs) -> oneshot::Receiver<anyhow::Result<()>> {
         let args = serde_json::json!({
             "username": user.username,
             "display_name": user.display_name,
             "password": user.password.expose_secret(),
             "assigned_role": user.assigned_role
         });
-        self.send_request_expect_empty(PATH_API_ADMIN_USER_NEW, &args, ui_notify)
+        self.send_request_expect_empty(PATH_API_ADMIN_USER_NEW, &args)
     }
 
-    #[tracing::instrument(skip(ui_notify))]
-    pub fn reset_password<F: UiCallBack>(
+    #[tracing::instrument]
+    pub fn reset_password(
         &self,
         args: PasswordResetReqArgs,
-        ui_notify: F,
     ) -> oneshot::Receiver<anyhow::Result<()>> {
         let args = serde_json::json!({
             "username": args.username,
             "new_password": args.new_password.expose_secret()
         });
-        self.send_request_expect_empty(PATH_API_ADMIN_USER_PASSWORD_RESET, &args, ui_notify)
+        self.send_request_expect_empty(PATH_API_ADMIN_USER_PASSWORD_RESET, &args)
     }
 
-    #[tracing::instrument(skip(ui_notify))]
-    pub fn update_user<F: UiCallBack>(
-        &self,
-        diff: UserMetadataDiff,
-        ui_notify: F,
-    ) -> oneshot::Receiver<anyhow::Result<()>> {
+    #[tracing::instrument]
+    pub fn update_user(&self, diff: UserMetadataDiff) -> oneshot::Receiver<anyhow::Result<()>> {
         let wrapped = RonWrapper::new(&diff).expect("failed to create ron wrapper");
-        self.send_request_expect_empty(PATH_API_ADMIN_USER_UPDATE, &wrapped, ui_notify)
+        self.send_request_expect_empty(PATH_API_ADMIN_USER_UPDATE, &wrapped)
     }
 
-    #[tracing::instrument(skip(ui_notify))]
-    pub fn list_users_and_roles<F: UiCallBack>(
-        &self,
-        ui_notify: F,
-    ) -> oneshot::Receiver<anyhow::Result<ListUsersRoles>> {
-        self.send_request_expect_json(
-            PATH_API_ADMIN_USERS_LIST_AND_ROLES,
-            &DUMMY_ARGUMENT,
-            ui_notify,
-        )
+    #[tracing::instrument]
+    pub fn list_users_and_roles(&self) -> oneshot::Receiver<anyhow::Result<ListUsersRoles>> {
+        self.send_request_expect_json(PATH_API_ADMIN_USERS_LIST_AND_ROLES, &DUMMY_ARGUMENT)
     }
 }

@@ -17,10 +17,7 @@ mod warning_suppress {
 
 mod client;
 
-pub use client::{
-    websocket::{WakeFn, WebSocketConnection},
-    Client, LoginOutcome, DUMMY_ARGUMENT,
-};
+pub use client::{websocket::WebSocketConnection, Client, LoginOutcome, DUMMY_ARGUMENT};
 
 #[cfg(feature = "expose_internal")]
 pub use client::websocket::expose_internal as ws_expose_internal;

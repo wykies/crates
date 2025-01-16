@@ -1,6 +1,6 @@
 use anyhow::{anyhow, Context};
 use reqwest_cross::reqwest::{self, Method, RequestBuilder, StatusCode};
-use reqwest_cross::{fetch, fetch_plus, oneshot, UiCallBack};
+use reqwest_cross::{fetch, fetch_plus, oneshot};
 use secrecy::ExposeSecret as _;
 use std::fmt::Debug;
 use std::sync::{Arc, Mutex};
@@ -89,20 +89,13 @@ impl Client {
         }
     }
 
-    #[tracing::instrument(skip(ui_notify))]
-    pub fn get_branches<F>(&self, ui_notify: F) -> oneshot::Receiver<anyhow::Result<Vec<Branch>>>
-    where
-        F: UiCallBack,
-    {
-        self.send_request_expect_json(PATH_BRANCHES, &DUMMY_ARGUMENT, ui_notify)
+    #[tracing::instrument]
+    pub fn get_branches(&self) -> oneshot::Receiver<anyhow::Result<Vec<Branch>>> {
+        self.send_request_expect_json(PATH_BRANCHES, &DUMMY_ARGUMENT)
     }
 
-    #[tracing::instrument(skip(ui_notify))]
-    pub fn login<F: UiCallBack>(
-        &self,
-        args: LoginReqArgs,
-        ui_notify: F,
-    ) -> oneshot::Receiver<anyhow::Result<LoginOutcome>> {
+    #[tracing::instrument]
+    pub fn login(&self, args: LoginReqArgs) -> oneshot::Receiver<anyhow::Result<LoginOutcome>> {
         let args = serde_json::json!({
             "username": args.username,
             "password": args.password.expose_secret(),
@@ -113,15 +106,12 @@ impl Client {
         let response_handler = move |resp: reqwest::Result<reqwest::Response>| async {
             process_login(resp, client).await
         };
-        fetch_plus(req, response_handler, ui_notify)
+        fetch_plus(req, response_handler, || {})
     }
 
-    #[tracing::instrument(skip(ui_notify))]
-    pub fn health_check<F>(&self, ui_notify: F) -> oneshot::Receiver<anyhow::Result<()>>
-    where
-        F: UiCallBack,
-    {
-        self.send_request_expect_empty(PATH_HEALTH_CHECK, &DUMMY_ARGUMENT, ui_notify)
+    #[tracing::instrument]
+    pub fn health_check<F>(&self) -> oneshot::Receiver<anyhow::Result<()>> {
+        self.send_request_expect_empty(PATH_HEALTH_CHECK, &DUMMY_ARGUMENT)
     }
 
     #[tracing::instrument(skip(args))]
@@ -142,66 +132,58 @@ impl Client {
         }
     }
 
-    fn send_request_expect_json<F, T, U>(
+    fn send_request_expect_json<T, U>(
         &self,
         path_spec: PathSpec,
         args: &T,
-        ui_notify: F,
     ) -> oneshot::Receiver<anyhow::Result<U>>
     where
         T: serde::Serialize + std::fmt::Debug,
-        F: UiCallBack,
         U: Send + std::fmt::Debug + serde::de::DeserializeOwned + 'static,
     {
         let req = self.create_request_builder(path_spec, args);
         let response_handler =
             move |resp: reqwest::Result<reqwest::Response>| async { process_json_body(resp).await };
-        fetch_plus(req, response_handler, ui_notify)
+        fetch_plus(req, response_handler, || {})
     }
 
     #[cfg(feature = "expose_internal")]
-    pub fn expose_internal_send_request_expect_json<F, T, U>(
+    pub fn expose_internal_send_request_expect_json<T, U>(
         &self,
         path_spec: PathSpec,
         args: &T,
-        ui_notify: F,
     ) -> oneshot::Receiver<anyhow::Result<U>>
     where
         T: serde::Serialize + std::fmt::Debug,
-        F: UiCallBack,
         U: Send + std::fmt::Debug + serde::de::DeserializeOwned + 'static,
     {
-        self.send_request_expect_json(path_spec, args, ui_notify)
+        self.send_request_expect_json(path_spec, args)
     }
 
     #[cfg(feature = "expose_internal")]
-    pub fn expose_internal_send_request_expect_empty<F, T>(
+    pub fn expose_internal_send_request_expect_empty<T>(
         &self,
         path_spec: PathSpec,
         args: &T,
-        ui_notify: F,
     ) -> oneshot::Receiver<anyhow::Result<()>>
     where
         T: serde::Serialize + std::fmt::Debug,
-        F: UiCallBack,
     {
-        self.send_request_expect_empty(path_spec, args, ui_notify)
+        self.send_request_expect_empty(path_spec, args)
     }
 
-    fn send_request_expect_empty<F, T>(
+    fn send_request_expect_empty<T>(
         &self,
         path_spec: PathSpec,
         args: &T,
-        ui_notify: F,
     ) -> oneshot::Receiver<anyhow::Result<()>>
     where
         T: serde::Serialize + std::fmt::Debug,
-        F: UiCallBack,
     {
         let req = self.create_request_builder(path_spec, args);
         let response_handler =
             move |resp: reqwest::Result<reqwest::Response>| async { process_empty(resp).await };
-        fetch_plus(req, response_handler, ui_notify)
+        fetch_plus(req, response_handler, || {})
     }
 
     /// Sends the request but only logs the response
