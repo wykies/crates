@@ -12,7 +12,7 @@ use wykies_server_test_helper::{
 };
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, db_types::DbPool};
 
-pub use wykies_server_test_helper::{no_cb, wait_for_message};
+pub use wykies_server_test_helper::wait_for_message;
 
 #[derive(Debug)]
 pub struct TestApp(wykies_server_test_helper::TestApp<wykies_client_core::Client>);
@@ -118,7 +118,7 @@ impl TestApp {
         // Also tests if able to establish a websocket connection but this was the
         // simplest alternative that didn't need any permissions
         self.core_client
-            .ws_connect(PATH_WS_TOKEN_CHAT, no_cb)
+            .ws_connect(PATH_WS_TOKEN_CHAT)
             .await
             .expect("failed to receive on rx")
             .is_ok()
@@ -126,7 +126,7 @@ impl TestApp {
 
     pub async fn login(&self) -> anyhow::Result<LoginOutcome> {
         self.core_client
-            .login(self.test_user.login_args(), no_cb)
+            .login(self.test_user.login_args())
             .await
             .unwrap()
     }
@@ -135,7 +135,7 @@ impl TestApp {
     pub async fn login_assert(&self) {
         assert!(self
             .core_client
-            .login(self.test_user.login_args(), no_cb)
+            .login(self.test_user.login_args())
             .await
             .expect("failed to receive on rx")
             .expect("failed to extract login outcome")
@@ -145,7 +145,7 @@ impl TestApp {
     /// Logs out the user and panics on errors
     pub async fn logout_assert(&self) {
         self.core_client
-            .logout(no_cb)
+            .logout()
             .await
             .expect("failed to receive on rx")
             .expect("login result was not ok");

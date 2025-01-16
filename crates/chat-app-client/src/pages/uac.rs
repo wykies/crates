@@ -1,5 +1,5 @@
 use super::DisplayablePage;
-use crate::{app::wake_fn, displayable_page_common};
+use crate::displayable_page_common;
 use edit_user_info::EditUserInfo;
 use egui::Button;
 use egui_extras::{Column, TableBuilder};
@@ -139,9 +139,8 @@ impl DisplayablePage for UiUAC {
                     .show(ui, |ui| ui_show_user_list(ui, data, &mut self.user_op));
             });
         } else {
-            let ctx = ui.ctx().clone();
             let can_make_progress = self.data_state.egui_get(ui, None, || {
-                Awaiting(data_shared.client.list_users_and_roles(wake_fn(ctx)))
+                Awaiting(data_shared.client.list_users_and_roles())
             });
             debug_assert!(can_make_progress.is_able_to_make_progress());
         }

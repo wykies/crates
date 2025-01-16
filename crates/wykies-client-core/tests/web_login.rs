@@ -33,7 +33,7 @@ fn main() {
         );
 
         // Act - Login
-        let login_outcome = client.login(login_args.clone(), no_cb).await.unwrap();
+        let login_outcome = client.login(login_args.clone()).await.unwrap();
 
         // Assert - Login successful and user info stored
         assert_eq!(
@@ -56,10 +56,8 @@ async fn is_logged_in(client: &Client) -> bool {
     // Also tests if able to establish a websocket connection but this was the
     // simplest alternative that didn't need any permissions
     client
-        .ws_connect(PATH_WS_TOKEN_CHAT, no_cb)
+        .ws_connect(PATH_WS_TOKEN_CHAT)
         .await
         .expect("failed to receive on rx")
         .is_ok()
 }
-
-fn no_cb() {}

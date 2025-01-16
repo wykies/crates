@@ -1,5 +1,4 @@
-use crate::helpers::{no_cb, spawn_app};
-use std::sync::{Arc, Mutex};
+use crate::helpers::spawn_app;
 use wykies_client_core::LoginOutcome;
 use wykies_shared::{req_args::LoginReqArgs, uac::AuthError};
 
@@ -13,7 +12,7 @@ async fn login_failure_invalid_user() {
     );
 
     // Act
-    let outcome = app.core_client.login(login_args, no_cb).await.unwrap();
+    let outcome = app.core_client.login(login_args).await.unwrap();
 
     // Assert
     assert_eq!(
@@ -32,7 +31,7 @@ async fn login_failure_invalid_password() {
         .password("random-password".to_string().into());
 
     // Act
-    let outcome = app.core_client.login(login_args, no_cb).await.unwrap();
+    let outcome = app.core_client.login(login_args).await.unwrap();
 
     // Assert
     assert_eq!(
@@ -95,28 +94,6 @@ async fn login_logout_round_trip() {
 }
 
 #[tokio::test]
-async fn ensure_call_back_is_run() {
-    // Arrange
-    let app = spawn_app().await;
-    let test_flag = Arc::new(Mutex::new(false));
-    let test_flag_clone = Arc::clone(&test_flag);
-
-    // Act
-    assert!(app
-        .core_client
-        .login(app.test_user.login_args(), move || {
-            *test_flag_clone.lock().unwrap() = true;
-        })
-        .await
-        .expect("failed to receive from rx")
-        .expect("failed to get result of login")
-        .is_any_success());
-
-    // Assert
-    assert!(*test_flag.lock().unwrap(), "flag was not flipped");
-}
-
-#[tokio::test]
 /// Check that flag is respected even without any attempts
 async fn login_user_locked_out_no_attempts() {
     // Arrange
@@ -153,11 +130,7 @@ async fn ensure_user_gets_locked_out() {
     let login_attempt_limit = app.login_attempt_limit;
     for _ in 1..login_attempt_limit {
         // Attempt login
-        let outcome = app
-            .core_client
-            .login(login_args.clone(), no_cb)
-            .await
-            .unwrap();
+        let outcome = app.core_client.login(login_args.clone()).await.unwrap();
 
         // Ensure not locked out
         assert_eq!(
@@ -167,7 +140,7 @@ async fn ensure_user_gets_locked_out() {
     }
 
     // Attempt login again which should trigger the lockout
-    let outcome = app.core_client.login(login_args, no_cb).await.unwrap();
+    let outcome = app.core_client.login(login_args).await.unwrap();
 
     // Assert - User is locked out
     assert_eq!(
@@ -205,11 +178,7 @@ async fn ensure_locked_out_is_reset() {
     let login_attempt_limit = app.login_attempt_limit;
     for _ in 1..login_attempt_limit {
         // Attempt login
-        let outcome = app
-            .core_client
-            .login(login_args.clone(), no_cb)
-            .await
-            .unwrap();
+        let outcome = app.core_client.login(login_args.clone()).await.unwrap();
 
         // Ensure not locked out
         assert_eq!(
@@ -235,11 +204,7 @@ async fn ensure_locked_out_is_reset() {
     let login_attempt_limit = app.login_attempt_limit;
     for _ in 1..login_attempt_limit {
         // Attempt login
-        let outcome = app
-            .core_client
-            .login(login_args.clone(), no_cb)
-            .await
-            .unwrap();
+        let outcome = app.core_client.login(login_args.clone()).await.unwrap();
 
         // Ensure not locked out
         assert_eq!(

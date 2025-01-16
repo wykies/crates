@@ -62,9 +62,6 @@ impl<C> Debug for TestApp<C> {
     }
 }
 
-/// Empty function for use when a call back isn't needed
-pub fn no_cb() {}
-
 pub async fn spawn_app_without_host_branch_stored_before_migration<T>() -> (Configuration<T>, DbPool)
 where
     T: Clone + DeserializeOwned,

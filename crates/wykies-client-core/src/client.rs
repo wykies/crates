@@ -110,7 +110,7 @@ impl Client {
     }
 
     #[tracing::instrument]
-    pub fn health_check<F>(&self) -> oneshot::Receiver<anyhow::Result<()>> {
+    pub fn health_check(&self) -> oneshot::Receiver<anyhow::Result<()>> {
         self.send_request_expect_empty(PATH_HEALTH_CHECK, &DUMMY_ARGUMENT)
     }
 

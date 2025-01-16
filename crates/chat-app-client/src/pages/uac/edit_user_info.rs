@@ -73,7 +73,7 @@ impl EditUserInfo {
         if !self.edit_user.is_present() {
             self.load_time = Some(Timestamp::now());
             let can_make_progress = self.edit_user.egui_get(ui, Some("Clear Error"), || {
-                Awaiting(client_core.get_user(self.original_user.username.clone(), || {}))
+                Awaiting(client_core.get_user(self.original_user.username.clone()))
             });
             debug_assert!(can_make_progress.is_able_to_make_progress());
         }
@@ -123,8 +123,7 @@ impl EditUserInfo {
                 return;
             }
         };
-        self.save_status =
-            DataState::AwaitingResponse(Awaiting(client_core.update_user(diff, || {})));
+        self.save_status = DataState::AwaitingResponse(Awaiting(client_core.update_user(diff)));
     }
 
     /// Returns None if no save is ongoing

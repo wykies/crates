@@ -49,7 +49,7 @@ impl NewUserInfo {
         match self.try_into_req_args() {
             Ok(req_args) => {
                 self.save_status =
-                    DataState::AwaitingResponse(Awaiting(client_core.new_user(req_args, || {})))
+                    DataState::AwaitingResponse(Awaiting(client_core.new_user(req_args)))
             }
             Err(e) => self.save_status = DataState::Failed(e.into()),
         }

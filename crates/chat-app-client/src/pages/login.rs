@@ -1,5 +1,5 @@
 use super::{change_password::UiChangePassword, DisplayablePage};
-use crate::{app::wake_fn, DataShared};
+use crate::DataShared;
 use egui_helpers::{ResponseHelpers, UiHelpers as _};
 use reqwest_cross::{Awaiting, DataState};
 use secrecy::{ExposeSecret, SecretString};
@@ -49,7 +49,7 @@ impl UiLogin {
             || was_enter_pressed;
 
         if was_enter_pressed && is_allowed_to_login(self, &data_shared.username) {
-            self.send_login_attempt(ui, data_shared)
+            self.send_login_attempt(data_shared)
         }
     }
 
@@ -139,18 +139,18 @@ impl UiLogin {
             )
             .clicked()
         {
-            self.send_login_attempt(ui, data_shared);
+            self.send_login_attempt(data_shared);
         }
     }
 
-    fn send_login_attempt(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared) {
+    fn send_login_attempt(&mut self, data_shared: &mut DataShared) {
         let args = LoginReqArgs::new_with_branch(
             data_shared.username.clone(),
             self.password.clone(),
             1.into(), // Branches are not needed by the demo
         );
 
-        let rx = data_shared.client.login(args, wake_fn(ui.ctx().clone()));
+        let rx = data_shared.client.login(args);
         self.login_attempt_status = DataState::AwaitingResponse(Awaiting(rx));
     }
 }

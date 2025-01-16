@@ -1,6 +1,6 @@
 use wykies_shared::uac::{Permission, PermissionsError};
 
-use crate::helpers::{no_cb, spawn_app};
+use crate::helpers::spawn_app;
 
 #[tokio::test]
 async fn unprivileged_user_is_denied() {
@@ -11,11 +11,7 @@ async fn unprivileged_user_is_denied() {
     app.login_assert().await;
 
     // Act - Attempt to access restricted endpoint
-    let actual = app
-        .core_client
-        .get_list_host_branch_pairs(no_cb)
-        .await
-        .unwrap();
+    let actual = app.core_client.get_list_host_branch_pairs().await.unwrap();
 
     // Assert - Ensure request was denied
     let expected_error =
@@ -34,7 +30,7 @@ async fn test_admin_user_works() {
     // Act - Attempt to access restricted endpoint
     let actual = app_admin
         .core_client
-        .get_list_host_branch_pairs(no_cb)
+        .get_list_host_branch_pairs()
         .await
         .unwrap();
 

@@ -4,7 +4,7 @@ use wykies_shared::{
     req_args::api::admin::host_branch::LookupReqArgs, uac::AuthError,
 };
 
-use crate::helpers::{no_cb, spawn_app, spawn_app_without_host_branch_stored, TestApp};
+use crate::helpers::{spawn_app, spawn_app_without_host_branch_stored, TestApp};
 
 #[tokio::test]
 async fn set_host_branch_pair() {
@@ -21,7 +21,7 @@ async fn set_host_branch_pair() {
     // Arrange - Create Branch
     let branch_id = app_admin
         .core_client
-        .create_branch(&branch_draft, no_cb)
+        .create_branch(&branch_draft)
         .await
         .expect("failed to receive from rx")
         .expect("failed to extract branch id");
@@ -43,7 +43,7 @@ async fn set_host_branch_pair() {
     };
     let branch_id = app_admin
         .core_client
-        .create_branch(&branch_draft, no_cb)
+        .create_branch(&branch_draft)
         .await
         .expect("failed to receive from rx")
         .expect("failed to get branch new branch id");
@@ -56,7 +56,7 @@ async fn set_host_branch_pair() {
 async fn send_request_and_verify_response(app: &TestApp, pair: &HostBranchPair) {
     // Act - Set Pair (Create / Update)
     app.core_client
-        .create_host_branch_pair(pair, no_cb)
+        .create_host_branch_pair(pair)
         .await
         .expect("failed to receive from rx")
         .expect("failed to create host branch pair");
@@ -64,7 +64,7 @@ async fn send_request_and_verify_response(app: &TestApp, pair: &HostBranchPair) 
     // Act - Retrieve current list of pairs
     let pairs = app
         .core_client
-        .get_list_host_branch_pairs(no_cb)
+        .get_list_host_branch_pairs()
         .await
         .expect("failed to receive from rx")
         .expect("failed to get host branch pairs");
@@ -91,7 +91,7 @@ async fn host_branch_pair_lookup() {
     // Arrange - Create Branch
     let branch_id = app_admin
         .core_client
-        .create_branch(&branch_draft, no_cb)
+        .create_branch(&branch_draft)
         .await
         .expect("failed to receive from rx")
         .expect("failed to extract new branch id");
@@ -103,12 +103,9 @@ async fn host_branch_pair_lookup() {
     // Act - Do lookup
     let actual = app_admin
         .core_client
-        .get_host_branch_pair(
-            &LookupReqArgs {
-                host_id: host_branch_pair.host_id.clone(),
-            },
-            no_cb,
-        )
+        .get_host_branch_pair(&LookupReqArgs {
+            host_id: host_branch_pair.host_id.clone(),
+        })
         .await
         .expect("failed to receive from rx")
         .expect("failed to extract value");
@@ -122,12 +119,9 @@ async fn host_branch_pair_lookup() {
     // Act - Do lookup
     let actual = app_admin
         .core_client
-        .get_host_branch_pair(
-            &LookupReqArgs {
-                host_id: host_branch_pair.host_id.clone(),
-            },
-            no_cb,
-        )
+        .get_host_branch_pair(&LookupReqArgs {
+            host_id: host_branch_pair.host_id.clone(),
+        })
         .await
         .expect("failed to receive from rx")
         .expect("failed to extract value");
@@ -149,7 +143,7 @@ async fn ensure_branch_only_changes_if_not_set() {
     };
     let new_branch_id = app_admin
         .core_client
-        .create_branch(&body, no_cb)
+        .create_branch(&body)
         .await
         .expect("failed to receive from rx")
         .expect("failed to extract value");
@@ -163,7 +157,6 @@ async fn ensure_branch_only_changes_if_not_set() {
                 .test_user
                 .login_args()
                 .branch_to_set(Some(new_branch_id)),
-            no_cb,
         )
         .await
         .expect("failed to receive from rx")
@@ -173,12 +166,9 @@ async fn ensure_branch_only_changes_if_not_set() {
     // Act - Get current branch set
     let curr_branch_id = app_admin
         .core_client
-        .get_host_branch_pair(
-            &LookupReqArgs {
-                host_id: app_admin.host_branch_pair.host_id.clone(),
-            },
-            no_cb,
-        )
+        .get_host_branch_pair(&LookupReqArgs {
+            host_id: app_admin.host_branch_pair.host_id.clone(),
+        })
         .await
         .expect("failed to receive from rx")
         .expect("failed to extract value")
@@ -213,7 +203,6 @@ async fn ensure_branch_not_set_without_permissions() {
             app.test_user
                 .login_args()
                 .branch_to_set(Some(app.host_branch_pair.branch_id)),
-            no_cb,
         )
         .await
         .unwrap();
@@ -253,7 +242,6 @@ async fn ensure_branch_can_be_set_with_permissions() {
                 .test_user
                 .login_args()
                 .branch_to_set(Some(app_admin.host_branch_pair.branch_id)),
-            no_cb,
         )
         .await
         .expect("failed to receive on rx")
@@ -263,12 +251,9 @@ async fn ensure_branch_can_be_set_with_permissions() {
     // Act - Get current branch set
     let actual = app_admin
         .core_client
-        .get_host_branch_pair(
-            &LookupReqArgs {
-                host_id: app_admin.host_branch_pair.host_id.clone(),
-            },
-            no_cb,
-        )
+        .get_host_branch_pair(&LookupReqArgs {
+            host_id: app_admin.host_branch_pair.host_id.clone(),
+        })
         .await
         .expect("failed to receive from rx")
         .expect("failed to extract value");
@@ -285,12 +270,9 @@ async fn ensure_branch_can_be_set_with_permissions() {
     // Act - Get current branch set
     let actual = app_admin
         .core_client
-        .get_host_branch_pair(
-            &LookupReqArgs {
-                host_id: app_admin.host_branch_pair.host_id.clone(),
-            },
-            no_cb,
-        )
+        .get_host_branch_pair(&LookupReqArgs {
+            host_id: app_admin.host_branch_pair.host_id.clone(),
+        })
         .await
         .expect("failed to receive from rx")
         .expect("failed to extract value");

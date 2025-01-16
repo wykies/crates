@@ -1,4 +1,4 @@
-use crate::helpers::{no_cb, spawn_app};
+use crate::helpers::spawn_app;
 
 #[tokio::test]
 async fn health_check_works() {
@@ -6,7 +6,7 @@ async fn health_check_works() {
     let app = spawn_app().await;
 
     // Act
-    let actual = app.core_client.health_check(no_cb).await.unwrap();
+    let actual = app.core_client.health_check().await.unwrap();
 
     // Assert
     // Using unwrap so error shows instead of asserting `is_ok``

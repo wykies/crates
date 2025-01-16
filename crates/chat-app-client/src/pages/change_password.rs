@@ -1,4 +1,4 @@
-use egui::{Button, Context};
+use egui::Button;
 use egui_helpers::{ResponseHelpers, UiHelpers as _};
 use reqwest_cross::{Awaiting, DataState};
 use secrecy::{ExposeSecret as _, SecretString};
@@ -7,7 +7,7 @@ use wykies_shared::{
     uac::get_required_permissions,
 };
 
-use crate::{app::wake_fn, displayable_page_common};
+use crate::displayable_page_common;
 
 use super::DisplayablePage;
 
@@ -36,15 +36,12 @@ impl UiChangePassword {
             && !self.confirmation_password.expose_secret().is_empty()
     }
 
-    fn send_request(&mut self, ctx: Context, data_shared: &mut crate::DataShared) {
-        let rx = data_shared.client.change_password(
-            &ChangePasswordReqArgs {
-                current_password: self.current_password.clone(),
-                new_password: self.new_password.clone(),
-                new_password_check: self.confirmation_password.clone(),
-            },
-            wake_fn(ctx),
-        );
+    fn send_request(&mut self, data_shared: &mut crate::DataShared) {
+        let rx = data_shared.client.change_password(&ChangePasswordReqArgs {
+            current_password: self.current_password.clone(),
+            new_password: self.new_password.clone(),
+            new_password_check: self.confirmation_password.clone(),
+        });
         self.data_state = DataState::AwaitingResponse(Awaiting(rx));
     }
 
@@ -82,7 +79,7 @@ impl UiChangePassword {
         }
 
         if should_send {
-            self.send_request(ui.ctx().clone(), data_shared);
+            self.send_request(data_shared);
         }
     }
 

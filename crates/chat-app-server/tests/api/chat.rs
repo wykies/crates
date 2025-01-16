@@ -1,4 +1,4 @@
-use crate::helpers::{no_cb, spawn_app, wait_for_message};
+use crate::helpers::{spawn_app, wait_for_message};
 use ewebsock::{WsEvent, WsMessage};
 use plugin_chat::{ChatIM, ChatImText, ChatMsg, ChatUser, InitialStateBody, RespHistoryBody};
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, uac::Username};
@@ -11,13 +11,13 @@ async fn sent_messages_received() {
     app.login_assert().await;
     let mut conn1 = app
         .core_client
-        .ws_connect(PATH_WS_TOKEN_CHAT, no_cb)
+        .ws_connect(PATH_WS_TOKEN_CHAT)
         .await
         .expect("failed to receive on rx")
         .expect("connection result was not ok");
     let conn2 = app
         .core_client
-        .ws_connect(PATH_WS_TOKEN_CHAT, no_cb)
+        .ws_connect(PATH_WS_TOKEN_CHAT)
         .await
         .expect("failed to receive on rx")
         .expect("connection result was not ok");
@@ -77,7 +77,7 @@ async fn connect_to_chat() {
 
     // Connect Websocket
     app.core_client
-        .ws_connect(PATH_WS_TOKEN_CHAT, no_cb)
+        .ws_connect(PATH_WS_TOKEN_CHAT)
         .await
         .expect("failed to receive on rx")
         .expect("connection result was not ok");
@@ -96,7 +96,7 @@ async fn load_history() {
     // Act - Connect Websocket
     let mut conn = app
         .core_client
-        .ws_connect(PATH_WS_TOKEN_CHAT, no_cb)
+        .ws_connect(PATH_WS_TOKEN_CHAT)
         .await
         .expect("failed to receive on rx")
         .expect("connection result was not ok");
@@ -116,7 +116,7 @@ async fn load_history() {
     // Act - Reconnect to see if messages are sent in the history
     conn = app
         .core_client
-        .ws_connect(PATH_WS_TOKEN_CHAT, no_cb)
+        .ws_connect(PATH_WS_TOKEN_CHAT)
         .await
         .expect("failed to receive on rx")
         .expect("connection result was not ok");

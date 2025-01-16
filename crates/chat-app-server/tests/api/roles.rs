@@ -1,4 +1,4 @@
-use crate::helpers::{no_cb, spawn_app};
+use crate::helpers::{ spawn_app};
 use wykies_shared::{
     req_args::api::admin::role::AssignReqArgs,
     uac::{Permission, Role, RoleDraft},
@@ -25,7 +25,7 @@ async fn create_and_assign_role_to_user() {
     // Act - Create Role
     let role_id = app_admin
         .core_client
-        .create_role(&role_draft, no_cb)
+        .create_role(&role_draft)
         .await
         .expect("failed to receive on rx")
         .expect("failed to extract role_id");
@@ -33,7 +33,7 @@ async fn create_and_assign_role_to_user() {
     // Assert - Verify Role was created
     let role = app_admin
         .core_client
-        .get_role(role_id, no_cb)
+        .get_role(role_id)
         .await
         .expect("failed to receive on rx")
         .expect("failed to extract role_id");
@@ -55,7 +55,7 @@ async fn create_and_assign_role_to_user() {
     // Act - Log out the normal user
     app_normal
         .core_client
-        .logout(no_cb)
+        .logout()
         .await
         .expect("failed to receive on rx")
         .expect("failed to log out");
@@ -67,7 +67,7 @@ async fn create_and_assign_role_to_user() {
     };
     app_admin
         .core_client
-        .assign_role(&req_args, no_cb)
+        .assign_role(&req_args)
         .await
         .expect("failed to receive on rx")
         .expect("failed to assign role");

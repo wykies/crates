@@ -1,6 +1,6 @@
 use wykies_shared::branch::{Branch, BranchDraft};
 
-use crate::helpers::{no_cb, spawn_app};
+use crate::helpers::spawn_app;
 
 #[tokio::test]
 async fn create_branch() {
@@ -17,7 +17,7 @@ async fn create_branch() {
     // Act - Create Branch
     let branch_id = app_admin
         .core_client
-        .create_branch(&branch_draft, no_cb)
+        .create_branch(&branch_draft)
         .await
         .expect("failed to get msg from rx")
         .expect("failed to extract branch id from result");
@@ -25,7 +25,7 @@ async fn create_branch() {
     // Assert - Verify branch was created
     let branches = app_admin
         .core_client
-        .get_branches(no_cb)
+        .get_branches()
         .await
         .expect("failed to get msg from rx")
         .expect("failed to extract branches from result");

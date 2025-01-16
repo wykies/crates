@@ -9,7 +9,7 @@ use wykies_shared::{
     uac::{ResetPasswordError, UserMetadata, UserMetadataDiff, Username},
 };
 
-use crate::helpers::{no_cb, spawn_app};
+use crate::helpers::spawn_app;
 
 #[tokio::test]
 async fn list_users_and_roles() {
@@ -20,7 +20,7 @@ async fn list_users_and_roles() {
     // Act
     let mut actual = app
         .core_client
-        .list_users_and_roles(no_cb)
+        .list_users_and_roles()
         .await
         .expect("failed to receive on rx")
         .expect("failed to extract result");
@@ -45,7 +45,7 @@ async fn user() {
     // Act
     let actual = app
         .core_client
-        .get_user(app.test_user.username.clone().try_into().unwrap(), no_cb)
+        .get_user(app.test_user.username.clone().try_into().unwrap())
         .await
         .expect("failed to receive on rx")
         .expect("failed to extract result");
@@ -125,7 +125,7 @@ async fn common_update_user_test(f: impl FnOnce(UserMetadata) -> UserMetadata) {
     // Arrange -- Get User from DB
     let original_user = app
         .core_client
-        .get_user(app.test_user.username.clone().try_into().unwrap(), no_cb)
+        .get_user(app.test_user.username.clone().try_into().unwrap())
         .await
         .expect("failed to receive on rx")
         .expect("failed to extract result");
@@ -140,7 +140,7 @@ async fn common_update_user_test(f: impl FnOnce(UserMetadata) -> UserMetadata) {
 
     // Act -- Push change
     app.core_client
-        .update_user(diff, no_cb)
+        .update_user(diff)
         .await
         .expect("failed to receive on rx")
         .expect("failed to extract result");
@@ -148,7 +148,7 @@ async fn common_update_user_test(f: impl FnOnce(UserMetadata) -> UserMetadata) {
     // Act -- Get updated user
     let actual = app
         .core_client
-        .get_user(app.test_user.username.clone().try_into().unwrap(), no_cb)
+        .get_user(app.test_user.username.clone().try_into().unwrap())
         .await
         .expect("failed to receive on rx")
         .expect("failed to extract result");
@@ -173,7 +173,7 @@ async fn new_user() {
 
     // Act
     app.core_client
-        .new_user(req_args.clone(), no_cb)
+        .new_user(req_args.clone())
         .await
         .expect("failed to receive on rx")
         .expect("failed to extract result");
@@ -182,7 +182,7 @@ async fn new_user() {
     // of the panic in the code.
     let actual = app
         .core_client
-        .get_user(username.clone(), no_cb)
+        .get_user(username.clone())
         .await
         .expect("failed to receive on rx")
         .expect("failed to extract result");
@@ -207,7 +207,7 @@ async fn new_user() {
     // Act
     let outcome = app
         .core_client
-        .login(login_args, no_cb)
+        .login(login_args)
         .await
         .expect("failed to receive on rx")
         .expect("failed to extract result");
@@ -231,7 +231,7 @@ async fn password_reset_normal() {
     // Act - Change password
     app_admin
         .core_client
-        .reset_password(password_reset_req_args, no_cb)
+        .reset_password(password_reset_req_args)
         .await
         .expect("failed to receive on rx")
         .expect("failed to extract result");
@@ -257,7 +257,7 @@ async fn password_reset_blocked_same_user() {
     // Act
     let actual = app
         .core_client
-        .reset_password(args, no_cb)
+        .reset_password(args)
         .await
         .expect("failed to receive on rx")
         .expect_err("failed to extract error");

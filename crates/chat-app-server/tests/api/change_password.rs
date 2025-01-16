@@ -1,4 +1,4 @@
-use crate::helpers::{no_cb, spawn_app};
+use crate::helpers::spawn_app;
 use uuid::Uuid;
 use wykies_shared::{
     errors::NotLoggedInError, req_args::api::ChangePasswordReqArgs, uac::ChangePasswordError,
@@ -16,7 +16,7 @@ async fn you_must_be_logged_in_to_change_your_password() {
     };
 
     // Act
-    let actual = app.core_client.change_password(&args, no_cb).await.unwrap();
+    let actual = app.core_client.change_password(&args).await.unwrap();
 
     // Assert
     assert_eq!(
@@ -38,14 +38,11 @@ async fn new_password_fields_must_match() {
     // Act - Try to change password
     let actual = app
         .core_client
-        .change_password(
-            &ChangePasswordReqArgs {
-                current_password: app.test_user.password.clone().into(),
-                new_password: new_password.clone().into(),
-                new_password_check: another_new_password.into(),
-            },
-            no_cb,
-        )
+        .change_password(&ChangePasswordReqArgs {
+            current_password: app.test_user.password.clone().into(),
+            new_password: new_password.clone().into(),
+            new_password_check: another_new_password.into(),
+        })
         .await
         .unwrap();
 
@@ -69,14 +66,11 @@ async fn current_password_must_be_valid() {
     // Act - Try to change password
     let actual = app
         .core_client
-        .change_password(
-            &ChangePasswordReqArgs {
-                current_password: wrong_password.into(),
-                new_password: new_password.clone().into(),
-                new_password_check: new_password.into(),
-            },
-            no_cb,
-        )
+        .change_password(&ChangePasswordReqArgs {
+            current_password: wrong_password.into(),
+            new_password: new_password.clone().into(),
+            new_password_check: new_password.into(),
+        })
         .await
         .unwrap();
 
@@ -102,14 +96,11 @@ async fn changing_password_works() {
     // Act - Change password
     let actual = app
         .core_client
-        .change_password(
-            &ChangePasswordReqArgs {
-                current_password: app.test_user.password.clone().into(),
-                new_password: new_password.clone().into(),
-                new_password_check: new_password.clone().into(),
-            },
-            no_cb,
-        )
+        .change_password(&ChangePasswordReqArgs {
+            current_password: app.test_user.password.clone().into(),
+            new_password: new_password.clone().into(),
+            new_password_check: new_password.clone().into(),
+        })
         .await
         .unwrap();
 
@@ -122,10 +113,7 @@ async fn changing_password_works() {
     // Act - Login using the new password
     let login_outcome = app
         .core_client
-        .login(
-            app.test_user.login_args().password(new_password.into()),
-            no_cb,
-        )
+        .login(app.test_user.login_args().password(new_password.into()))
         .await
         .unwrap();
 
