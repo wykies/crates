@@ -12,7 +12,7 @@ use wykies_server_test_helper::{
 };
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, db_types::DbPool};
 
-pub use wykies_server_test_helper::wait_for_message;
+pub use wykies_server_test_helper::{no_cb, wait_for_message};
 
 #[derive(Debug)]
 pub struct TestApp(wykies_server_test_helper::TestApp<wykies_client_core::Client>);
@@ -118,7 +118,7 @@ impl TestApp {
         // Also tests if able to establish a websocket connection but this was the
         // simplest alternative that didn't need any permissions
         self.core_client
-            .ws_connect(PATH_WS_TOKEN_CHAT)
+            .ws_connect(PATH_WS_TOKEN_CHAT, no_cb)
             .await
             .expect("failed to receive on rx")
             .is_ok()

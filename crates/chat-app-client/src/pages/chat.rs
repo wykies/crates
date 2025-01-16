@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use crate::displayable_page_common;
+use crate::{app::wake_fn, displayable_page_common};
 
 use super::DisplayablePage;
 use frontend::FrontEnd;
@@ -47,8 +47,13 @@ impl DisplayablePage for UiChat {
                 .get_or_insert_with(frontend_init)
                 .show(ui, connection)
         } else {
+            let ctx = ui.ctx().clone();
             let can_make_progress = self.data_state.egui_get(ui, Some("Reconnect"), || {
-                Awaiting(data_shared.client.ws_connect(PATH_WS_TOKEN_CHAT))
+                Awaiting(
+                    data_shared
+                        .client
+                        .ws_connect(PATH_WS_TOKEN_CHAT, wake_fn(ctx)),
+                )
             });
             debug_assert!(can_make_progress.is_able_to_make_progress());
         }

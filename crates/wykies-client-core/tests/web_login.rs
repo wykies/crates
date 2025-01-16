@@ -56,7 +56,7 @@ async fn is_logged_in(client: &Client) -> bool {
     // Also tests if able to establish a websocket connection but this was the
     // simplest alternative that didn't need any permissions
     client
-        .ws_connect(PATH_WS_TOKEN_CHAT)
+        .ws_connect(PATH_WS_TOKEN_CHAT, || {})
         .await
         .expect("failed to receive on rx")
         .is_ok()

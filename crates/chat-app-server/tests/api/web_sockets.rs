@@ -4,7 +4,7 @@ use ewebsock::WsEvent;
 use wykies_client_core::{ws_expose_internal, DUMMY_ARGUMENT};
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, token::AuthToken};
 
-use crate::helpers::{spawn_app, wait_for_message};
+use crate::helpers::{no_cb, spawn_app, wait_for_message};
 
 #[tokio::test]
 async fn rejected_without_requesting_token() {
@@ -16,7 +16,7 @@ async fn rejected_without_requesting_token() {
         .expose_internal_ws_url_from(&PATH_WS_TOKEN_CHAT);
 
     // Try to connect
-    let conn = ws_expose_internal::initiate_ws_connection(ws_url).unwrap();
+    let conn = ws_expose_internal::initiate_ws_connection(ws_url, no_cb).unwrap();
 
     // Get response
     let response = wait_for_message(&conn.rx, false).await.unwrap();
@@ -49,7 +49,7 @@ async fn fails_to_connect_without_correct_token() {
         .expect("failed to extract token");
 
     // Initiate connection
-    let mut conn = ws_expose_internal::initiate_ws_connection(ws_url).unwrap();
+    let mut conn = ws_expose_internal::initiate_ws_connection(ws_url, no_cb).unwrap();
 
     // Wait for connection to be opened
     ws_expose_internal::wait_for_connection_to_open(&mut conn)
