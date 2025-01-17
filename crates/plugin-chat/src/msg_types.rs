@@ -1,6 +1,8 @@
 use anyhow::Context;
 use std::{fmt::Display, marker::PhantomData};
-use wykies_shared::{db_types::Db, errors::ConversionError, string_wrapper, uac::Username};
+#[cfg(feature = "server_only")]
+use wykies_shared::db_types::Db;
+use wykies_shared::{errors::ConversionError, string_wrapper, uac::Username};
 use wykies_time::Timestamp;
 
 string_wrapper!(ChatImText, 255);

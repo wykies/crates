@@ -1,4 +1,6 @@
-use crate::{db_types::Db, errors::ConversionError, id::DbId, string_wrapper};
+#[cfg(feature = "server_only")]
+use crate::db_types::Db;
+use crate::{errors::ConversionError, id::DbId, string_wrapper};
 
 string_wrapper!(BranchName, 30);
 string_wrapper!(BranchAddress, 200);
