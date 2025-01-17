@@ -37,7 +37,7 @@ pub struct DataShared {
     /// client-core
     is_login_completed: bool,
     #[serde(skip)]
-    pub display_name: DisplayName,
+    pub display_name: Option<DisplayName>,
     #[serde(skip)]
     // TODO 2: Add option for user to change the server they are connecting to (Saving a list of
     //          recent servers)
@@ -53,7 +53,7 @@ impl DataShared {
         if let Some(user_info) = self.client.user_info() {
             debug!("Updating username to {}", user_info.username);
             self.username = user_info.username.clone().into();
-            self.display_name = user_info.display_name.clone();
+            self.display_name = Some(user_info.display_name.clone());
             self.is_login_completed = true;
         } else {
             warn!("No user found in client");
@@ -223,7 +223,9 @@ impl ChatApp {
                     if !self.is_locked() && ui.button("Lock").clicked() {
                         self.lock();
                     }
-                    ui.label(format!("Logged in as {}", self.data_shared.display_name));
+                    if let Some(display_name) = self.data_shared.display_name.as_ref() {
+                        ui.label(format!("Logged in as {}", display_name));
+                    }
                 }
                 egui::warn_if_debug_build(ui);
             });

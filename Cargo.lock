@@ -4301,6 +4301,7 @@ dependencies = [
  "actix-web",
  "actix-ws",
  "anyhow",
+ "egui",
  "futures-util",
  "ringbuffer",
  "serde",
