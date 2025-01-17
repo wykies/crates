@@ -1,12 +1,12 @@
 use super::{Permissions, RoleIdAndName, RoleName};
 #[cfg(feature = "server_only")]
 use crate::db_types::Db;
-use crate::{errors::ConversionError, id::DbId, string_wrapper};
+use crate::{errors::ConversionError, id::DbId, string_wrapper, AlwaysCase};
 use anyhow::bail;
 use chrono::NaiveDate;
 
-string_wrapper!(Username, 16);
-string_wrapper!(DisplayName, 30);
+string_wrapper!(Username, 16, AlwaysCase::Any);
+string_wrapper!(DisplayName, 30, AlwaysCase::Any);
 
 /// Stores the user info that is returned on login
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]

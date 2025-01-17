@@ -1,12 +1,12 @@
 use super::Permissions;
 #[cfg(feature = "server_only")]
 use crate::db_types::Db;
-use crate::{errors::ConversionError, id::DbId, string_wrapper};
+use crate::{errors::ConversionError, id::DbId, string_wrapper, AlwaysCase};
 use serde::{Deserialize, Serialize};
 use std::sync::LazyLock;
 
-string_wrapper!(RoleName, 16);
-string_wrapper!(RoleDescription, 50);
+string_wrapper!(RoleName, 16, AlwaysCase::Any);
+string_wrapper!(RoleDescription, 50, AlwaysCase::Any);
 
 impl RoleName {
     pub fn no_role_set() -> &'static Self {

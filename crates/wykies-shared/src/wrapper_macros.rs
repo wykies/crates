@@ -1,6 +1,6 @@
 #[macro_export]
 macro_rules! string_wrapper {
-    ($name: ident, $max_length: expr) => {
+    ($name: ident, $max_length: expr, $always_case: expr) => {
         #[derive(
             Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq, Hash, PartialOrd, Ord,
         )]
@@ -19,7 +19,12 @@ macro_rules! string_wrapper {
                         actual: value.len(),
                     });
                 }
-                let value = value.to_uppercase();
+                let value = match $always_case{
+                    AlwaysCase::Any => value,
+                    AlwaysCase::Lower => value.to_lowercase(),
+                    AlwaysCase::Upper => value.to_uppercase(),
+                };
+
                 Ok(Self(value))
             }
         }
@@ -85,4 +90,10 @@ macro_rules! string_wrapper {
             }
         }
     };
+}
+
+pub enum AlwaysCase {
+    Any,
+    Lower,
+    Upper,
 }

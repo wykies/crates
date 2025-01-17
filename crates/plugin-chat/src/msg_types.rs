@@ -2,11 +2,10 @@ use anyhow::Context;
 use std::{fmt::Display, marker::PhantomData};
 #[cfg(feature = "server_only")]
 use wykies_shared::db_types::Db;
-use wykies_shared::{errors::ConversionError, string_wrapper, uac::Username};
+use wykies_shared::{errors::ConversionError, string_wrapper, uac::Username, AlwaysCase};
 use wykies_time::Timestamp;
 
-// TODO 4: Implement not everything must be upper case
-string_wrapper!(ChatImText, 255);
+string_wrapper!(ChatImText, 255, AlwaysCase::Any);
 
 impl TryFrom<Vec<u8>> for ChatImText {
     type Error = anyhow::Error;

@@ -21,6 +21,8 @@ mod wrapper_macros;
 #[cfg(feature = "server_only")]
 pub use db_types;
 
+pub use wrapper_macros::AlwaysCase;
+
 pub use random::{random_string, random_string_def_len};
 
 #[cfg(not(target_arch = "wasm32"))]

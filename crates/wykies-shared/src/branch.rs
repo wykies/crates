@@ -1,8 +1,8 @@
 #[cfg(feature = "server_only")]
 use crate::db_types::Db;
-use crate::{errors::ConversionError, id::DbId, string_wrapper};
+use crate::{errors::ConversionError, id::DbId, string_wrapper, AlwaysCase};
 
-string_wrapper!(BranchName, 30);
+string_wrapper!(BranchName, 30, AlwaysCase::Any);
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
 pub struct Branch {

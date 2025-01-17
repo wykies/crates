@@ -1,6 +1,8 @@
-use crate::{errors::ConversionError, id::DbId, string_wrapper};
+#[cfg(feature = "server_only")]
+use crate::db_types::Db;
+use crate::{errors::ConversionError, id::DbId, string_wrapper, AlwaysCase};
 
-string_wrapper!(HostId, 50);
+string_wrapper!(HostId, 50, AlwaysCase::Any);
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
 pub struct HostBranchPair {
