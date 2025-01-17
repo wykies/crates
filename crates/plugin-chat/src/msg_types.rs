@@ -5,6 +5,7 @@ use wykies_shared::db_types::Db;
 use wykies_shared::{errors::ConversionError, string_wrapper, uac::Username};
 use wykies_time::Timestamp;
 
+// TODO 4: Implement not everything must be upper case
 string_wrapper!(ChatImText, 255);
 
 impl TryFrom<Vec<u8>> for ChatImText {
