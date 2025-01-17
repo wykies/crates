@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "INSERT INTO branch\n            (branch_name) \n            VALUES ($1) RETURNING branch_id;",
+  "query": "INSERT INTO branch\n            (branch_name, branch_address) \n            VALUES ($1, '') RETURNING branch_id;",
   "describe": {
     "columns": [
       {
@@ -18,5 +18,5 @@
       false
     ]
   },
-  "hash": "f26d62892902b0506b3e281967510b4669376cae713bba62435d997a659c2034"
+  "hash": "bc466bbd8eadbb57b09264bd44fc18c1cfe4bd8720068a41ae6bdf38890ae69a"
 }

@@ -50,8 +50,8 @@ pub async fn branch_create(
     let result = {
         let sql_result = sqlx::query!(
             "INSERT INTO `branch` 
-            (`BranchID`, `BranchName`) 
-            VALUES (NULL, ?);",
+            (`BranchID`, `BranchName`, `BranchAddress`) 
+            VALUES (NULL, ?, '');",
             draft.name,
         )
         .execute(pool)
@@ -66,8 +66,8 @@ pub async fn branch_create(
         // TODO 5: Check why encode trait impl doesn't make converting not necessary
         sqlx::query!(
             "INSERT INTO branch
-            (branch_name) 
-            VALUES ($1) RETURNING branch_id;",
+            (branch_name, branch_address) 
+            VALUES ($1, '') RETURNING branch_id;",
             draft.name.as_ref(),
         )
         .fetch_one(pool)
