@@ -6,7 +6,7 @@ use egui_extras::{Column, TableBuilder};
 use egui_helpers::UiHelpers;
 use new_user_info::NewUserInfo;
 use pass_reset_user_info::PassResetUserInfo;
-use reqwest_cross::{Awaiting, DataState};
+use reqwest_cross::DataState;
 use secrecy::ExposeSecret;
 use std::ops::ControlFlow;
 use wykies_client_core::Client;
@@ -106,7 +106,11 @@ impl DisplayablePage for UiUAC {
         if self.should_refresh {
             self.reset_to_default(super::private::Token {});
         }
-        if let DataState::Present(data) = &mut self.data_state {
+        if self.data_state.is_none() {
+            self.data_state
+                .egui_start_request(ui, || data_shared.client.list_users_and_roles());
+        }
+        if let Some(data) = self.data_state.egui_poll_mut(ui, None) {
             egui::TopBottomPanel::bottom(format!("user edit panel{}", self.page_unique_number))
                 .show_inside(ui, |ui| {
                     ui.vertical_centered(|ui| {
@@ -138,11 +142,6 @@ impl DisplayablePage for UiUAC {
                 egui::ScrollArea::horizontal()
                     .show(ui, |ui| ui_show_user_list(ui, data, &mut self.user_op));
             });
-        } else {
-            let can_make_progress = self.data_state.egui_get(ui, None, || {
-                Awaiting(data_shared.client.list_users_and_roles())
-            });
-            debug_assert!(can_make_progress.is_able_to_make_progress());
         }
     }
 }

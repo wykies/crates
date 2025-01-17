@@ -33,7 +33,7 @@ impl EditUserInfo {
 
     /// Returns if the edited user is different from the original one
     pub fn has_changes(&self) -> bool {
-        let DataState::Present(edit_user) = self.edit_user.as_ref() else {
+        let Some(edit_user) = self.edit_user.present() else {
             return false;
         };
         edit_user != &self.original_user
@@ -54,7 +54,7 @@ impl EditUserInfo {
             // Only load if loading already started
             self.load_user_info(ui, client_core);
         }
-        if let DataState::Present(edit_user) = self.edit_user.as_mut() {
+        if let Some(edit_user) = self.edit_user.present_mut() {
             Some((&self.original_user, edit_user))
         } else {
             None
@@ -72,10 +72,12 @@ impl EditUserInfo {
     pub fn load_user_info(&mut self, ui: &mut egui::Ui, client_core: &Client) {
         if !self.edit_user.is_present() {
             self.load_time = Some(Timestamp::now());
-            let can_make_progress = self.edit_user.egui_get(ui, Some("Clear Error"), || {
-                Awaiting(client_core.get_user(self.original_user.username.clone()))
-            });
-            debug_assert!(can_make_progress.is_able_to_make_progress());
+            if self.edit_user.is_none() {
+                self.edit_user.egui_start_request(ui, || {
+                    client_core.get_user(self.original_user.username.clone())
+                });
+            }
+            self.edit_user.egui_poll(ui, Some("Clear Error"));
         }
     }
 

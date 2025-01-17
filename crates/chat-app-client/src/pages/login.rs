@@ -114,7 +114,7 @@ impl UiLogin {
                     )
                 });
                 password_page.show(ui, data_shared);
-                if matches!(password_page.data_state, DataState::Present(())) {
+                if password_page.data_state.is_present() {
                     self.login_attempt_status = DataState::Present(LoginOutcome::Success);
                 }
             } else {

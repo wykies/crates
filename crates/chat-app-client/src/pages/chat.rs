@@ -4,7 +4,7 @@ use crate::{app::wake_fn, displayable_page_common};
 
 use super::DisplayablePage;
 use frontend::FrontEnd;
-use reqwest_cross::{Awaiting, DataState};
+use reqwest_cross::DataState;
 use wykies_client_core::WebSocketConnection;
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, uac::get_required_permissions};
 
@@ -42,20 +42,18 @@ impl DisplayablePage for UiChat {
                 title,
             )
         };
-        if let DataState::Present(connection) = &mut self.data_state {
+        if self.data_state.is_none() {
+            let ctx = ui.ctx().clone();
+            self.data_state.egui_start_request(ui, || {
+                data_shared
+                    .client
+                    .ws_connect(PATH_WS_TOKEN_CHAT, wake_fn(ctx))
+            });
+        }
+        if let Some(connection) = self.data_state.egui_poll_mut(ui, Some("Reconnect")) {
             self.frontend
                 .get_or_insert_with(frontend_init)
                 .show(ui, connection)
-        } else {
-            let ctx = ui.ctx().clone();
-            let can_make_progress = self.data_state.egui_get(ui, Some("Reconnect"), || {
-                Awaiting(
-                    data_shared
-                        .client
-                        .ws_connect(PATH_WS_TOKEN_CHAT, wake_fn(ctx)),
-                )
-            });
-            debug_assert!(can_make_progress.is_able_to_make_progress());
         }
     }
 }
