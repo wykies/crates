@@ -1,8 +1,5 @@
 # Wykies Open Source Rust Crates
 
-Note: Our code base is diverging and right now we don't have the time to keep the client updated so [this will](https://github.com/wykies/crates/tree/ee8d7d1208587b19cf27f5e64adeaf6b299ce878) be the last commit where the client compiles for a while.
-We'll try refactor out more of the shared code so that they work across both instead of just the bottom level so that the maintenance burden will be decreased.
-
 <!-- TODO 4: Add Cargo Semver Checks to CI at Workspace level (There is supposed to be a workspace flag) -->
 
 These are creates we decided to share are they were not the differentiating part of applications that we develop.
