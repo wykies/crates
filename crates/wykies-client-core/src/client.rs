@@ -304,11 +304,16 @@ fn extract_response(
     let response = match response {
         Ok(x) => x,
         Err(err_msg) => {
+            #[cfg(target_arch = "wasm32")]
+            let is_connected = "NOT AVAILABLE ON WASM";
+            #[cfg(not(target_arch = "wasm32"))]
+            let is_connected = err_msg.is_connect();
+
             warn!(
                 ?err_msg,
                 is_body = ?err_msg.is_body(),
                 is_builder = ?err_msg.is_builder(),
-                is_connect = ?err_msg.is_connect(),
+                ?is_connected,
                 is_decode = ?err_msg.is_decode(),
                 is_redirect = ?err_msg.is_redirect(),
                 is_request = ?err_msg.is_request(),
@@ -319,6 +324,7 @@ fn extract_response(
                 "reqwest::Error is: {err_msg}"
             );
             let custom_msg = match &err_msg {
+                #[cfg(not(target_arch = "wasm32"))]
                 e if e.is_connect() => "Server Not Reachable",
                 _ => "Request Failed",
             };
