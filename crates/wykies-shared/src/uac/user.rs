@@ -1,106 +1,10 @@
+use super::{Permissions, RoleIdAndName, RoleName};
+use crate::{id::DbId, string_wrapper};
 use anyhow::bail;
 use chrono::NaiveDate;
-use egui::WidgetText;
-use std::fmt::Display;
 
-use crate::{errors::ConversionError, id::DbId};
-
-use super::{Permissions, RoleIdAndName, RoleName};
-
-#[derive(
-    Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq, Hash, PartialOrd, Ord,
-)]
-/// Represents a username and is constrained to not be an empty string
-pub struct Username(String);
-
-#[derive(Default, Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
-pub struct DisplayName(String);
-
-impl TryFrom<String> for Username {
-    type Error = ConversionError;
-
-    fn try_from(value: String) -> Result<Self, Self::Error> {
-        if value.is_empty() {
-            return Err(ConversionError::Empty);
-        }
-        if value.len() > Self::MAX_LENGTH {
-            return Err(ConversionError::MaxExceeded {
-                max: Self::MAX_LENGTH,
-                actual: value.len(),
-            });
-        }
-        Ok(Self(value))
-    }
-}
-
-impl TryFrom<&str> for Username {
-    type Error = ConversionError;
-
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        value.to_string().try_into()
-    }
-}
-
-impl TryFrom<String> for DisplayName {
-    type Error = ConversionError;
-
-    fn try_from(value: String) -> Result<Self, Self::Error> {
-        if value.is_empty() {
-            return Err(ConversionError::Empty);
-        }
-        if value.len() > Self::MAX_LENGTH {
-            return Err(ConversionError::MaxExceeded {
-                max: Self::MAX_LENGTH,
-                actual: value.len(),
-            });
-        }
-        Ok(Self(value))
-    }
-}
-
-impl Username {
-    pub const MAX_LENGTH: usize = 16;
-}
-
-impl DisplayName {
-    pub const MAX_LENGTH: usize = 30;
-}
-
-impl From<Username> for String {
-    fn from(value: Username) -> Self {
-        value.0
-    }
-}
-
-impl From<DisplayName> for String {
-    fn from(value: DisplayName) -> Self {
-        value.0
-    }
-}
-
-impl AsRef<str> for Username {
-    fn as_ref(&self) -> &str {
-        &self.0
-    }
-}
-
-impl Display for Username {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl Display for DisplayName {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-impl AsRef<str> for DisplayName {
-    fn as_ref(&self) -> &str {
-        &self.0
-    }
-}
+string_wrapper!(Username, 16);
+string_wrapper!(DisplayName, 30);
 
 /// Stores the user info that is returned on login
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
@@ -162,18 +66,6 @@ impl ListUsersRoles {
             Some(x) => Ok(&x.name),
             None => bail!("didn't find a role with ID: {id:?}"),
         }
-    }
-}
-
-impl From<&Username> for WidgetText {
-    fn from(value: &Username) -> Self {
-        (&value.0).into()
-    }
-}
-
-impl From<&DisplayName> for WidgetText {
-    fn from(value: &DisplayName) -> Self {
-        (&value.0).into()
     }
 }
 
@@ -261,44 +153,9 @@ impl UserMetadataDiff {
     }
 }
 
-#[cfg(feature = "server_only")]
-pub mod sql {
-    use super::*;
-    use crate::db_types::Db;
-
-    impl sqlx::Encode<'_, Db> for Username {
-        fn encode_by_ref(
-            &self,
-            buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
-        ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
-            <String as sqlx::Encode<'_, Db>>::encode_by_ref(&self.0, buf)
-        }
-    }
-
-    impl sqlx::Encode<'_, Db> for DisplayName {
-        fn encode_by_ref(
-            &self,
-            buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
-        ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
-            <String as sqlx::Encode<'_, Db>>::encode_by_ref(&self.0, buf)
-        }
-    }
-
-    impl sqlx::Type<Db> for Username {
-        fn type_info() -> <Db as sqlx::Database>::TypeInfo {
-            <String as sqlx::Type<Db>>::type_info()
-        }
-    }
-
-    impl sqlx::Type<Db> for DisplayName {
-        fn type_info() -> <Db as sqlx::Database>::TypeInfo {
-            <String as sqlx::Type<Db>>::type_info()
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
+    // Actually test the macro so we only need one of these
     use rstest::rstest;
 
     use super::*;
@@ -309,17 +166,6 @@ mod tests {
     fn illegal_username(#[case] name: String, #[case] expect: ConversionError) {
         // Act
         let actual: Result<Username, ConversionError> = name.try_into();
-
-        // Assert
-        assert_eq!(actual.unwrap_err(), expect);
-    }
-
-    #[rstest]
-    #[case::empty("", ConversionError::Empty)]
-    #[case::too_long("a".repeat(31), ConversionError::MaxExceeded{max:30, actual:31})]
-    fn illegal_display_name(#[case] name: String, #[case] expect: ConversionError) {
-        // Act
-        let actual: Result<DisplayName, ConversionError> = name.try_into();
 
         // Assert
         assert_eq!(actual.unwrap_err(), expect);
