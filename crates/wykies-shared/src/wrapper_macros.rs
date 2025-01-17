@@ -20,6 +20,7 @@ macro_rules! string_wrapper {
                         actual: value.len(),
                     });
                 }
+                let value = value.to_uppercase();
                 Ok(Self(value))
             }
         }
