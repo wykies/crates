@@ -60,6 +60,14 @@ macro_rules! string_wrapper {
             }
         }
 
+        impl std::ops::Deref for $name {
+            type Target = str;
+
+            fn deref(&self) -> &Self::Target {
+                &self.0[..]
+            }
+        }
+
         #[cfg(feature = "server_only")]
         impl sqlx::Encode<'_, crate::db_types::Db> for $name {
             fn encode_by_ref(
