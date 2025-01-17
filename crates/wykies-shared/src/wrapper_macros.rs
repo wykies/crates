@@ -8,14 +8,14 @@ macro_rules! string_wrapper {
         pub struct $name(String);
 
         impl TryFrom<String> for $name {
-            type Error = crate::errors::ConversionError;
+            type Error = ConversionError;
 
             fn try_from(value: String) -> Result<Self, Self::Error> {
                 if value.is_empty() {
-                    return Err(crate::errors::ConversionError::Empty);
+                    return Err(ConversionError::Empty);
                 }
                 if value.len() > Self::MAX_LENGTH {
-                    return Err(crate::errors::ConversionError::MaxExceeded {
+                    return Err(ConversionError::MaxExceeded {
                         max: Self::MAX_LENGTH,
                         actual: value.len(),
                     });
@@ -25,7 +25,7 @@ macro_rules! string_wrapper {
         }
 
         impl TryFrom<&str> for $name {
-            type Error = crate::errors::ConversionError;
+            type Error = ConversionError;
 
             fn try_from(value: &str) -> Result<Self, Self::Error> {
                 value.to_string().try_into()
@@ -69,19 +69,19 @@ macro_rules! string_wrapper {
         }
 
         #[cfg(feature = "server_only")]
-        impl sqlx::Encode<'_, crate::db_types::Db> for $name {
+        impl sqlx::Encode<'_, Db> for $name {
             fn encode_by_ref(
                 &self,
-                buf: &mut <crate::db_types::Db as sqlx::Database>::ArgumentBuffer<'_>,
+                buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
             ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
-                <String as sqlx::Encode<'_, crate::db_types::Db>>::encode_by_ref(&self.0, buf)
+                <String as sqlx::Encode<'_, Db>>::encode_by_ref(&self.0, buf)
             }
         }
 
         #[cfg(feature = "server_only")]
-        impl sqlx::Type<crate::db_types::Db> for $name {
-            fn type_info() -> <crate::db_types::Db as sqlx::Database>::TypeInfo {
-                <String as sqlx::Type<crate::db_types::Db>>::type_info()
+        impl sqlx::Type<Db> for $name {
+            fn type_info() -> <Db as sqlx::Database>::TypeInfo {
+                <String as sqlx::Type<Db>>::type_info()
             }
         }
     };

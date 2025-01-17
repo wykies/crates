@@ -1,5 +1,5 @@
 use super::{Permissions, RoleIdAndName, RoleName};
-use crate::{id::DbId, string_wrapper};
+use crate::{db_types::Db, errors::ConversionError, id::DbId, string_wrapper};
 use anyhow::bail;
 use chrono::NaiveDate;
 

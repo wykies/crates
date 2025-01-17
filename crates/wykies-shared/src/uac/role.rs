@@ -1,5 +1,5 @@
 use super::Permissions;
-use crate::{id::DbId, string_wrapper};
+use crate::{db_types::Db, errors::ConversionError, id::DbId, string_wrapper};
 use serde::{Deserialize, Serialize};
 use std::sync::LazyLock;
 
