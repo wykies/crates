@@ -1,4 +1,3 @@
-/// If allowed empty not specified then empty is not allowed
 #[macro_export]
 macro_rules! string_wrapper {
     ($name: ident, $max_length: expr) => {
