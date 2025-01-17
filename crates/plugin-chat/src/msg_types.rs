@@ -1,7 +1,21 @@
 use anyhow::Context;
 use std::{fmt::Display, marker::PhantomData};
-use wykies_shared::{errors::ConversionError, uac::Username};
+use wykies_shared::{db_types::Db, errors::ConversionError, string_wrapper, uac::Username};
 use wykies_time::Timestamp;
+
+string_wrapper!(ChatImText, 255);
+
+impl TryFrom<Vec<u8>> for ChatImText {
+    type Error = anyhow::Error;
+
+    fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
+        String::from_utf8(value)
+            .context("failed to convert byte array into String")?
+            .trim_matches(char::from(0))
+            .try_into()
+            .context("failed to convert string into ChatImText")
+    }
+}
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize, PartialEq, Eq)]
 /// Messages sent between the server and client
@@ -25,9 +39,6 @@ pub struct ChatIM {
     pub timestamp: Timestamp,
     pub content: ChatImText,
 }
-
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
-pub struct ChatImText(String);
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
 pub struct InitialStateBody {
@@ -96,68 +107,9 @@ impl ChatUser {
     }
 }
 
-impl From<ChatImText> for String {
-    fn from(value: ChatImText) -> Self {
-        value.0
-    }
-}
-
 impl From<ChatUser> for Username {
     fn from(value: ChatUser) -> Self {
         value.0
-    }
-}
-
-impl ChatImText {
-    pub const MAX_LENGTH: usize = 255;
-}
-
-impl TryFrom<String> for ChatImText {
-    type Error = ConversionError;
-
-    fn try_from(mut value: String) -> Result<Self, Self::Error> {
-        if value.len() != value.trim().len() {
-            value = value.trim().to_string();
-        }
-        if value.len() > Self::MAX_LENGTH {
-            return Err(ConversionError::MaxExceeded {
-                max: Self::MAX_LENGTH,
-                actual: value.len(),
-            });
-        }
-        Ok(Self(value))
-    }
-}
-
-impl TryFrom<&str> for ChatImText {
-    type Error = ConversionError;
-
-    fn try_from(value: &str) -> Result<Self, Self::Error> {
-        value.to_string().try_into()
-    }
-}
-
-impl TryFrom<Vec<u8>> for ChatImText {
-    type Error = anyhow::Error;
-
-    fn try_from(value: Vec<u8>) -> Result<Self, Self::Error> {
-        String::from_utf8(value)
-            .context("failed to convert byte array into String")?
-            .trim_matches(char::from(0))
-            .try_into()
-            .context("failed to convert string into ChatImText")
-    }
-}
-
-impl AsRef<str> for ChatImText {
-    fn as_ref(&self) -> &str {
-        &self.0
-    }
-}
-
-impl Display for ChatImText {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
     }
 }
 

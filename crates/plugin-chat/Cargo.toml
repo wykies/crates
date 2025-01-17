@@ -7,10 +7,11 @@ edition = "2021"
 actix-web = { workspace = true, optional = true }
 actix-ws = { workspace = true, optional = true }
 anyhow.workspace = true
+egui.workspace = true
 futures-util = { workspace = true, optional = true }
 ringbuffer = { workspace = true, optional = true }
-serde.workspace = true
 serde_json = { workspace = true, optional = true }
+serde.workspace = true
 sqlx = { workspace = true, features = ["macros"], optional = true }
 tokio = { workspace = true, optional = true }
 tracing = { workspace = true, optional = true }
