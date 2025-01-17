@@ -19,7 +19,7 @@ macro_rules! string_wrapper {
                         actual: value.len(),
                     });
                 }
-                let value = match $always_case{
+                let value = match $always_case {
                     AlwaysCase::Any => value,
                     AlwaysCase::Lower => value.to_lowercase(),
                     AlwaysCase::Upper => value.to_uppercase(),
@@ -80,6 +80,98 @@ macro_rules! string_wrapper {
                 buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
             ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
                 <String as sqlx::Encode<'_, Db>>::encode_by_ref(&self.0, buf)
+            }
+        }
+
+        #[cfg(feature = "server_only")]
+        impl sqlx::Type<Db> for $name {
+            fn type_info() -> <Db as sqlx::Database>::TypeInfo {
+                <String as sqlx::Type<Db>>::type_info()
+            }
+        }
+    };
+}
+#[macro_export]
+macro_rules! char_array_wrapper {
+    ($name: ident, $length: expr, $always_case: expr) => {
+        #[derive(
+            Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord,
+        )]
+        pub struct $name([char; Self::LENGTH]);
+
+        impl $name {
+            pub const LENGTH: usize = $length;
+        }
+
+        impl std::fmt::Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                let mut result = String::new();
+                for ch in self.0.iter().cloned().filter(|&c| c != ' ') {
+                    result.push(ch);
+                }
+
+                write!(f, "{result}")
+            }
+        }
+
+        impl TryFrom<String> for $name {
+            type Error = ConversionError;
+
+            fn try_from(value: String) -> Result<Self, Self::Error> {
+                if value.is_empty() {
+                    return Err(ConversionError::Empty);
+                }
+                if value.len() > Self::LENGTH {
+                    return Err(ConversionError::MaxExceeded {
+                        max: Self::LENGTH,
+                        actual: value.len(),
+                    });
+                }
+                let value = match $always_case {
+                    AlwaysCase::Any => value,
+                    AlwaysCase::Lower => value.to_lowercase(),
+                    AlwaysCase::Upper => value.to_uppercase(),
+                };
+
+                let mut char_array = [' '; Self::LENGTH];
+                for (i, c) in value.char_indices() {
+                    assert!(
+                        i <= Self::LENGTH,
+                        "input was not properly validated, max length exceeded"
+                    );
+                    char_array[i] = c;
+                }
+                Ok(Self(char_array))
+            }
+        }
+
+        impl TryFrom<&str> for $name {
+            type Error = ConversionError;
+
+            fn try_from(value: &str) -> Result<Self, Self::Error> {
+                value.to_string().try_into()
+            }
+        }
+
+        impl From<$name> for String {
+            fn from(value: $name) -> Self {
+                value.to_string()
+            }
+        }
+
+        impl From<&$name> for egui::WidgetText {
+            fn from(value: &$name) -> Self {
+                value.to_string().into()
+            }
+        }
+
+        #[cfg(feature = "server_only")]
+        impl sqlx::Encode<'_, Db> for $name {
+            fn encode_by_ref(
+                &self,
+                buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
+            ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
+                <String as sqlx::Encode<'_, Db>>::encode_by_ref(&self.to_string(), buf)
             }
         }
 
