@@ -1,4 +1,4 @@
-use anyhow::{anyhow, Context};
+use anyhow::{anyhow, bail, Context};
 use reqwest_cross::reqwest::{self, Method, RequestBuilder, StatusCode};
 use reqwest_cross::{fetch, fetch_plus, oneshot};
 use secrecy::ExposeSecret as _;
@@ -301,10 +301,30 @@ async fn handle_error(response: reqwest::Response) -> anyhow::Error {
 fn extract_response(
     response: reqwest::Result<reqwest::Response>,
 ) -> anyhow::Result<(reqwest::Response, StatusCode)> {
-    if response.is_err() {
-        info!("Response is err: {:#?}", response);
-    }
-    let response = response.context("failed to send request")?;
+    let response = match response {
+        Ok(x) => x,
+        Err(err_msg) => {
+            warn!(
+                ?err_msg,
+                is_body = ?err_msg.is_body(),
+                is_builder = ?err_msg.is_builder(),
+                is_connect = ?err_msg.is_connect(),
+                is_decode = ?err_msg.is_decode(),
+                is_redirect = ?err_msg.is_redirect(),
+                is_request = ?err_msg.is_request(),
+                is_status = ?err_msg.is_status(),
+                is_timeout = ?err_msg.is_timeout(),
+                status = ?err_msg.status(),
+                url = ?err_msg.url(),
+                "reqwest::Error is: {err_msg}"
+            );
+            let custom_msg = match &err_msg {
+                e if e.is_connect() => "Server Not Reachable",
+                _ => "Request Failed",
+            };
+            bail!("{custom_msg}: {err_msg}")
+        }
+    };
     let status = response.status();
     Ok((response, status))
 }
