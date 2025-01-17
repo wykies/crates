@@ -13,9 +13,9 @@ use wykies_shared::{
 pub async fn branch_list(pool: web::Data<DbPool>) -> actix_web::Result<web::Json<Vec<Branch>>> {
     let pool: &DbPool = &pool;
     #[cfg(feature = "mysql")]
-    let query = sqlx::query!("SELECT `BranchID`, `BranchName`, `BranchAddress` FROM `branch`");
+    let query = sqlx::query!("SELECT `BranchID`, `BranchName` FROM `branch`");
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
-    let query = sqlx::query!("SELECT branch_id, branch_name, branch_address FROM branch");
+    let query = sqlx::query!("SELECT branch_id, branch_name FROM branch");
     let rows = query
         .fetch_all(pool)
         .await
@@ -28,19 +28,11 @@ pub async fn branch_list(pool: web::Data<DbPool>) -> actix_web::Result<web::Json
             return Ok(Branch {
                 id: x.BranchID.try_into()?,
                 name: x.BranchName.try_into().context("invalid branch name")?,
-                address: x
-                    .BranchAddress
-                    .try_into()
-                    .context("invalid branch address")?,
             });
             #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
             Ok(Branch {
                 id: x.branch_id.try_into()?,
                 name: x.branch_name.try_into().context("invalid branch name")?,
-                address: x
-                    .branch_address
-                    .try_into()
-                    .context("invalid branch address")?,
             })
         })
         .collect::<anyhow::Result<Vec<Branch>>>()
@@ -58,10 +50,9 @@ pub async fn branch_create(
     let result = {
         let sql_result = sqlx::query!(
             "INSERT INTO `branch` 
-            (`BranchID`, `BranchName`, `BranchAddress`) 
-            VALUES (NULL, ?, ?);",
+            (`BranchID`, `BranchName`) 
+            VALUES (NULL, ?);",
             draft.name,
-            draft.address,
         )
         .execute(pool)
         .await
@@ -75,10 +66,9 @@ pub async fn branch_create(
         // TODO 5: Check why encode trait impl doesn't make converting not necessary
         sqlx::query!(
             "INSERT INTO branch
-            (branch_name, branch_address) 
-            VALUES ($1, $2) RETURNING branch_id;",
+            (branch_name) 
+            VALUES ($1) RETURNING branch_id;",
             draft.name.as_ref(),
-            draft.address.as_ref(),
         )
         .fetch_one(pool)
         .await

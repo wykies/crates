@@ -8,7 +8,6 @@ async fn create_branch() {
     let app_admin = spawn_app().await.create_admin_user().await;
     let branch_draft = BranchDraft {
         name: "test name".to_string().try_into().unwrap(),
-        address: "test address".to_string().try_into().unwrap(),
     };
 
     // Act - Login the admin
@@ -33,7 +32,6 @@ async fn create_branch() {
     let expected = Branch {
         id: branch_id,
         name: branch_draft.name,
-        address: branch_draft.address,
     };
     assert_eq!(actual, expected);
 }

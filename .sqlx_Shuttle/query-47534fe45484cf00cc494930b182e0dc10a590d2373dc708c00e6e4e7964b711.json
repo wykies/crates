@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT branch_id, branch_name, branch_address FROM branch",
+  "query": "SELECT branch_id, branch_name FROM branch",
   "describe": {
     "columns": [
       {
@@ -12,11 +12,6 @@
         "ordinal": 1,
         "name": "branch_name",
         "type_info": "Varchar"
-      },
-      {
-        "ordinal": 2,
-        "name": "branch_address",
-        "type_info": "Varchar"
       }
     ],
     "parameters": {
@@ -24,9 +19,8 @@
     },
     "nullable": [
       false,
-      false,
       false
     ]
   },
-  "hash": "e75d2610d7d3f69c13dc4a6bc6e392bf0e1532a3a4b0542ade8354267c2a9769"
+  "hash": "47534fe45484cf00cc494930b182e0dc10a590d2373dc708c00e6e4e7964b711"
 }

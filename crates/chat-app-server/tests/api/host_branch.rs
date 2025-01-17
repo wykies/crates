@@ -12,7 +12,6 @@ async fn set_host_branch_pair() {
     let app_admin = spawn_app().await.create_admin_user().await;
     let branch_draft = BranchDraft {
         name: "test name".to_string().try_into().unwrap(),
-        address: "test address".to_string().try_into().unwrap(),
     };
 
     // Act - Login the admin
@@ -39,7 +38,6 @@ async fn set_host_branch_pair() {
     // Act - Create new branch
     let branch_draft = BranchDraft {
         name: "test name2".to_string().try_into().unwrap(),
-        address: "test address2".to_string().try_into().unwrap(),
     };
     let branch_id = app_admin
         .core_client
@@ -82,7 +80,6 @@ async fn host_branch_pair_lookup() {
     let app_admin = spawn_app().await.create_admin_user().await;
     let branch_draft = BranchDraft {
         name: "test name".to_string().try_into().unwrap(),
-        address: "test address".to_string().try_into().unwrap(),
     };
 
     // Act - Login the admin
@@ -139,7 +136,6 @@ async fn ensure_branch_only_changes_if_not_set() {
     app_admin.login_assert().await;
     let body = BranchDraft {
         name: "second branch".to_string().try_into().unwrap(),
-        address: "other address".to_string().try_into().unwrap(),
     };
     let new_branch_id = app_admin
         .core_client
