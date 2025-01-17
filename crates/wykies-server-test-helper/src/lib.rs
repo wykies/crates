@@ -25,6 +25,8 @@ use wykies_shared::{
 };
 use wykies_time::Seconds;
 
+mod macros;
+
 const MSG_WAIT_TIMEOUT: Seconds = Seconds::new(2);
 
 // Ensure that the `tracing` stack is only initialised once
