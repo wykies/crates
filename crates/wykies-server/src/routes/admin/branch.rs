@@ -27,12 +27,12 @@ pub async fn branch_list(pool: web::Data<DbPool>) -> actix_web::Result<web::Json
             #[cfg(feature = "mysql")]
             return Ok(Branch {
                 id: x.BranchID.try_into()?,
-                name: x.BranchName.try_into().context("invalid branch name")?,
+                name: x.BranchName.try_into()?,
             });
             #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
             Ok(Branch {
                 id: x.branch_id.try_into()?,
-                name: x.branch_name.try_into().context("invalid branch name")?,
+                name: x.branch_name.try_into()?,
             })
         })
         .collect::<anyhow::Result<Vec<Branch>>>()
@@ -74,8 +74,7 @@ pub async fn branch_create(
         .await
         .map_err(e500)?
         .branch_id
-        .try_into()
-        .map_err(e500)?
+        .try_into()?
     };
     Ok(web::Json(result))
 }

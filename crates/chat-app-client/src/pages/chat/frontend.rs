@@ -406,11 +406,10 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
     fn system_msg(&mut self, content: String) -> Result<ChatIM, ()> {
         let content = match content
             .try_into()
-            .context("failed to generate system message")
         {
             Ok(x) => x,
-            Err(err) => {
-                error!(?err, "failed to generate system message");
+            Err(err_msg) => {
+                error!(?err_msg, "failed to generate system message");
                 self.set_error_unrecoverable("Error generating system message");
                 return Err(());
             }

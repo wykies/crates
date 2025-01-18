@@ -121,11 +121,8 @@ pub struct AuthUserInfo {
 
 impl AuthUserInfo {
     pub fn into_login_response(self, branch_id: DbId) -> anyhow::Result<LoginResponse> {
-        let username = self.username.try_into().context("username invalid")?;
-        let display_name = self
-            .display_name
-            .try_into()
-            .context("display name invalid")?;
+        let username = self.username.try_into()?;
+        let display_name = self.display_name.try_into()?;
         let user_info = UserInfo {
             username,
             display_name,

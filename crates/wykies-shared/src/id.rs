@@ -1,4 +1,4 @@
-use anyhow::Context;
+use crate::errors::DbIdConversionError;
 
 #[derive(
     Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, Copy,
@@ -12,13 +12,13 @@ impl From<u64> for DbId {
 }
 
 impl TryFrom<i32> for DbId {
-    type Error = anyhow::Error;
+    type Error = DbIdConversionError;
 
     fn try_from(value: i32) -> Result<Self, Self::Error> {
         if value >= 0 {
             Ok(Self(value as u64))
         } else {
-            anyhow::bail!("Negative values not supported as Id's. Value: {value}");
+            Err(DbIdConversionError::NegativeI32(value))
         }
     }
 }
@@ -30,13 +30,13 @@ impl From<DbId> for u64 {
 }
 
 impl TryFrom<DbId> for i32 {
-    type Error = anyhow::Error;
+    type Error = DbIdConversionError;
 
     fn try_from(value: DbId) -> Result<Self, Self::Error> {
         value
             .0
             .try_into()
-            .context("failed to convert DbId into i32")
+            .map_err(|_| DbIdConversionError::TooBigForI32(value))
     }
 }
 

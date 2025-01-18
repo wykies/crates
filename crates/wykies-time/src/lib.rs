@@ -4,8 +4,6 @@
 
 use std::{fmt::Display, time::Duration};
 
-use anyhow::Context as _;
-
 /// Intended to be similar to Duration but always clear that it is in Seconds
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize, PartialOrd, Ord,
@@ -18,6 +16,14 @@ pub struct Seconds(u64);
     Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize, PartialOrd, Ord,
 )]
 pub struct Timestamp(u64);
+
+#[derive(Debug, thiserror::Error, PartialEq, Eq)]
+pub enum TimestampConversionError {
+    #[error("Negative values are not supported. Value: {0}")]
+    NegativeI64(i64),
+    #[error("Seconds {0} exceeded the range of I64")]
+    ExceededRangeOfI64(Seconds),
+}
 
 impl Timestamp {
     pub fn now() -> Self {
@@ -78,14 +84,12 @@ impl Timestamp {
 }
 
 impl TryFrom<i64> for Timestamp {
-    type Error = anyhow::Error;
+    type Error = TimestampConversionError;
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
-        Ok(Self(
-            value
-                .try_into()
-                .context("failed to create Timestamp from i64")?,
-        ))
+        value
+            .try_into()
+            .map_err(|_| TimestampConversionError::NegativeI64(value))
     }
 }
 
@@ -161,13 +165,13 @@ impl From<Duration> for Seconds {
 }
 
 impl TryFrom<Seconds> for i64 {
-    type Error = anyhow::Error;
+    type Error = TimestampConversionError;
 
     fn try_from(value: Seconds) -> Result<Self, Self::Error> {
         value
             .0
             .try_into()
-            .context("failed to convert seconds into i64. Out of range?")
+            .map_err(|_| TimestampConversionError::ExceededRangeOfI64(value))
     }
 }
 

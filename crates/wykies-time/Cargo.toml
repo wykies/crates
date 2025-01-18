@@ -5,11 +5,11 @@ edition = "2021"
 description = "Simple time wrappers to make mistakes harder to make"
 
 [dependencies]
-anyhow.workspace = true
 chrono.workspace = true
 db-types = { workspace = true, optional = true }
 serde.workspace = true
 sqlx = { workspace = true, optional = true }
+thiserror.workspace = true
 web-time.workspace = true
 
 [features]

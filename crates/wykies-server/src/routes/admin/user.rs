@@ -48,14 +48,10 @@ pub async fn user(
 
     #[cfg(feature = "mysql")]
     let result = UserMetadata {
-        username: record.UserName.try_into().map_err(e500)?,
-        display_name: record.DisplayName.try_into().map_err(e500)?,
+        username: record.UserName.try_into()?,
+        display_name: record.DisplayName.try_into()?,
         force_pass_change: db_int_to_bool(record.ForcePassChange),
-        assigned_role: if let Some(x) = record.AssignedRole {
-            Some(x.try_into().map_err(e500)?)
-        } else {
-            None
-        },
+        assigned_role: record.AssignedRole.map(|x| x.try_into()).transpose()?,
         enabled: db_int_to_bool(record.Enabled),
         locked_out: db_int_to_bool(record.LockedOut),
         failed_attempts: record.FailedAttempts.try_into().map_err(e500)?,
@@ -63,14 +59,10 @@ pub async fn user(
     };
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
     let result = UserMetadata {
-        username: record.user_name.try_into().map_err(e500)?,
-        display_name: record.display_name.try_into().map_err(e500)?,
+        username: record.user_name.try_into()?,
+        display_name: record.display_name.try_into()?,
         force_pass_change: record.force_pass_change,
-        assigned_role: if let Some(x) = record.assigned_role {
-            Some(x.try_into().map_err(e500)?)
-        } else {
-            None
-        },
+        assigned_role: record.AssignedRole.map(|x| x.try_into()).transpose()?,
         enabled: record.is_enabled,
         locked_out: record.locked_out,
         failed_attempts: record.failed_attempts.try_into().map_err(e500)?,
@@ -104,10 +96,7 @@ pub async fn user_new(
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
     // TODO 5: Check why encode trait impl doesn't make converting not necessary
     let query = {
-        let assigned_role: Option<i32> = match args.assigned_role {
-            Some(x) => Some(x.try_into().map_err(e500)?),
-            None => None,
-        };
+        let assigned_role: Option<i32> = args.assigned_role.map(|x| x.try_into()).transpose()?;
         sqlx::query!(
             "INSERT INTO users
         (user_name, password_hash, display_name, assigned_role, pass_change_date, is_enabled) 
@@ -170,10 +159,7 @@ pub async fn user_update(
     // TODO 5: Check why encode trait impl doesn't make converting not necessary
     let query = {
         let display_name = diff.display_name.map(|x| x.to_string());
-        let assigned_role: Option<i32> = match diff.assigned_role {
-            Some(Some(x)) => Some(x.try_into().map_err(e500)?),
-            Some(None) | None => None,
-        };
+        let assigned_role: Option<i32> = diff.assigned_role.map(|x| x.try_into()).transpose()?;
         let failed_attempts: Option<i16> = diff.failed_attempts.map(|x| x.into());
         sqlx::query!(
             "UPDATE users SET
@@ -265,11 +251,7 @@ async fn get_users_list(pool: &DbPool) -> actix_web::Result<Vec<UserMetadata>> {
                 username: x.UserName.try_into()?,
                 display_name: x.DisplayName.try_into()?,
                 force_pass_change: db_int_to_bool(x.ForcePassChange),
-                assigned_role: if let Some(x) = x.AssignedRole {
-                    Some(x.try_into()?)
-                } else {
-                    None
-                },
+                assigned_role: x.AssignedRole.map(|x| x.try_into()).transpose()?,
                 enabled: db_int_to_bool(x.Enabled),
                 locked_out: db_int_to_bool(x.LockedOut),
                 failed_attempts: x.FailedAttempts.try_into()?,
@@ -280,11 +262,7 @@ async fn get_users_list(pool: &DbPool) -> actix_web::Result<Vec<UserMetadata>> {
                 username: x.user_name.try_into()?,
                 display_name: x.display_name.try_into()?,
                 force_pass_change: x.force_pass_change,
-                assigned_role: if let Some(x) = x.assigned_role {
-                    Some(x.try_into()?)
-                } else {
-                    None
-                },
+                assigned_role: x.assigned_role.map(|x| x.try_into()).transpose()?,
                 enabled: x.is_enabled,
                 locked_out: x.locked_out,
                 failed_attempts: x.failed_attempts.try_into()?,

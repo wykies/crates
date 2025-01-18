@@ -11,7 +11,7 @@ use std::{
 use strum::{EnumCount, IntoEnumIterator};
 use tracing::instrument;
 
-use crate::const_config::path::*;
+use crate::{const_config::path::*, errors::PermissionConversionError};
 
 #[derive(
     Debug,
@@ -161,7 +161,7 @@ impl From<Vec<Permission>> for Permissions {
 }
 
 impl TryFrom<String> for Permissions {
-    type Error = anyhow::Error;
+    type Error = PermissionConversionError;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
         if value.is_empty() {
@@ -169,7 +169,11 @@ impl TryFrom<String> for Permissions {
         }
 
         if Permission::COUNT != value.len() {
-            bail!("Only valid strings are those of length {} but found string of length {}. Value: {value:?}", Permission::COUNT , value.len());
+            return Err(PermissionConversionError::WrongLength {
+                allowed_length: Permission::COUNT,
+                actual_length: value.len(),
+                value,
+            });
         }
         let mut result = Permissions::default();
         for (c, p) in value.chars().zip(Permission::iter()) {
@@ -179,9 +183,7 @@ impl TryFrom<String> for Permissions {
                     let did_not_exist = result.0.insert(p);
                     debug_assert!(did_not_exist, "Since we should always get a new Permission we should never already have the value inserted");
                 }
-                _ => bail!(
-                    "found an unexpected character for {p:?}. Only 0 or 1 expected but found {c}"
-                ),
+                _ => return Err(PermissionConversionError::InvalidCharacter { c, perm: p }),
             }
         }
         Ok(result)
@@ -189,7 +191,7 @@ impl TryFrom<String> for Permissions {
 }
 
 impl TryFrom<Option<String>> for Permissions {
-    type Error = anyhow::Error;
+    type Error = PermissionConversionError;
 
     fn try_from(value: Option<String>) -> Result<Self, Self::Error> {
         value.unwrap_or_default().try_into()
@@ -366,7 +368,7 @@ mod tests {
     #[case::too_short("111")]
     #[case::invalid_char("a0000100001001000000000000000000000")]
     fn invalid_inputs(#[case] s: String) {
-        let actual: anyhow::Result<Permissions> = s.try_into();
+        let actual: Result<Permissions, PermissionConversionError> = s.try_into();
         match actual {
             Ok(val) => panic!("Expected an error but got {val:?}"),
             Err(e) => println!("Expected and error and got one: {e}"),

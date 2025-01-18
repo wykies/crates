@@ -24,7 +24,7 @@ pub async fn set_host_branch_pair(
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
     let query = {
         // TODO 5: Check why encode trait impl doesn't make converting not necessary
-        let assigned_branch: i32 = pair.branch_id.try_into().map_err(e500)?;
+        let assigned_branch: i32 = pair.branch_id.try_into()?;
         sqlx::query!(
             "INSERT INTO hostbranch 
             (hostname, assigned_branch)

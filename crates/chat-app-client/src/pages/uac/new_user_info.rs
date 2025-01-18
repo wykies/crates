@@ -1,4 +1,3 @@
-use anyhow::Context;
 use reqwest_cross::{Awaiting, DataState};
 use secrecy::SecretString;
 use wykies_client_core::Client;
@@ -56,16 +55,8 @@ impl NewUserInfo {
     }
 
     fn try_into_req_args(&self) -> anyhow::Result<NewUserReqArgs> {
-        let username = self
-            .username
-            .clone()
-            .try_into()
-            .context("invalid username")?;
-        let display_name = self
-            .display_name
-            .clone()
-            .try_into()
-            .context("invalid display name")?;
+        let username = self.username.clone().try_into()?;
+        let display_name = self.display_name.clone().try_into()?;
         let password = self.password.clone();
         let assigned_role = self.assigned_role;
 

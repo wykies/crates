@@ -36,16 +36,16 @@ pub async fn role(
     #[cfg(feature = "mysql")]
     let result = Role {
         id: role_id,
-        name: row.Name.try_into().map_err(e500)?,
-        description: row.Description.try_into().map_err(e500)?,
-        permissions: row.Permissions.try_into().map_err(e500)?,
+        name: row.Name.try_into()?,
+        description: row.Description.try_into()?,
+        permissions: row.Permissions.try_into()?,
     };
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
     let result = Role {
         id: role_id,
-        name: row.role_name.try_into().map_err(e500)?,
-        description: row.role_description.try_into().map_err(e500)?,
-        permissions: row.permissions.try_into().map_err(e500)?,
+        name: row.role_name.try_into()?,
+        description: row.role_description.try_into()?,
+        permissions: row.permissions.try_into()?,
     };
     Ok(web::Json(result))
 }
@@ -116,7 +116,7 @@ pub async fn role_assign(
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
     // TODO 5: Check why encode trait impl doesn't make converting not necessary
     let query = {
-        let role_id: i32 = req_args.role_id.try_into().map_err(e500)?;
+        let role_id: i32 = req_args.role_id.try_into()?;
         sqlx::query!(
             "UPDATE users
         SET assigned_role = $1 

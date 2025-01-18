@@ -1,6 +1,10 @@
 #[cfg(feature = "server_only")]
 use crate::db_types::Db;
-use crate::{errors::ConversionError, id::DbId, string_wrapper, AlwaysCase};
+use crate::{
+    errors::{ConversionError, HostIdConversionError},
+    id::DbId,
+    string_wrapper, AlwaysCase,
+};
 
 string_wrapper!(HostId, 50, AlwaysCase::Any);
 
@@ -11,11 +15,8 @@ pub struct HostBranchPair {
 }
 
 #[cfg(not(target_arch = "wasm32"))]
-use anyhow::{bail, Context as _};
-
-#[cfg(not(target_arch = "wasm32"))]
 impl TryFrom<actix_web::dev::ConnectionInfo> for HostId {
-    type Error = anyhow::Error;
+    type Error = HostIdConversionError;
 
     fn try_from(value: actix_web::dev::ConnectionInfo) -> Result<Self, Self::Error> {
         // Prefer real ip even though it is not safe to use for security because we are
@@ -27,8 +28,8 @@ impl TryFrom<actix_web::dev::ConnectionInfo> for HostId {
         } else if let Some(peer_addr) = value.peer_addr() {
             peer_addr
         } else {
-            bail!("No 'peer_addr' found");
+            return Err(HostIdConversionError::NoPeerAddrFound);
         };
-        addr.to_string().try_into().context("invalid host_id")
+        Ok(addr.to_string().try_into()?)
     }
 }
