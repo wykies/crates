@@ -26,4 +26,10 @@ pub mod conversions {
             StatusCode::UNAUTHORIZED
         }
     }
+
+    impl actix_web::error::ResponseError for ConversionError {
+        fn status_code(&self) -> StatusCode {
+            StatusCode::INTERNAL_SERVER_ERROR
+        }
+    }
 }
