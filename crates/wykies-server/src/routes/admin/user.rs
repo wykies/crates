@@ -62,7 +62,7 @@ pub async fn user(
         username: record.user_name.try_into()?,
         display_name: record.display_name.try_into()?,
         force_pass_change: record.force_pass_change,
-        assigned_role: record.AssignedRole.map(|x| x.try_into()).transpose()?,
+        assigned_role: record.assigned_role.map(|x| x.try_into()).transpose()?,
         enabled: record.is_enabled,
         locked_out: record.locked_out,
         failed_attempts: record.failed_attempts.try_into().map_err(e500)?,
@@ -159,7 +159,10 @@ pub async fn user_update(
     // TODO 5: Check why encode trait impl doesn't make converting not necessary
     let query = {
         let display_name = diff.display_name.map(|x| x.to_string());
-        let assigned_role: Option<i32> = diff.assigned_role.map(|x| x.try_into()).transpose()?;
+        let assigned_role: Option<i32> = match diff.assigned_role {
+            Some(Some(x)) => Some(x.try_into()?),
+            Some(None) | None => None,
+        };
         let failed_attempts: Option<i16> = diff.failed_attempts.map(|x| x.into());
         sqlx::query!(
             "UPDATE users SET
