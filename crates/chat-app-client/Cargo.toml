@@ -9,10 +9,10 @@ description = "egui Client for the Demo Chat App"
 anyhow.workspace = true
 clap = { workspace = true, features = ["derive"] }
 eframe = { workspace = true, features = [ # put all features on their own line
-  "accesskit",     # Make egui compatible with screen readers. NOTE: adds a lot of dependencies.
+  "accesskit", # Make egui compatible with screen readers. NOTE: adds a lot of dependencies.
   "default_fonts", # Embed the default egui fonts.
-  "glow",          # Use the glow rendering backend. Alternative: "wgpu".
-  "persistence",   # Enable restoring app state when restarting the app.
+  "glow", # Use the glow rendering backend. Alternative: "wgpu".
+  "persistence", # Enable restoring app state when restarting the app.
 ] }
 egui.workspace = true
 egui-helpers.workspace = true
@@ -39,6 +39,6 @@ tracing-subscriber.workspace = true
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 # console_error_panic_hook = "0.1.6" # TODO 4: Look into this I think it stopped getting used in one of the updates
 ewebsock = { workspace = true, features = ["tls"] }
-log.workspace = true                                # Needed to work with eframe::WebLogger
+log.workspace = true # Needed to work with eframe::WebLogger
 wasm-bindgen-futures = "0.4"
-web-sys.workspace = true                            # to access the DOM (to hide the loading text)
+web-sys.workspace = true # to access the DOM (to hide the loading text)

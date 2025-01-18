@@ -10,8 +10,8 @@ members = [
   "crates/tracked-cancellations",
   "crates/ws-auth",
   "crates/wykies-client-core",
-  "crates/wykies-server-test-helper",
   "crates/wykies-server",
+  "crates/wykies-server-test-helper",
   "crates/wykies-shared",
   "crates/wykies-time",
 ]
@@ -25,17 +25,14 @@ actix-web = "4.6.0"
 actix-ws = "0.3.0"
 anyhow = "1.0.94"
 argon2 = "0.5.3"
-chrono = { version = "0.4.34", default-features = false, features = [
-  "clock",
-  "serde",
-] }
+chrono = { version = "0.4.34", default-features = false, features = ["clock", "serde"] }
 clap = "4.5.24"
 config = { version = "0.15.4", default-features = false, features = ["toml"] }
 db-types = { version = "*", path = "crates/db-types", default-features = false }
 eframe = "0.30.0"
 egui = { version = "0.30.0", default-features = false }
-egui_extras = "0.30.0"
 egui-helpers = { version = "*", path = "crates/egui-helpers" }
+egui_extras = "0.30.0"
 ewebsock = "0.8.0"
 futures-util = "0.3.30"
 getrandom = "0.2.15"
@@ -43,12 +40,7 @@ insta = "1.40.0"
 log = "0.4.22"
 plugin-chat = { version = "*", path = "crates/plugin-chat" }
 rand = "0.8"
-reqwest-cross = { version = "0.6.0", default-features = false, features = [
-  "native-tokio",
-  "json",
-  "rustls-tls",
-  "cookies",
-] }
+reqwest-cross = { version = "0.6.0", default-features = false, features = ["native-tokio", "json", "rustls-tls", "cookies"] }
 ringbuffer = "0.15.0"
 ron = "0.8.1"
 rstest = "0.24.0"
