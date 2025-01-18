@@ -11,12 +11,13 @@ macro_rules! string_wrapper {
 
             fn try_from(value: String) -> Result<Self, Self::Error> {
                 if value.is_empty() {
-                    return Err(ConversionError::Empty);
+                    return Err(ConversionError::Empty{type_name: stringify!($name)});
                 }
                 if value.len() > Self::MAX_LENGTH {
                     return Err(ConversionError::MaxExceeded {
                         max: Self::MAX_LENGTH,
                         actual: value.len(),
+                        type_name: stringify!($name),
                     });
                 }
                 let value = match $always_case {
@@ -119,12 +120,15 @@ macro_rules! char_array_wrapper {
 
             fn try_from(value: String) -> Result<Self, Self::Error> {
                 if value.is_empty() {
-                    return Err(ConversionError::Empty);
+                    return Err(ConversionError::Empty {
+                        type_name: stringify!($name),
+                    });
                 }
                 if value.len() > Self::LENGTH {
                     return Err(ConversionError::MaxExceeded {
                         max: Self::LENGTH,
                         actual: value.len(),
+                        type_name: stringify!($name),
                     });
                 }
                 let value = match $always_case {

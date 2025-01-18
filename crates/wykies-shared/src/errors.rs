@@ -2,10 +2,14 @@ use thiserror::Error;
 
 #[derive(Debug, thiserror::Error, PartialEq, Eq)]
 pub enum ConversionError {
-    #[error("Empty not allowed")]
-    Empty,
-    #[error("Maximum length exceeded. {max} allowed but found {actual}")]
-    MaxExceeded { max: usize, actual: usize },
+    #[error("Empty not allowed for {type_name}")]
+    Empty { type_name: &'static str },
+    #[error("Maximum length exceeded. {max} allowed but found {actual} for {type_name}")]
+    MaxExceeded {
+        max: usize,
+        actual: usize,
+        type_name: &'static str,
+    },
 }
 
 #[derive(Debug, Error)]
