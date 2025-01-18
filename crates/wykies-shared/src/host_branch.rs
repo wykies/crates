@@ -1,10 +1,6 @@
 #[cfg(feature = "server_only")]
 use crate::db_types::Db;
-use crate::{
-    errors::{ConversionError, HostIdConversionError},
-    id::DbId,
-    string_wrapper, AlwaysCase,
-};
+use crate::{errors::ConversionError, id::DbId, string_wrapper, AlwaysCase};
 
 string_wrapper!(HostId, 50, AlwaysCase::Any);
 
@@ -16,7 +12,7 @@ pub struct HostBranchPair {
 
 #[cfg(not(target_arch = "wasm32"))]
 impl TryFrom<actix_web::dev::ConnectionInfo> for HostId {
-    type Error = HostIdConversionError;
+    type Error = crate::errors::HostIdConversionError;
 
     fn try_from(value: actix_web::dev::ConnectionInfo) -> Result<Self, Self::Error> {
         // Prefer real ip even though it is not safe to use for security because we are
@@ -28,7 +24,7 @@ impl TryFrom<actix_web::dev::ConnectionInfo> for HostId {
         } else if let Some(peer_addr) = value.peer_addr() {
             peer_addr
         } else {
-            return Err(HostIdConversionError::NoPeerAddrFound);
+            return Err(crate::errors::HostIdConversionError::NoPeerAddrFound);
         };
         Ok(addr.to_string().try_into()?)
     }
