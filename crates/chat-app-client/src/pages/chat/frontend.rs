@@ -404,9 +404,7 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
     }
 
     fn system_msg(&mut self, content: String) -> Result<ChatIM, ()> {
-        let content = match content
-            .try_into()
-        {
+        let content = match content.try_into() {
             Ok(x) => x,
             Err(err_msg) => {
                 error!(?err_msg, "failed to generate system message");
