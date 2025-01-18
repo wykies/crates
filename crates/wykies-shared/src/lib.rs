@@ -30,3 +30,8 @@ pub mod telemetry;
 
 #[cfg(feature = "server_only")]
 pub use error_wrappers::{e400, e500};
+
+/// Helper function to compare to float to the nearest cent
+pub fn float_eq_to_cents(a: f64, b: f64) -> bool {
+    (a - b).abs() < 0.005
+}
