@@ -160,14 +160,27 @@ mod tests {
     // Actually test the macro so we only need one of these
     use rstest::rstest;
 
+    crate::char_array_wrapper!(CharArrayTest, 3, AlwaysCase::Lower);
+
     use super::*;
 
     #[rstest]
-    #[case::empty("", ConversionError::Empty)]
-    #[case::too_long("a".repeat(17), ConversionError::MaxExceeded{max:16, actual:17})]
+    #[case::empty("", ConversionError::Empty{type_name: "Username"})]
+    #[case::too_long("a".repeat(17), ConversionError::MaxExceeded{max:16, actual:17, type_name: "Username"})]
     fn illegal_username(#[case] name: String, #[case] expect: ConversionError) {
         // Act
         let actual: Result<Username, ConversionError> = name.try_into();
+
+        // Assert
+        assert_eq!(actual.unwrap_err(), expect);
+    }
+
+    #[rstest]
+    #[case::empty("", ConversionError::Empty{type_name: "CharArrayTest"})]
+    #[case::too_long("a".repeat(5), ConversionError::MaxExceeded{max:3, actual:5, type_name: "CharArrayTest"})]
+    fn illegal_char_array(#[case] value: String, #[case] expect: ConversionError) {
+        // Act
+        let actual: Result<CharArrayTest, ConversionError> = value.try_into();
 
         // Assert
         assert_eq!(actual.unwrap_err(), expect);
