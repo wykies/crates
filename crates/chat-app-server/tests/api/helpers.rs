@@ -7,7 +7,7 @@ use tracked_cancellations::TrackedCancellationToken;
 use wykies_client_core::LoginOutcome;
 use wykies_server::{ApiServerBuilder, ApiServerInitBundle, Configuration};
 use wykies_server_test_helper::{
-    build_test_app, convert_port_to_test_address,
+    build_test_app, convert_port_to_test_address, expect_ok,
     spawn_app_without_host_branch_stored_before_migration, store_host_branch, TestUser,
 };
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, db_types::DbPool};
@@ -133,21 +133,11 @@ impl TestApp {
 
     /// Logs in the user and panics if the login is not successful
     pub async fn login_assert(&self) {
-        assert!(self
-            .core_client
-            .login(self.test_user.login_args())
-            .await
-            .expect("failed to receive on rx")
-            .expect("failed to extract login outcome")
-            .is_any_success());
+        assert!(expect_ok!(self.core_client.login(self.test_user.login_args())).is_any_success());
     }
 
     /// Logs out the user and panics on errors
     pub async fn logout_assert(&self) {
-        self.core_client
-            .logout()
-            .await
-            .expect("failed to receive on rx")
-            .expect("login result was not ok");
+        expect_ok!(self.core_client.logout());
     }
 }

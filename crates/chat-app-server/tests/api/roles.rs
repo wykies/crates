@@ -1,4 +1,5 @@
 use crate::helpers::spawn_app;
+use wykies_server_test_helper::expect_ok;
 use wykies_shared::{
     req_args::api::admin::role::AssignReqArgs,
     uac::{Permission, Role, RoleDraft},
@@ -23,20 +24,10 @@ async fn create_and_assign_role_to_user() {
     app_admin.login_assert().await;
 
     // Act - Create Role
-    let role_id = app_admin
-        .core_client
-        .create_role(&role_draft)
-        .await
-        .expect("failed to receive on rx")
-        .expect("failed to extract role_id");
+    let role_id = expect_ok!(app_admin.core_client.create_role(&role_draft));
 
     // Assert - Verify Role was created
-    let role = app_admin
-        .core_client
-        .get_role(role_id)
-        .await
-        .expect("failed to receive on rx")
-        .expect("failed to extract role_id");
+    let role = expect_ok!(app_admin.core_client.get_role(role_id));
     let expected = Role {
         id: role_id,
         name: role_draft.name,
@@ -53,24 +44,14 @@ async fn create_and_assign_role_to_user() {
     assert!(user.permissions.0.is_empty());
 
     // Act - Log out the normal user
-    app_normal
-        .core_client
-        .logout()
-        .await
-        .expect("failed to receive on rx")
-        .expect("failed to log out");
+    expect_ok!(app_normal.core_client.logout());
 
     // Act - Set the role for the normal user
     let req_args = AssignReqArgs {
         username: app_normal.test_user.username.clone().try_into().unwrap(),
         role_id: role.id,
     };
-    app_admin
-        .core_client
-        .assign_role(&req_args)
-        .await
-        .expect("failed to receive on rx")
-        .expect("failed to assign role");
+    expect_ok!(app_admin.core_client.assign_role(&req_args));
 
     // Act - Login the Normal user
     app_normal.login_assert().await;

@@ -1,6 +1,7 @@
 use secrecy::SecretString;
 use uuid::Uuid;
 use wykies_client_core::LoginOutcome;
+use wykies_server_test_helper::expect_ok;
 use wykies_shared::{
     req_args::{
         api::admin::user::{NewUserReqArgs, PasswordResetReqArgs},
@@ -18,12 +19,7 @@ async fn list_users_and_roles() {
     app.login_assert().await;
 
     // Act
-    let mut actual = app
-        .core_client
-        .list_users_and_roles()
-        .await
-        .expect("failed to receive on rx")
-        .expect("failed to extract result");
+    let mut actual = expect_ok!(app.core_client.list_users_and_roles());
 
     // Sort for snapshot
     actual.users.sort_by_key(|x| x.username.to_string());
@@ -43,12 +39,9 @@ async fn user() {
     app.login_assert().await;
 
     // Act
-    let actual = app
+    let actual = expect_ok!(app
         .core_client
-        .get_user(app.test_user.username.clone().try_into().unwrap())
-        .await
-        .expect("failed to receive on rx")
-        .expect("failed to extract result");
+        .get_user(app.test_user.username.clone().try_into().unwrap()));
 
     // Assert
     insta::assert_json_snapshot!(actual, {
@@ -123,12 +116,9 @@ async fn common_update_user_test(f: impl FnOnce(UserMetadata) -> UserMetadata) {
     app.login_assert().await;
 
     // Arrange -- Get User from DB
-    let original_user = app
+    let original_user = expect_ok!(app
         .core_client
-        .get_user(app.test_user.username.clone().try_into().unwrap())
-        .await
-        .expect("failed to receive on rx")
-        .expect("failed to extract result");
+        .get_user(app.test_user.username.clone().try_into().unwrap()));
 
     // Arrange -- Create modified user
     let edited_user = f(original_user.clone());
@@ -139,19 +129,12 @@ async fn common_update_user_test(f: impl FnOnce(UserMetadata) -> UserMetadata) {
         .expect("no difference found");
 
     // Act -- Push change
-    app.core_client
-        .update_user(diff)
-        .await
-        .expect("failed to receive on rx")
-        .expect("failed to extract result");
+    expect_ok!(app.core_client.update_user(diff));
 
     // Act -- Get updated user
-    let actual = app
+    let actual = expect_ok!(app
         .core_client
-        .get_user(app.test_user.username.clone().try_into().unwrap())
-        .await
-        .expect("failed to receive on rx")
-        .expect("failed to extract result");
+        .get_user(app.test_user.username.clone().try_into().unwrap()));
 
     // Assert
     assert_eq!(actual, edited_user);
@@ -172,20 +155,9 @@ async fn new_user() {
     };
 
     // Act
-    app.core_client
-        .new_user(req_args.clone())
-        .await
-        .expect("failed to receive on rx")
-        .expect("failed to extract result");
-    // TODO 4: Add macro to add the expects as there isn't much value in copying
-    // this every time. Needs to be macro and not a function to capture the location
-    // of the panic in the code.
-    let actual = app
-        .core_client
-        .get_user(username.clone())
-        .await
-        .expect("failed to receive on rx")
-        .expect("failed to extract result");
+    expect_ok!(app.core_client.new_user(req_args.clone()));
+
+    let actual = expect_ok!(app.core_client.get_user(username.clone()));
 
     // Assert
     let expected = UserMetadata {
@@ -205,12 +177,7 @@ async fn new_user() {
     let login_args = LoginReqArgs::new(username, password);
 
     // Act
-    let outcome = app
-        .core_client
-        .login(login_args)
-        .await
-        .expect("failed to receive on rx")
-        .expect("failed to extract result");
+    let outcome = expect_ok!(app.core_client.login(login_args));
 
     // Assert
     assert_eq!(outcome, LoginOutcome::ForcePasswordChange);
@@ -229,12 +196,9 @@ async fn password_reset_normal() {
     app_admin.login_assert().await;
 
     // Act - Change password
-    app_admin
+    expect_ok!(app_admin
         .core_client
-        .reset_password(password_reset_req_args)
-        .await
-        .expect("failed to receive on rx")
-        .expect("failed to extract result");
+        .reset_password(password_reset_req_args));
 
     // Act - Login using the new password
     app_normal.test_user.password = new_password;

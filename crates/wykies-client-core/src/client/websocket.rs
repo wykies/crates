@@ -108,7 +108,8 @@ async fn wait_for_connection_to_open(conn: &mut WebSocketConnection) -> anyhow::
         WsEvent::Error(err_msg) => {
             // Using I'm A Tea Pot as unable to send more detailed error back
             if err_msg.contains("418") {
-                // Using I'm a teapot to communicate it's an Unexpected Client as we can only get the status code
+                // Using I'm a teapot to communicate it's an Unexpected Client as we can only
+                // get the status code
                 warn!("UnexpectedClient");
                 bail!("Server Reported Expected Connection (This may happen sometimes but should not happen very often)")
             } else {
