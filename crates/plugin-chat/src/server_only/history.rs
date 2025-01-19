@@ -176,7 +176,7 @@ impl ChatDbWriter {
 
         query_builder.push_values(self.buffer.drain(..), |mut b, im| {
             b.push_bind::<String>(im.author.into())
-                .push_bind(im.timestamp.as_secs_since_unix_epoch())
+                .push_bind(im.timestamp)
                 .push_bind::<String>(im.content.into());
         });
 

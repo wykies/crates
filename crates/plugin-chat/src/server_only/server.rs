@@ -137,7 +137,7 @@ impl ChatServer {
             "SELECT `Author`, `Timestamp`, `Content`
             FROM chat WHERE `Timestamp` <= ?
             ORDER BY `Timestamp` DESC LIMIT ?",
-            req.latest_timestamp.as_secs_since_unix_epoch(),
+            req.latest_timestamp,
             req.qty
         );
         #[cfg(all(not(feature = "mysql"), feature = "postgres"))]

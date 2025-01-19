@@ -222,4 +222,5 @@ pub mod sql {
     use db_types::impl_encode_for_newtype_around_u64;
 
     impl_encode_for_newtype_around_u64!(Seconds, "mysql", "postgres");
+    impl_encode_for_newtype_around_u64!(Timestamp, "mysql", "postgres");
 }
