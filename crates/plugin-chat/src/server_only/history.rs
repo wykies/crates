@@ -175,9 +175,9 @@ impl ChatDbWriter {
             QueryBuilder::new("INSERT INTO chat (author, unix_timestamp, content) ");
 
         query_builder.push_values(self.buffer.drain(..), |mut b, im| {
-            b.push_bind::<String>(im.author.into())
+            b.push_bind(im.author)
                 .push_bind(im.timestamp)
-                .push_bind::<String>(im.content.into());
+                .push_bind(im.content);
         });
 
         // TODO 5: Optimizations left on the table are to try to have the size sent be
