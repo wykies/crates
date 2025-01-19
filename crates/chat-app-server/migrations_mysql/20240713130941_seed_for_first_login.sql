@@ -1,3 +1,4 @@
+START TRANSACTION;
 -- f
 -- Create Seed Role
 INSERT INTO `roles` (
@@ -38,3 +39,4 @@ VALUES (
 -- Create Seed Branch
 INSERT INTO `branch` (`BranchID`, `BranchName`, `BranchAddress`)
 VALUES (NULL, 'Seed Branch', '');
+COMMIT;

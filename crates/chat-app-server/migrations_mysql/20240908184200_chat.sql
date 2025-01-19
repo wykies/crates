@@ -1,3 +1,4 @@
+START TRANSACTION;
 -- --------------------------------------------------------
 --
 -- Table structure for table `chat`
@@ -25,3 +26,4 @@ MODIFY `ChatID` int(11) NOT NULL AUTO_INCREMENT;
 --
 ALTER TABLE `chat`
 ADD CONSTRAINT `chat_ibfk_1` FOREIGN KEY (`Author`) REFERENCES `user` (`UserName`);
+COMMIT;
