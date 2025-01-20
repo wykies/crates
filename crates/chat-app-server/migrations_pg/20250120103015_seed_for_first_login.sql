@@ -30,5 +30,5 @@ VALUES (
         true
     );
 -- Create Seed Branch
-INSERT INTO branch (branch_name, branch_address)
-VALUES ('Seed Branch', '');
+INSERT INTO branch (branch_name, short_name, branch_address)
+VALUES ('Seed Branch', 'SE', '');

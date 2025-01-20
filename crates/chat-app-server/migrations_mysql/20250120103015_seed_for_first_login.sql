@@ -37,6 +37,11 @@ VALUES (
         1
     );
 -- Create Seed Branch
-INSERT INTO `branch` (`BranchID`, `BranchName`, `BranchAddress`)
-VALUES (NULL, 'Seed Branch', '');
+INSERT INTO `branch` (
+        `BranchID`,
+        `BranchName`,
+        `ShortName`,
+        `BranchAddress`
+    )
+VALUES (NULL, 'Seed Branch', 'SE', '');
 COMMIT;
