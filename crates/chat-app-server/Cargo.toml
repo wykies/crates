@@ -29,7 +29,7 @@ ewebsock.workspace = true
 insta = { workspace = true, features = ["serde", "redactions", "json"] }
 secrecy.workspace = true
 serde_json.workspace = true
-uuid = { workspace = true, features = ["v4", "serde"] }
+uuid.workspace = true
 wykies-client-core = { workspace = true, features = ["expose_internal"] }
 wykies-server-test-helper.workspace = true
 wykies-time = { workspace = true }

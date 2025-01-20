@@ -62,7 +62,7 @@ tracing-bunyan-formatter = "0.3.10"
 tracing-log = "0.2.0"
 tracing-subscriber = { version = "0.3", features = ["fmt", "json"] }
 tracked-cancellations = { version = "*", path = "crates/tracked-cancellations" }
-uuid = "1"
+uuid = { version = "1", features = ["v4", "serde"] }
 version-control-clean-check = "0.1.4"
 wasm-bindgen-test = "0.3.42"
 web-sys = "0.3.72"
