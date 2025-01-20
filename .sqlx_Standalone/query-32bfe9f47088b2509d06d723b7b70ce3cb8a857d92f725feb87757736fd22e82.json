@@ -1,0 +1,12 @@
+{
+  "db_name": "MySQL",
+  "query": "INSERT INTO `branch` \n            (`BranchID`, `BranchName`, `ShortName`, `BranchAddress`) \n            VALUES (NULL, ?, ?, '');",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": []
+  },
+  "hash": "32bfe9f47088b2509d06d723b7b70ce3cb8a857d92f725feb87757736fd22e82"
+}

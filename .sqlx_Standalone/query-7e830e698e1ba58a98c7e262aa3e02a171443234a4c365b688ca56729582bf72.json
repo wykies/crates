@@ -1,6 +1,6 @@
 {
   "db_name": "MySQL",
-  "query": "SELECT `BranchID`, `BranchName` FROM `branch`",
+  "query": "SELECT `BranchID`, `BranchName`, `ShortName` FROM `branch` ORDER BY `BranchName`;",
   "describe": {
     "columns": [
       {
@@ -20,6 +20,15 @@
           "flags": "NOT_NULL | UNIQUE_KEY | NO_DEFAULT_VALUE",
           "max_size": 120
         }
+      },
+      {
+        "ordinal": 2,
+        "name": "ShortName",
+        "type_info": {
+          "type": "VarString",
+          "flags": "NOT_NULL",
+          "max_size": 8
+        }
       }
     ],
     "parameters": {
@@ -27,8 +36,9 @@
     },
     "nullable": [
       false,
+      false,
       false
     ]
   },
-  "hash": "45f5b7d35b447f8b0b5359851fac17cac6c699f44036dd12cd9d8b514821d72e"
+  "hash": "7e830e698e1ba58a98c7e262aa3e02a171443234a4c365b688ca56729582bf72"
 }
