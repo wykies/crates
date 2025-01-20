@@ -13,9 +13,12 @@ use wykies_shared::{
 pub async fn branch_list(pool: web::Data<DbPool>) -> actix_web::Result<web::Json<Vec<Branch>>> {
     let pool: &DbPool = &pool;
     #[cfg(feature = "mysql")]
-    let query = sqlx::query!("SELECT `BranchID`, `BranchName` FROM `branch`");
+    let query = sqlx::query!(
+        "SELECT `BranchID`, `BranchName`, `ShortName` FROM `branch` ORDER BY `BranchName`;"
+    );
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
-    let query = sqlx::query!("SELECT branch_id, branch_name FROM branch");
+    let query =
+        sqlx::query!("SELECT branch_id, branch_name, short_name FROM branch ORDER BY branch_name");
     let rows = query
         .fetch_all(pool)
         .await
@@ -28,11 +31,13 @@ pub async fn branch_list(pool: web::Data<DbPool>) -> actix_web::Result<web::Json
             return Ok(Branch {
                 id: x.BranchID.try_into()?,
                 name: x.BranchName.try_into()?,
+                short_name: x.ShortName.try_into()?,
             });
             #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
             Ok(Branch {
                 id: x.branch_id.try_into()?,
                 name: x.branch_name.try_into()?,
+                short_name: x.short_name.try_into()?,
             })
         })
         .collect::<anyhow::Result<Vec<Branch>>>()
@@ -50,9 +55,10 @@ pub async fn branch_create(
     let result = {
         let sql_result = sqlx::query!(
             "INSERT INTO `branch` 
-            (`BranchID`, `BranchName`, `BranchAddress`) 
-            VALUES (NULL, ?, '');",
+            (`BranchID`, `BranchName`, `ShortName`, `BranchAddress`) 
+            VALUES (NULL, ?, ?, '');",
             draft.name,
+            draft.short_name
         )
         .execute(pool)
         .await
@@ -66,9 +72,10 @@ pub async fn branch_create(
         // TODO 5: Check why encode trait impl doesn't make converting not necessary
         sqlx::query!(
             "INSERT INTO branch
-            (branch_name, branch_address) 
-            VALUES ($1, '') RETURNING branch_id;",
+            (branch_name, short_name, branch_address) 
+            VALUES ($1, $2, '') RETURNING branch_id;",
             draft.name.as_ref(),
+            draft.short_name.to_string(),
         )
         .fetch_one(pool)
         .await

@@ -1,0 +1,3 @@
+ALTER TABLE `branch`
+ADD `ShortName` VARCHAR(2) NOT NULL DEFAULT ''
+AFTER `BranchName`;

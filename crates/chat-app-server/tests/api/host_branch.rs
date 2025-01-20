@@ -12,7 +12,8 @@ async fn set_host_branch_pair() {
     // Arrange
     let app_admin = spawn_app().await.create_admin_user().await;
     let branch_draft = BranchDraft {
-        name: "test name".to_string().try_into().unwrap(),
+        name: "test name".try_into().unwrap(),
+        short_name: "te".try_into().unwrap(),
     };
 
     // Act - Login the admin
@@ -33,7 +34,8 @@ async fn set_host_branch_pair() {
 
     // Act - Create new branch
     let branch_draft = BranchDraft {
-        name: "test name2".to_string().try_into().unwrap(),
+        name: "test name2".try_into().unwrap(),
+        short_name: "t2".try_into().unwrap(),
     };
     let branch_id = expect_ok!(app_admin.core_client.create_branch(&branch_draft));
     host_branch_pair.branch_id = branch_id;
@@ -61,7 +63,8 @@ async fn host_branch_pair_lookup() {
     // Arrange
     let app_admin = spawn_app().await.create_admin_user().await;
     let branch_draft = BranchDraft {
-        name: "test name".to_string().try_into().unwrap(),
+        name: "test name".try_into().unwrap(),
+        short_name: "te".try_into().unwrap(),
     };
 
     // Act - Login the admin
@@ -104,7 +107,8 @@ async fn ensure_branch_only_changes_if_not_set() {
     // Arrange - Create 2nd branch and logout to test setting it
     app_admin.login_assert().await;
     let body = BranchDraft {
-        name: "second branch".to_string().try_into().unwrap(),
+        name: "second branch".try_into().unwrap(),
+        short_name: "se".try_into().unwrap(),
     };
     let new_branch_id = expect_ok!(app_admin.core_client.create_branch(&body));
     app_admin.logout_assert().await;
@@ -122,7 +126,7 @@ async fn ensure_branch_only_changes_if_not_set() {
     let curr_branch_id = expect_ok!(app_admin.core_client.get_host_branch_pair(&LookupReqArgs {
         host_id: app_admin.host_branch_pair.host_id.clone(),
     }))
-    .expect("expected some not none");
+    .expect("expected pair to exist");
 
     // Assert - Confirm branch has not changed
     assert_ne!(curr_branch_id, new_branch_id);
