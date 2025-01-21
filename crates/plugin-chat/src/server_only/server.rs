@@ -191,7 +191,7 @@ impl ChatServer {
             .collect::<anyhow::Result<Vec<_>>>()
             .context("failed to convert rows from DB into chat history");
 
-        let mut result = match result {
+        let ims = match result {
             Ok(x) => x,
             Err(e) => {
                 // Abort Error occurred
@@ -200,13 +200,12 @@ impl ChatServer {
             }
         };
 
-        // Reverse result was sorted the wrong way for LIMIT to get right messages
-        result = result.into_iter().rev().collect();
-        self.send_to_client(
-            conn_id,
-            ChatMsg::RespHistory(ChatMsgsHistory { ims: result }),
-        )
-        .await;
+        // Sort result because it was sorted the wrong way for LIMIT to get right
+        // messages
+        let mut result = ChatMsgsHistory { ims };
+        result.sort_by_timestamp();
+        self.send_to_client(conn_id, ChatMsg::RespHistory(result))
+            .await;
     }
 
     #[instrument]

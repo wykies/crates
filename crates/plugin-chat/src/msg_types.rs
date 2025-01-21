@@ -153,7 +153,7 @@ impl ChatMsgsHistory {
         self.ims.last()
     }
 
-    fn sort_by_timestamp(&mut self) {
+    pub fn sort_by_timestamp(&mut self) {
         self.ims.sort_by_key(|x| x.timestamp);
     }
 
