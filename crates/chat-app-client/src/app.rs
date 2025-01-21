@@ -39,7 +39,7 @@ pub struct DataShared {
     #[serde(skip)]
     pub display_name: Option<DisplayName>,
     #[serde(skip)]
-    // TODO 2: Add option for user to change the server they are connecting to (Saving a list of
+    // TODO 4: Add option for user to change the server they are connecting to (Saving a list of
     //          recent servers)
     pub client: wykies_client_core::Client,
     #[serde(skip)]
