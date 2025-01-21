@@ -154,4 +154,10 @@ impl ChatMsgsHistory {
     fn sort_by_timestamp(&mut self) {
         self.ims.sort_by_key(|x| x.timestamp);
     }
+
+    pub fn earliest_timestamp_or_now(&self) -> Timestamp {
+        self.first()
+            .map(|chat_im| chat_im.timestamp)
+            .unwrap_or_else(Timestamp::now)
+    }
 }

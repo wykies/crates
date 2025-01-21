@@ -398,14 +398,10 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
     fn request_more_history(&mut self, connection: &mut WebSocketConnection) {
         self.last_history_request = Timestamp::now();
         let qty = CHAT_HISTORY_REQUEST_SIZE;
-        let latest_timestamp = self
-            .history
-            .first()
-            .map(|chat_im| chat_im.timestamp)
-            .unwrap_or_else(Timestamp::now);
+        let current_earliest_timestamp = self.history.earliest_timestamp_or_now();
         let chat_msg = ChatMsg::ReqHistory(ReqHistoryBody {
             qty,
-            latest_timestamp,
+            latest_timestamp: current_earliest_timestamp,
         });
         connection.tx.send(WsMessage::Text(
             serde_json::to_string(&chat_msg)
