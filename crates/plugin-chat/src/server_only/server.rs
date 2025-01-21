@@ -308,6 +308,8 @@ impl ChatServer {
         .context("failed to unregister connection")
     }
 
+    /// This is the code used by the server to process commands received over
+    /// the channel
     #[instrument(err(Debug))]
     async fn process_cmd(
         &mut self,
@@ -315,7 +317,10 @@ impl ChatServer {
         cancellation_token: TrackedCancellationToken,
     ) -> anyhow::Result<()> {
         let Some(cmd) = cmd else {
-            bail!("None received by ChatServer on Command Channel. Shutting Down")
+            bail!(
+                "Unexpected None received by ChatServer on Command Channel. Shutting Down. 
+                This means that the channel has been closed and there are no remaining messages in the channel's buffer."
+            )
         };
 
         match cmd {

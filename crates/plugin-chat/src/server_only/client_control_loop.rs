@@ -56,7 +56,7 @@ pub async fn chat_ws_start_client_handler_loop(
             }
 
             stream_msg = msg_stream.next() => {
-                if let Some(reason) = process_stream_msg(
+                if let Some(reason) = process_stream_from_client(
                     stream_msg,
                     &mut last_heartbeat,
                     &mut session,
@@ -112,7 +112,7 @@ async fn process_message_from_server(
 
 #[instrument(skip(session))]
 /// Handle stream messages received - commands & messages received from client
-async fn process_stream_msg(
+async fn process_stream_from_client(
     msg: Option<Result<AggregatedMessage, ProtocolError>>,
     last_heartbeat: &mut Instant,
     session: &mut Session,
@@ -144,7 +144,7 @@ async fn process_stream_msg(
                 }
 
                 AggregatedMessage::Binary(_bin) => {
-                    warn!("unexpected binary message being ignored");
+                    warn!("unexpected binary message. Closing connection");
                     Some(CloseCode::Unsupported.into())
                 }
 
@@ -209,7 +209,7 @@ async fn process_msg_from_client(
         | ChatMsg::UserLeft(_)
         | ChatMsg::InitialState(_)
         | ChatMsg::RespHistory(_) => {
-            bail!("unexpected message type received from the client of: {chat_msg:?}")
+            bail!("unexpected message type received from the client: {chat_msg:?}")
         }
         ChatMsg::IM(mut chat_im) => {
             validate_im_from_client(&mut chat_im, &conn_id).context("IM validation failed")?;
