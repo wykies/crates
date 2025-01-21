@@ -1,5 +1,3 @@
-use std::marker::PhantomData;
-
 use crate::helpers::{no_cb, spawn_app, wait_for_message};
 use ewebsock::{WsEvent, WsMessage};
 use plugin_chat::{ChatIM, ChatImText, ChatMsg, ChatUser, InitialStateBody, RespHistoryBody};
@@ -25,11 +23,7 @@ async fn sent_messages_received() {
     let expected_initial_state = WsEvent::Message(WsMessage::Text(
         serde_json::to_string(&ChatMsg::InitialState(InitialStateBody {
             connected_users: vec![(chat_user, 2)],
-            history: RespHistoryBody {
-                ims: Vec::new(),
-                server_only: PhantomData,
-            },
-            server_only: PhantomData,
+            history: RespHistoryBody { ims: Vec::new() },
         }))
         .unwrap(),
     ));

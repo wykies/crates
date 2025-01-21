@@ -3,7 +3,7 @@ use crate::{
     ChatIM, ChatMsg, ChatUser, InitialStateBody, ReqHistoryBody, RespHistoryBody,
 };
 use anyhow::{anyhow, bail, Context};
-use std::{collections::HashMap, fmt::Debug, marker::PhantomData, sync::Arc};
+use std::{collections::HashMap, fmt::Debug, sync::Arc};
 use tokio::{
     select,
     sync::{mpsc, oneshot},
@@ -212,10 +212,7 @@ impl ChatServer {
         result = result.into_iter().rev().collect();
         self.send_to_client(
             conn_id,
-            ChatMsg::RespHistory(RespHistoryBody {
-                ims: result,
-                server_only: PhantomData,
-            }),
+            ChatMsg::RespHistory(RespHistoryBody { ims: result }),
         )
         .await;
     }
@@ -283,12 +280,10 @@ impl ChatServer {
         let connected_users = self.get_connected_users();
         let history = RespHistoryBody {
             ims: self.history.get_recent(),
-            server_only: PhantomData,
         };
         let msg = Arc::new(ChatMsg::InitialState(InitialStateBody {
             connected_users,
             history,
-            server_only: PhantomData,
         }));
         let r = tx
             .send(msg)

@@ -1,5 +1,5 @@
 use anyhow::Context;
-use std::{fmt::Display, marker::PhantomData};
+use std::fmt::Display;
 #[cfg(feature = "server_only")]
 use wykies_shared::db_types::Db;
 use wykies_shared::{errors::ConversionError, string_wrapper, uac::Username, AlwaysCase};
@@ -48,10 +48,6 @@ pub struct InitialStateBody {
     /// 256)
     pub connected_users: Vec<(ChatUser, u8)>,
     pub history: RespHistoryBody,
-    #[cfg(feature = "server_only")]
-    pub server_only: PhantomData<()>,
-    #[cfg(not(feature = "server_only"))]
-    server_only: PhantomData<()>,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
@@ -61,23 +57,14 @@ pub struct ReqHistoryBody {
     /// transactions but shouldn't be many. The client is responsible to
     /// deduplicate)
     pub latest_timestamp: Timestamp,
-    #[cfg(feature = "client_only")]
-    pub client_only: PhantomData<()>,
-    #[cfg(not(feature = "client_only"))]
-    client_only: PhantomData<()>,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
 pub struct RespHistoryBody {
     pub ims: Vec<ChatIM>,
-    #[cfg(feature = "server_only")]
-    pub server_only: PhantomData<()>,
-    #[cfg(not(feature = "server_only"))]
-    server_only: PhantomData<()>,
 }
 
 impl ChatUser {
-    #[cfg(feature = "server_only")] // Only allow server to create this type
     pub fn new(value: Username) -> Self {
         Self(value)
     }
