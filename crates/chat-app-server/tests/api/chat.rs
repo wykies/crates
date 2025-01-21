@@ -7,7 +7,6 @@ use plugin_chat::{
 use pretty_assertions::{assert_eq, assert_ne};
 use std::time::Duration;
 use tokio::time::sleep;
-use tracing::info;
 use wykies_server_test_helper::expect_ok;
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, uac::Username};
 use wykies_time::Timestamp;
@@ -140,7 +139,7 @@ async fn chat_overflowing_server_history_buffer() {
     let author: Username = app.test_user.username.clone().try_into().unwrap();
     const MSGS_SENT: u64 = 2 * CHAT_HISTORY_RECENT_CAPACITY as u64;
     let expected_ims_texts: Vec<ChatImText> = (0..MSGS_SENT)
-        .map(|i| i.to_string().try_into().unwrap())
+        .map(|i| format!("{i:0>4}").try_into().unwrap())
         .collect();
 
     // Act - Connect Websocket
@@ -214,16 +213,23 @@ async fn chat_overflowing_server_history_buffer() {
             }
             other => panic!("unexpected event: {other:?}"),
         };
+
         let is_empty = more_history.is_empty();
         history.prepend_other(more_history).unwrap();
         if is_empty {
             assert_ne!(i, 0, "No history was retrieved");
             // Should be i and not (i-1) because it is 0 based so if it only got on the
             // first one then i will be 1
-            info!("All history retrieved in {i} requests");
+            println!("All history retrieved in {i} requests");
             break;
         }
     }
+
+    // Apply this sort for testing purposes because we don't care much about the
+    // order of messages sent at the same time in prod
+    history
+        .ims
+        .sort_by_cached_key(|x| (x.timestamp, x.content.to_string()));
 
     // Assert - Ensure we got the messages we were expecting
     let actual: Vec<ChatImText> = history.ims.into_iter().map(|x| x.content).collect();
