@@ -1,3 +1,5 @@
+use std::marker::PhantomData;
+
 use anyhow::Context;
 use connected_users::ConnectedUsers;
 use egui::{
@@ -427,7 +429,11 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
             .first()
             .map(|chat_im| chat_im.timestamp)
             .unwrap_or_else(Timestamp::now);
-        let chat_msg = ChatMsg::ReqHistory(ReqHistoryBody::new(qty, latest_timestamp));
+        let chat_msg = ChatMsg::ReqHistory(ReqHistoryBody {
+            qty,
+            latest_timestamp,
+            client_only: PhantomData,
+        });
         connection.tx.send(WsMessage::Text(
             serde_json::to_string(&chat_msg)
                 .expect("failed to serialize chat msg for history request"),

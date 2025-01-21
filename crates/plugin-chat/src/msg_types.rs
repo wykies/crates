@@ -48,7 +48,9 @@ pub struct InitialStateBody {
     /// 256)
     pub connected_users: Vec<(ChatUser, u8)>,
     pub history: RespHistoryBody,
-    #[serde(skip)]
+    #[cfg(feature = "server_only")]
+    pub server_only: PhantomData<()>,
+    #[cfg(not(feature = "server_only"))]
     server_only: PhantomData<()>,
 }
 
@@ -59,47 +61,19 @@ pub struct ReqHistoryBody {
     /// transactions but shouldn't be many. The client is responsible to
     /// deduplicate)
     pub latest_timestamp: Timestamp,
-    #[serde(skip)]
+    #[cfg(feature = "client_only")]
+    pub client_only: PhantomData<()>,
+    #[cfg(not(feature = "client_only"))]
     client_only: PhantomData<()>,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
 pub struct RespHistoryBody {
     pub ims: Vec<ChatIM>,
-    #[serde(skip)]
+    #[cfg(feature = "server_only")]
+    pub server_only: PhantomData<()>,
+    #[cfg(not(feature = "server_only"))]
     server_only: PhantomData<()>,
-}
-
-impl RespHistoryBody {
-    #[cfg(feature = "server_only")]
-    pub fn new(ims: Vec<ChatIM>) -> Self {
-        Self {
-            ims,
-            server_only: PhantomData,
-        }
-    }
-}
-
-impl ReqHistoryBody {
-    #[cfg(feature = "client_only")]
-    pub fn new(qty: u8, latest_timestamp: Timestamp) -> Self {
-        Self {
-            qty,
-            latest_timestamp,
-            client_only: PhantomData,
-        }
-    }
-}
-
-impl InitialStateBody {
-    #[cfg(feature = "server_only")]
-    pub fn new(connected_users: Vec<(ChatUser, u8)>, history: RespHistoryBody) -> Self {
-        Self {
-            connected_users,
-            history,
-            server_only: PhantomData,
-        }
-    }
 }
 
 impl ChatUser {

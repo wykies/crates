@@ -3,7 +3,7 @@ use crate::{
     ChatIM, ChatMsg, ChatUser, InitialStateBody, ReqHistoryBody, RespHistoryBody,
 };
 use anyhow::{anyhow, bail, Context};
-use std::{collections::HashMap, fmt::Debug, sync::Arc};
+use std::{collections::HashMap, fmt::Debug, marker::PhantomData, sync::Arc};
 use tokio::{
     select,
     sync::{mpsc, oneshot},
@@ -210,8 +210,14 @@ impl ChatServer {
 
         // Reverse result was sorted the wrong way for LIMIT to get right messages
         result = result.into_iter().rev().collect();
-        self.send_to_client(conn_id, ChatMsg::RespHistory(RespHistoryBody::new(result)))
-            .await;
+        self.send_to_client(
+            conn_id,
+            ChatMsg::RespHistory(RespHistoryBody {
+                ims: result,
+                server_only: PhantomData,
+            }),
+        )
+        .await;
     }
 
     #[instrument]
@@ -275,11 +281,15 @@ impl ChatServer {
     #[instrument]
     async fn send_initial_state(&self, tx: mpsc::Sender<Arc<ChatMsg>>) {
         let connected_users = self.get_connected_users();
-        let history = RespHistoryBody::new(self.history.get_recent());
-        let msg = Arc::new(ChatMsg::InitialState(InitialStateBody::new(
+        let history = RespHistoryBody {
+            ims: self.history.get_recent(),
+            server_only: PhantomData,
+        };
+        let msg = Arc::new(ChatMsg::InitialState(InitialStateBody {
             connected_users,
             history,
-        )));
+            server_only: PhantomData,
+        }));
         let r = tx
             .send(msg)
             .await
