@@ -34,7 +34,6 @@ enum Command {
 
     ForClients {
         msg: ChatMsg,
-        skip: Option<WsConnId>,
         res_tx: oneshot::Sender<()>,
     },
 
@@ -102,11 +101,7 @@ impl ChatServer {
 
     /// Send message to other users
     #[instrument]
-    async fn send_msg_to_clients(
-        &mut self,
-        skip: Option<WsConnId>,
-        msg: ChatMsg,
-    ) -> anyhow::Result<()> {
+    async fn send_msg_to_clients(&mut self, msg: ChatMsg) -> anyhow::Result<()> {
         let msg = Arc::new(msg);
 
         // Save a copy of the IMs in recent history
@@ -118,9 +113,6 @@ impl ChatServer {
         }
 
         for (conn_id, tx) in self.connections.iter() {
-            if skip.as_ref().is_some_and(|x| x == conn_id) {
-                continue;
-            }
             // errors if client disconnected abruptly and hasn't been timed-out yet
             let r = tx.send(Arc::clone(&msg)).await.with_context(|| {
                 format!("failed to send message to one of the clients. Connection id {conn_id:?}")
@@ -242,10 +234,9 @@ impl ChatServer {
         user_info: Arc<UserSessionInfo>,
     ) -> anyhow::Result<WsConnId> {
         // notify all users
-        self.send_msg_to_clients(
-            None,
-            ChatMsg::UserJoined(ChatUser::new(user_info.username.clone())),
-        )
+        self.send_msg_to_clients(ChatMsg::UserJoined(ChatUser::new(
+            user_info.username.clone(),
+        )))
         .await
         .context("failed to send msg to clients")?;
 
@@ -300,10 +291,9 @@ impl ChatServer {
             warn!("Failed to remove connection with ID: {conn_id:?}");
         }
         // Notify other users of disconnect
-        self.send_msg_to_clients(
-            None,
-            ChatMsg::UserLeft(ChatUser::new(conn_id.user_info.username.clone())),
-        )
+        self.send_msg_to_clients(ChatMsg::UserLeft(ChatUser::new(
+            conn_id.user_info.username.clone(),
+        )))
         .await
         .context("failed to unregister connection")
     }
@@ -343,8 +333,8 @@ impl ChatServer {
                     .context("fatal error to unregister a connection")?;
             }
 
-            Command::ForClients { skip, msg, res_tx } => {
-                self.send_msg_to_clients(skip, msg)
+            Command::ForClients { msg, res_tx } => {
+                self.send_msg_to_clients(msg)
                     .await
                     .context("failed to sent IM to clients")?;
                 self.send_response(res_tx, ()).await;
@@ -395,10 +385,10 @@ impl ChatServerHandle {
 
     /// Broadcast message to other users
     #[instrument]
-    pub async fn send_msg_to_clients(&self, skip: Option<WsConnId>, msg: ChatMsg) {
+    pub async fn send_msg_to_clients(&self, msg: ChatMsg) {
         let (res_tx, res_rx) = oneshot::channel();
 
-        self.send_cmd_to_server(Command::ForClients { msg, skip, res_tx }, res_rx)
+        self.send_cmd_to_server(Command::ForClients { msg, res_tx }, res_rx)
             .await
             .expect("failed to send command");
     }

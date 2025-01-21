@@ -216,9 +216,7 @@ async fn process_msg_from_client(
 
             // Provide no skip so that author also receives the message to get the correct
             // timestamp
-            chat_server
-                .send_msg_to_clients(None, ChatMsg::IM(chat_im))
-                .await;
+            chat_server.send_msg_to_clients(ChatMsg::IM(chat_im)).await;
         }
         ChatMsg::ReqHistory(req) => chat_server.process_history_request(conn_id, req).await,
     }
