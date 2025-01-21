@@ -1,9 +1,13 @@
 use crate::helpers::{no_cb, spawn_app, wait_for_message};
 use ewebsock::{WsEvent, WsMessage};
 use plugin_chat::{
-    consts::CHAT_HISTORY_RECENT_CAPACITY, ChatIM, ChatImText, ChatMsg, ChatMsgsHistory, ChatUser,
-    InitialStateBody,
+    consts::{CHAT_HISTORY_RECENT_CAPACITY, CHAT_HISTORY_REQUEST_SIZE},
+    ChatIM, ChatImText, ChatMsg, ChatMsgsHistory, ChatUser, InitialStateBody, ReqHistoryBody,
 };
+use pretty_assertions::{assert_eq, assert_ne};
+use std::time::Duration;
+use tokio::time::sleep;
+use tracing::info;
 use wykies_server_test_helper::expect_ok;
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, uac::Username};
 use wykies_time::Timestamp;
@@ -74,7 +78,7 @@ async fn connect_to_chat() {
 }
 
 #[tokio::test]
-async fn load_history() {
+async fn chat_initial_buffered_history() {
     // Arrange
     let app = spawn_app().await;
     app.login_assert().await;
@@ -98,7 +102,7 @@ async fn load_history() {
     }
     tokio::time::sleep(std::time::Duration::from_millis(100)).await; //Wait for message to be sent before dropping sender
 
-    // Act - Reconnect to see if messages are sent in the history
+    // Act - Reconnect to see if messages are included in the history
     conn = expect_ok!(app.core_client.ws_connect(PATH_WS_TOKEN_CHAT, no_cb));
 
     // Act - Wait for initial state message
@@ -128,7 +132,105 @@ async fn load_history() {
     }
 }
 
-// TODO 4: Add a test for load_more chat messages (Would need to overflow the
-//          server cache buffer)
-// TODO 4: Add test for saving to DB (overflow save buffer
-//          qty as time would take too long)
+#[tokio::test]
+async fn chat_overflowing_server_history_buffer() {
+    // Arrange
+    let app = spawn_app().await;
+    app.login_assert().await;
+    let author: Username = app.test_user.username.clone().try_into().unwrap();
+    const MSGS_SENT: u64 = 2 * CHAT_HISTORY_RECENT_CAPACITY as u64;
+    let expected_ims_texts: Vec<ChatImText> = (0..MSGS_SENT)
+        .map(|i| i.to_string().try_into().unwrap())
+        .collect();
+
+    // Act - Connect Websocket
+    let mut conn = expect_ok!(app.core_client.ws_connect(PATH_WS_TOKEN_CHAT, no_cb));
+
+    // Act - Send messages
+    let sleep_interval = CHAT_HISTORY_REQUEST_SIZE as usize / 2;
+    for (count, im) in expected_ims_texts.iter().enumerate() {
+        let msg = ChatMsg::IM(ChatIM {
+            author: author.clone(),
+            timestamp: Timestamp::now(),
+            content: im.clone(),
+        });
+        let msg = WsMessage::Text(serde_json::to_string(&msg).unwrap());
+        conn.tx.send(msg);
+        if count % sleep_interval == 0 {
+            // Sleep to ensure all messages do not have the same timestamp
+            sleep(Duration::from_secs(1)).await;
+        }
+    }
+    tokio::time::sleep(std::time::Duration::from_millis(
+        // Wait 3 millis for each message to be sent before dropping (expected to be way too much)
+        3 * MSGS_SENT,
+    ))
+    .await;
+
+    // Act - Reconnect to see if messages are included in the history
+    conn = expect_ok!(app.core_client.ws_connect(PATH_WS_TOKEN_CHAT, no_cb));
+
+    // Act - Wait for initial state message
+    let incoming = wait_for_message(&conn.rx, true)
+        .await
+        .expect("failed to receive message");
+
+    // Act - Extract history from initial message
+    let mut history = match incoming {
+        WsEvent::Message(WsMessage::Text(text)) => {
+            let msg: ChatMsg = serde_json::from_str(&text).unwrap();
+            match msg {
+                ChatMsg::InitialState(InitialStateBody { history, .. }) => history,
+                other => panic!("expected initial state but got: {other:?}"),
+            }
+        }
+        other => panic!("unexpected event: {other:?}"),
+    };
+
+    // Act - Get other history
+    // Works based on the assumption that each request might only contain half of
+    // the records that are new because they are sent so quickly
+    let request_count =
+        ((MSGS_SENT as usize - history.len()) / CHAT_HISTORY_REQUEST_SIZE as usize) * 2 + 1;
+    let qty = CHAT_HISTORY_REQUEST_SIZE;
+    for i in 0..request_count {
+        let current_earliest_timestamp = history.earliest_timestamp_or_now();
+        let chat_msg = ChatMsg::ReqHistory(ReqHistoryBody {
+            qty,
+            latest_timestamp: current_earliest_timestamp,
+        });
+        conn.tx
+            .send(WsMessage::Text(serde_json::to_string(&chat_msg).unwrap()));
+        let incoming = wait_for_message(&conn.rx, true)
+            .await
+            .expect("failed to receive message");
+        let more_history = match incoming {
+            WsEvent::Message(WsMessage::Text(text)) => {
+                let msg: ChatMsg = serde_json::from_str(&text).unwrap();
+                match msg {
+                    ChatMsg::RespHistory(history) => history,
+                    other => panic!("expected Response to History Request but got: {other:?}"),
+                }
+            }
+            other => panic!("unexpected event: {other:?}"),
+        };
+        let is_empty = more_history.is_empty();
+        history.prepend_other(more_history).unwrap();
+        if is_empty {
+            assert_ne!(i, 0, "No history was retrieved");
+            // Should be i and not (i-1) because it is 0 based so if it only got on the
+            // first one then i will be 1
+            info!("All history retrieved in {i} requests");
+            break;
+        }
+    }
+
+    // Assert - Ensure we got the messages we were expecting
+    let actual: Vec<ChatImText> = history.ims.into_iter().map(|x| x.content).collect();
+    println!(
+        "Expected: {} messages and got {}",
+        expected_ims_texts.len(),
+        actual.len()
+    );
+    assert_eq!(actual, expected_ims_texts);
+}

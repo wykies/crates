@@ -59,6 +59,7 @@ mod warning_suppress_test {
     use chrono as _;
     use ewebsock as _;
     use insta as _;
+    use pretty_assertions as _;
     use secrecy as _;
     use serde_json as _;
     use sqlx as _;

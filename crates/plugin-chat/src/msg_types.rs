@@ -52,6 +52,8 @@ pub struct InitialStateBody {
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
 pub struct ReqHistoryBody {
+    /// We use a u8 so no matter what value the client sets it will always be
+    /// reasonable
     pub qty: u8,
     /// The latest timestamp allowed in the response (Might duplicate the some
     /// transactions but shouldn't be many. The client is responsible to
@@ -159,5 +161,14 @@ impl ChatMsgsHistory {
         self.first()
             .map(|chat_im| chat_im.timestamp)
             .unwrap_or_else(Timestamp::now)
+    }
+
+    pub fn len(&self) -> usize {
+        self.ims.len()
+    }
+
+    #[must_use]
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
     }
 }
