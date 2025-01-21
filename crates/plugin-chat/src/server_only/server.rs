@@ -1,6 +1,6 @@
 use crate::{
     consts::{CHAT_HISTORY_RECENT_CAPACITY, CHAT_MAX_IMS_BEFORE_SAVE, CHAT_MAX_TIME_BEFORE_SAVE},
-    ChatIM, ChatMsg, ChatUser, InitialStateBody, ReqHistoryBody, RespHistoryBody,
+    ChatIM, ChatMsg, ChatMsgsHistory, ChatUser, InitialStateBody, ReqHistoryBody,
 };
 use anyhow::{anyhow, bail, Context};
 use std::{collections::HashMap, fmt::Debug, sync::Arc};
@@ -204,7 +204,7 @@ impl ChatServer {
         result = result.into_iter().rev().collect();
         self.send_to_client(
             conn_id,
-            ChatMsg::RespHistory(RespHistoryBody { ims: result }),
+            ChatMsg::RespHistory(ChatMsgsHistory { ims: result }),
         )
         .await;
     }
@@ -269,7 +269,7 @@ impl ChatServer {
     #[instrument]
     async fn send_initial_state(&self, tx: mpsc::Sender<Arc<ChatMsg>>) {
         let connected_users = self.get_connected_users();
-        let history = RespHistoryBody {
+        let history = ChatMsgsHistory {
             ims: self.history.get_recent(),
         };
         let msg = Arc::new(ChatMsg::InitialState(InitialStateBody {

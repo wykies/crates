@@ -9,7 +9,7 @@ use plugin_chat::{
     consts::{
         CHAT_HISTORY_REQUEST_SIZE, CHAT_MIN_TIME_BETWEEN_HISTORY_REQUESTS, CHAT_SYSTEM_USERNAME,
     },
-    ChatIM, ChatImText, ChatMsg, ReqHistoryBody,
+    ChatIM, ChatImText, ChatMsg, ChatMsgsHistory, ReqHistoryBody,
 };
 use tracing::{error, info};
 use wykies_client_core::WebSocketConnection;
@@ -27,7 +27,7 @@ pub struct FrontEnd {
     username: Username,
     system_username: Username,
     page_unique_name: String,
-    ims: Vec<ChatIM>,
+    history: ChatMsgsHistory,
     text_to_send: String,
     error_status: Option<ChatUiError>,
     scroll_to_bottom: Option<u8>,
@@ -48,7 +48,7 @@ impl FrontEnd {
             system_username: Username::try_from(CHAT_SYSTEM_USERNAME)
                 .expect("username is from a constant should either always work or always fail"),
             page_unique_name,
-            ims: Default::default(),
+            history: Default::default(),
             text_to_send: Default::default(),
             error_status: Default::default(),
             scroll_to_bottom: Default::default(),
@@ -143,12 +143,12 @@ impl FrontEnd {
         match chat_msg {
             ChatMsg::UserJoined(user) => {
                 let sys_msg = self.system_msg(format!("{user} connected"))?;
-                self.ims.push(sys_msg);
+                self.history.push(sys_msg);
                 self.connected_users.user_joined(user);
             }
             ChatMsg::UserLeft(user) => {
                 let sys_msg = self.system_msg(format!("{user} disconnected"))?;
-                self.ims.push(sys_msg);
+                self.history.push(sys_msg);
                 if let Err(err) = self
                     .connected_users
                     .user_left(user)
@@ -159,13 +159,17 @@ impl FrontEnd {
                 }
             }
             ChatMsg::IM(im) => {
-                self.ims.push(im);
+                self.history.push(im);
             }
-            ChatMsg::InitialState(state) => {
-                let connected_users = state.connected_users;
-                let history_ims = state.history.ims;
-                self.connected_users.merge_initial_users(connected_users);
-                self.prepend_ims_history(history_ims);
+            ChatMsg::InitialState(initial_state) => {
+                self.connected_users
+                    .merge_initial_users(initial_state.connected_users);
+                if let Err(e) = self.history.prepend_other(initial_state.history) {
+                    self.error_status = Some(ChatUiError {
+                        msg: e.to_string(),
+                        is_transient: true,
+                    })
+                };
             }
             ChatMsg::ReqHistory(req_history_body) => {
                 error!("Received a request for history: {req_history_body:?}");
@@ -174,8 +178,13 @@ impl FrontEnd {
                 ));
                 return Err(());
             }
-            ChatMsg::RespHistory(body) => {
-                self.prepend_ims_history(body.ims);
+            ChatMsg::RespHistory(incoming_history) => {
+                if let Err(e) = self.history.prepend_other(incoming_history) {
+                    self.error_status = Some(ChatUiError {
+                        msg: e.to_string(),
+                        is_transient: true,
+                    })
+                };
             }
         }
         Ok(())
@@ -283,7 +292,7 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
                         );
                     }
                 });
-                for im in self.ims.iter() {
+                for im in self.history.iter() {
                     let mut frame = egui::Frame::default().inner_margin(4.0).begin(ui);
                     {
                         let ui = &mut frame.content_ui;
@@ -370,39 +379,6 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
         });
     }
 
-    fn prepend_ims_history(&mut self, mut history_ims: Vec<ChatIM>) {
-        // Sort lists to ensure ordered by timestamp
-        self.ims.sort_by_key(|x| x.timestamp);
-        history_ims.sort_by_key(|x| x.timestamp);
-
-        // Put these at the start of our history by swapping with current history and
-        // then adding in the current history
-        std::mem::swap(&mut history_ims, &mut self.ims);
-
-        // Remove any duplicates from the end of end of what was returned.
-        let mut ims_from_before_history = history_ims; // Swapped above
-        let possibly_duplicated_timestamp = ims_from_before_history.first().map(|x| x.timestamp);
-        if let Some(possibly_duplicated_timestamp) = possibly_duplicated_timestamp {
-            // Get range of possibly duplicated values
-            let mut last_index_with_same_timestamp = 0;
-            for (i, im) in ims_from_before_history.iter().enumerate() {
-                if im.timestamp == possibly_duplicated_timestamp {
-                    last_index_with_same_timestamp = i;
-                } else {
-                    break;
-                }
-            }
-            let range_to_consider = &ims_from_before_history[..=last_index_with_same_timestamp];
-
-            // Only keep non-duplicated values
-            self.ims.retain(|x| {
-                x.timestamp != possibly_duplicated_timestamp || !range_to_consider.contains(x)
-            });
-        }
-
-        self.ims.append(&mut ims_from_before_history);
-    }
-
     fn system_msg(&mut self, content: String) -> Result<ChatIM, ()> {
         let content = match content.try_into() {
             Ok(x) => x,
@@ -423,7 +399,7 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
         self.last_history_request = Timestamp::now();
         let qty = CHAT_HISTORY_REQUEST_SIZE;
         let latest_timestamp = self
-            .ims
+            .history
             .first()
             .map(|chat_im| chat_im.timestamp)
             .unwrap_or_else(Timestamp::now);

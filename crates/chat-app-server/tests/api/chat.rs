@@ -1,6 +1,9 @@
 use crate::helpers::{no_cb, spawn_app, wait_for_message};
 use ewebsock::{WsEvent, WsMessage};
-use plugin_chat::{ChatIM, ChatImText, ChatMsg, ChatUser, InitialStateBody, RespHistoryBody};
+use plugin_chat::{
+    consts::CHAT_HISTORY_RECENT_CAPACITY, ChatIM, ChatImText, ChatMsg, ChatMsgsHistory, ChatUser,
+    InitialStateBody,
+};
 use wykies_server_test_helper::expect_ok;
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, uac::Username};
 use wykies_time::Timestamp;
@@ -23,7 +26,7 @@ async fn sent_messages_received() {
     let expected_initial_state = WsEvent::Message(WsMessage::Text(
         serde_json::to_string(&ChatMsg::InitialState(InitialStateBody {
             connected_users: vec![(chat_user, 2)],
-            history: RespHistoryBody { ims: Vec::new() },
+            history: ChatMsgsHistory { ims: Vec::new() },
         }))
         .unwrap(),
     ));
@@ -109,7 +112,7 @@ async fn load_history() {
             let msg: ChatMsg = serde_json::from_str(&text).unwrap();
             let ims = match msg {
                 ChatMsg::InitialState(InitialStateBody {
-                    history: RespHistoryBody { ims, .. },
+                    history: ChatMsgsHistory { ims, .. },
                     ..
                 }) => ims,
                 other => panic!("expected initial state but got: {other:?}"),

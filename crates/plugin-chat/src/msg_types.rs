@@ -1,4 +1,4 @@
-use anyhow::Context;
+use anyhow::{bail, Context};
 use std::fmt::Display;
 #[cfg(feature = "server_only")]
 use wykies_shared::db_types::Db;
@@ -27,7 +27,7 @@ pub enum ChatMsg {
     IM(ChatIM),
     InitialState(InitialStateBody),
     ReqHistory(ReqHistoryBody),
-    RespHistory(RespHistoryBody),
+    RespHistory(ChatMsgsHistory),
 }
 
 #[derive(
@@ -47,7 +47,7 @@ pub struct InitialStateBody {
     /// The users connected right now including their multiplicity (saturates at
     /// 256)
     pub connected_users: Vec<(ChatUser, u8)>,
-    pub history: RespHistoryBody,
+    pub history: ChatMsgsHistory,
 }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
@@ -59,8 +59,8 @@ pub struct ReqHistoryBody {
     pub latest_timestamp: Timestamp,
 }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
-pub struct RespHistoryBody {
+#[derive(Debug, Default, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
+pub struct ChatMsgsHistory {
     pub ims: Vec<ChatIM>,
 }
 
@@ -88,5 +88,70 @@ impl Display for ChatIM {
 impl Display for ChatUser {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         self.0.fmt(f)
+    }
+}
+
+impl ChatMsgsHistory {
+    pub fn push(&mut self, im: ChatIM) {
+        self.ims.push(im);
+    }
+
+    /// Merges two history objects under the assumption that the messages in
+    /// `other` are older, returning an error if that is not the case
+    pub fn prepend_other(&mut self, mut other: Self) -> anyhow::Result<()> {
+        // Sort lists to ensure ordered by timestamp
+        self.sort_by_timestamp();
+        other.sort_by_timestamp();
+
+        // Ensure the precondition about the objects is met
+        match (self.first(), other.last()) {
+            (Some(first), Some(last)) if first.timestamp < last.timestamp => {
+                bail!("Prepending Chat IM history failed. Last message in other is after our first message. Our first: {first:?}, Other Last: {last:?}");
+            }
+            _ => (), // No possible conflict in any other case
+        }
+
+        // Remove any duplicates from the end of end of what was returned.
+        let possibly_duplicated_timestamp = self.first().map(|x| x.timestamp);
+        if let Some(possibly_duplicated_timestamp) = possibly_duplicated_timestamp {
+            // Get range of possibly duplicated values
+            let mut last_index_with_same_timestamp = 0;
+            for (i, im) in self.ims.iter().enumerate() {
+                if im.timestamp == possibly_duplicated_timestamp {
+                    last_index_with_same_timestamp = i;
+                } else {
+                    // No more can match because we sorted the list
+                    break;
+                }
+            }
+            let range_to_consider = &self.ims[..=last_index_with_same_timestamp];
+
+            // Only keep non-duplicated values
+            other.ims.retain(|x| {
+                x.timestamp != possibly_duplicated_timestamp || !range_to_consider.contains(x)
+            });
+        }
+
+        other.ims.append(&mut self.ims);
+
+        // Keep other history now that we've added all our messages to it
+        std::mem::swap(&mut self.ims, &mut other.ims);
+
+        Ok(())
+    }
+
+    pub fn iter(&self) -> impl Iterator<Item = &ChatIM> {
+        self.ims.iter()
+    }
+
+    pub fn first(&self) -> Option<&ChatIM> {
+        self.ims.first()
+    }
+    pub fn last(&self) -> Option<&ChatIM> {
+        self.ims.last()
+    }
+
+    fn sort_by_timestamp(&mut self) {
+        self.ims.sort_by_key(|x| x.timestamp);
     }
 }

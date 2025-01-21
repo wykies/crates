@@ -6,5 +6,5 @@ mod msg_types;
 pub mod server_only;
 
 pub use msg_types::{
-    ChatIM, ChatImText, ChatMsg, ChatUser, InitialStateBody, ReqHistoryBody, RespHistoryBody,
+    ChatIM, ChatImText, ChatMsg, ChatMsgsHistory, ChatUser, InitialStateBody, ReqHistoryBody,
 };
