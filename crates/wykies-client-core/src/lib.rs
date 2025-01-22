@@ -18,7 +18,7 @@ mod warning_suppress {
 mod client;
 
 pub use client::{
-    websocket::{wait_for_ws_event, WakeFn, WebSocketConnection},
+    websocket::{wait_for_ws_event, WakeFn},
     Client, LoginOutcome, DUMMY_ARGUMENT,
 };
 

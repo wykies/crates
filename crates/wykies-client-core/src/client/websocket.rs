@@ -5,19 +5,14 @@ use ewebsock::WsEvent;
 use reqwest_cross::fetch_plus;
 use reqwest_cross::oneshot;
 use reqwest_cross::reqwest;
-use std::fmt::Debug;
 use tracing::warn;
+use wykies_shared::websockets::WebSocketConnection;
 use wykies_shared::{
     const_config::path::{PathSpec, PATH_WS_PREFIX},
     token::AuthToken,
 };
 
 const WS_CONNECTION_PREFIX: &str = "/ws";
-
-pub struct WebSocketConnection {
-    pub tx: ewebsock::WsSender,
-    pub rx: ewebsock::WsReceiver,
-}
 
 pub trait WakeFn: Fn() + Send + Sync + 'static + Clone {}
 impl<T> WakeFn for T where T: Fn() + Send + Sync + 'static + Clone {}
@@ -139,12 +134,6 @@ where
         .map_err(|e| anyhow::anyhow!("{e}"))
         .context("failed to connect web socket")?;
     Ok(WebSocketConnection { tx, rx })
-}
-
-impl Debug for WebSocketConnection {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "WebSocketConnection {{ .. }} ")
-    }
 }
 
 #[cfg(feature = "expose_internal")]

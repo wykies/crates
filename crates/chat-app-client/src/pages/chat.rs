@@ -5,8 +5,10 @@ use crate::{app::wake_fn, displayable_page_common};
 use super::DisplayablePage;
 use frontend::FrontEnd;
 use reqwest_cross::DataState;
-use wykies_client_core::WebSocketConnection;
-use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, uac::get_required_permissions};
+use wykies_shared::{
+    const_config::path::PATH_WS_TOKEN_CHAT, uac::get_required_permissions,
+    websockets::WebSocketConnection,
+};
 
 mod frontend;
 

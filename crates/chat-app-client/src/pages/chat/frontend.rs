@@ -12,8 +12,7 @@ use plugin_chat::{
     ChatIM, ChatImText, ChatMsg, ChatMsgsHistory, ReqHistoryBody,
 };
 use tracing::{error, info};
-use wykies_client_core::WebSocketConnection;
-use wykies_shared::{internal_error, uac::Username};
+use wykies_shared::{internal_error, uac::Username, websockets::WebSocketConnection};
 use wykies_time::Timestamp;
 
 mod connected_users;

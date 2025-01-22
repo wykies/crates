@@ -16,6 +16,7 @@ pub mod req_args;
 pub mod session;
 pub mod token;
 pub mod uac;
+pub mod websockets;
 mod wrapper_macros;
 
 #[cfg(feature = "server_only")]
