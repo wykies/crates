@@ -27,7 +27,7 @@ impl<T> WakeFn for T where T: Fn() + Send + Sync + 'static + Clone {}
 
 impl Client {
     #[tracing::instrument(skip(wake_up))]
-    pub fn ws_connect<F: WakeFn + Clone>(
+    pub fn ws_connect<F: WakeFn>(
         &self,
         path_spec: PathSpec,
         wake_up: F,
