@@ -39,7 +39,7 @@ command = ["shuttle", "run"]
 need_stdout = true
 allow_warnings = true
 background = false
-on_change_strategy = "kill_then_restart"
+kill = ["pkill", "-TERM", "-P"]
 
 [jobs.run-client-egui]
 command = ["cargo", "run", "--bin", "chat-app-client", "--all-features"]
