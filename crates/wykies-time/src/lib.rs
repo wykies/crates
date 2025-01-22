@@ -87,9 +87,10 @@ impl TryFrom<i64> for Timestamp {
     type Error = TimestampConversionError;
 
     fn try_from(value: i64) -> Result<Self, Self::Error> {
-        value
+        let x: u64 = value
             .try_into()
-            .map_err(|_| TimestampConversionError::NegativeI64(value))
+            .map_err(|_| TimestampConversionError::NegativeI64(value))?;
+        Ok(Self(x))
     }
 }
 
