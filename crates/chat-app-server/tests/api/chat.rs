@@ -101,7 +101,10 @@ async fn chat_initial_buffered_history() {
     }
     tokio::time::sleep(std::time::Duration::from_millis(100)).await; //Wait for message to be sent before dropping sender
 
-    // Act - Reconnect to see if messages are included in the history
+    // Act - Close connection
+    conn.tx.close();
+
+    // Act - Start a new connection to see if messages are included in the history
     conn = expect_ok!(app.core_client.ws_connect(PATH_WS_TOKEN_CHAT, no_cb));
 
     // Act - Wait for initial state message
@@ -161,12 +164,15 @@ async fn chat_overflowing_server_history_buffer() {
         }
     }
     tokio::time::sleep(std::time::Duration::from_millis(
-        // Wait 3 millis for each message to be sent before dropping (expected to be way too much)
+        // Wait 3 millis for each message sending before disconnect (expected to be way too much)
         3 * MSGS_SENT,
     ))
     .await;
 
-    // Act - Reconnect to see if messages are included in the history
+    // Act - Close connection
+    conn.tx.close();
+
+    // Act - Start a new connection to see if messages are included in the history
     conn = expect_ok!(app.core_client.ws_connect(PATH_WS_TOKEN_CHAT, no_cb));
 
     // Act - Wait for initial state message
