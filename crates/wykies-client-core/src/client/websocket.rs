@@ -6,7 +6,7 @@ use reqwest_cross::fetch_plus;
 use reqwest_cross::oneshot;
 use reqwest_cross::reqwest;
 use tracing::warn;
-use wykies_shared::websockets::WebSocketConnection;
+use wykies_shared::websockets::WSConnTxRx;
 use wykies_shared::{
     const_config::path::{PathSpec, PATH_WS_PREFIX},
     token::AuthToken,
@@ -23,7 +23,7 @@ impl Client {
         &self,
         path_spec: PathSpec,
         wake_up: F,
-    ) -> oneshot::Receiver<anyhow::Result<WebSocketConnection>> {
+    ) -> oneshot::Receiver<anyhow::Result<WSConnTxRx>> {
         let ws_url = self.ws_url_from(&path_spec);
         let req = self.create_request_builder(path_spec, &DUMMY_ARGUMENT);
         let response_handler = move |resp: reqwest::Result<reqwest::Response>| async {
@@ -64,7 +64,7 @@ async fn do_connect_ws<F: WakeFn>(
     response: reqwest::Result<reqwest::Response>,
     ws_url: String,
     wake_up: F,
-) -> anyhow::Result<WebSocketConnection> {
+) -> anyhow::Result<WSConnTxRx> {
     // Get token from response passed in
     let token = extract_token(response).await?;
 
@@ -81,7 +81,7 @@ async fn do_connect_ws<F: WakeFn>(
 }
 
 #[tracing::instrument(ret, err(Debug))]
-async fn wait_for_connection_to_open(conn: &mut WebSocketConnection) -> anyhow::Result<()> {
+async fn wait_for_connection_to_open(conn: &mut WSConnTxRx) -> anyhow::Result<()> {
     let event = wait_for_ws_event(conn)
         .await
         .context("any message while waiting for connection to open")?;
@@ -111,7 +111,7 @@ async fn wait_for_connection_to_open(conn: &mut WebSocketConnection) -> anyhow::
 }
 
 /// Provides a wrapper when we need to wait on a response in an async context
-pub async fn wait_for_ws_event(conn: &mut WebSocketConnection) -> anyhow::Result<WsEvent> {
+pub async fn wait_for_ws_event(conn: &mut WSConnTxRx) -> anyhow::Result<WsEvent> {
     // TODO 4: Add a timeout (that's why it returns a result right now)
     loop {
         if let Some(m) = conn.rx.try_recv() {
@@ -126,32 +126,29 @@ async fn extract_token(response: reqwest::Result<reqwest::Response>) -> anyhow::
     process_json_body(response).await
 }
 
-fn initiate_ws_connection<F>(ws_url: String, wake_up: F) -> anyhow::Result<WebSocketConnection>
+fn initiate_ws_connection<F>(ws_url: String, wake_up: F) -> anyhow::Result<WSConnTxRx>
 where
     F: WakeFn,
 {
     let (tx, rx) = ewebsock::connect_with_wakeup(ws_url, Default::default(), wake_up)
         .map_err(|e| anyhow::anyhow!("{e}"))
         .context("failed to connect web socket")?;
-    Ok(WebSocketConnection { tx, rx })
+    Ok(WSConnTxRx { tx, rx })
 }
 
 #[cfg(feature = "expose_internal")]
 pub mod expose_internal {
 
-    use super::{WakeFn, WebSocketConnection};
+    use super::{WSConnTxRx, WakeFn};
 
-    pub fn initiate_ws_connection<F>(
-        ws_url: String,
-        wake_up: F,
-    ) -> anyhow::Result<WebSocketConnection>
+    pub fn initiate_ws_connection<F>(ws_url: String, wake_up: F) -> anyhow::Result<WSConnTxRx>
     where
         F: WakeFn,
     {
         super::initiate_ws_connection(ws_url, wake_up)
     }
 
-    pub async fn wait_for_connection_to_open(conn: &mut WebSocketConnection) -> anyhow::Result<()> {
+    pub async fn wait_for_connection_to_open(conn: &mut WSConnTxRx) -> anyhow::Result<()> {
         super::wait_for_connection_to_open(conn).await
     }
 }

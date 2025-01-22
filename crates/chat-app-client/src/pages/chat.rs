@@ -6,8 +6,7 @@ use super::DisplayablePage;
 use frontend::FrontEnd;
 use reqwest_cross::DataState;
 use wykies_shared::{
-    const_config::path::PATH_WS_TOKEN_CHAT, uac::get_required_permissions,
-    websockets::WebSocketConnection,
+    const_config::path::PATH_WS_TOKEN_CHAT, uac::get_required_permissions, websockets::WSConnTxRx,
 };
 
 mod frontend;
@@ -20,7 +19,7 @@ pub struct UiChat {
     #[serde(skip)]
     frontend: Option<FrontEnd>,
     #[serde(skip)]
-    data_state: DataState<WebSocketConnection>,
+    data_state: DataState<WSConnTxRx>,
 }
 
 impl DisplayablePage for UiChat {
