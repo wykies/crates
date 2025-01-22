@@ -1,19 +1,16 @@
-use std::fmt::Debug;
-
+use super::{process_json_body, DUMMY_ARGUMENT};
+use crate::Client;
 use anyhow::{bail, Context as _};
 use ewebsock::WsEvent;
 use reqwest_cross::fetch_plus;
 use reqwest_cross::oneshot;
 use reqwest_cross::reqwest;
+use std::fmt::Debug;
 use tracing::warn;
 use wykies_shared::{
     const_config::path::{PathSpec, PATH_WS_PREFIX},
     token::AuthToken,
 };
-
-use crate::Client;
-
-use super::{process_json_body, DUMMY_ARGUMENT};
 
 const WS_CONNECTION_PREFIX: &str = "/ws";
 
@@ -90,13 +87,9 @@ async fn do_connect_ws<F: WakeFn>(
 
 #[tracing::instrument(ret, err(Debug))]
 async fn wait_for_connection_to_open(conn: &mut WebSocketConnection) -> anyhow::Result<()> {
-    let event = loop {
-        if let Some(m) = conn.rx.try_recv() {
-            break m;
-        } else {
-            reqwest_cross::yield_now().await;
-        }
-    };
+    let event = wait_for_ws_event(conn)
+        .await
+        .context("any message while waiting for connection to open")?;
 
     let base_err_msg = "expected first websocket event to be opened but instead got a";
 
@@ -118,6 +111,18 @@ async fn wait_for_connection_to_open(conn: &mut WebSocketConnection) -> anyhow::
         }
         WsEvent::Closed => {
             bail!("{base_err_msg} Closed event")
+        }
+    }
+}
+
+/// Provides a wrapper when we need to wait on a response in an async context
+pub async fn wait_for_ws_event(conn: &mut WebSocketConnection) -> anyhow::Result<WsEvent> {
+    // TODO 4: Add a timeout (that's why it returns a result right now)
+    loop {
+        if let Some(m) = conn.rx.try_recv() {
+            break Ok(m);
+        } else {
+            reqwest_cross::yield_now().await;
         }
     }
 }
