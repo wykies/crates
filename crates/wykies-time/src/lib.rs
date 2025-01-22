@@ -19,10 +19,13 @@ pub struct Timestamp(u64);
 
 #[derive(Debug, thiserror::Error, PartialEq, Eq)]
 pub enum TimestampConversionError {
-    #[error("Negative values are not supported. Value: {0}")]
+    #[error("Timestamps do not support negative numbers. Value: {0}")]
     NegativeI64(i64),
-    #[error("Seconds {0} exceeded the range of I64")]
-    ExceededRangeOfI64(Seconds),
+}
+#[derive(Debug, thiserror::Error, PartialEq, Eq)]
+pub enum SecondsConversionError {
+    #[error("Seconds {0} exceeded the positive range of I64")]
+    ExceededPositiveRangeOfI64(Seconds),
 }
 
 impl Timestamp {
@@ -166,13 +169,13 @@ impl From<Duration> for Seconds {
 }
 
 impl TryFrom<Seconds> for i64 {
-    type Error = TimestampConversionError;
+    type Error = SecondsConversionError;
 
     fn try_from(value: Seconds) -> Result<Self, Self::Error> {
         value
             .0
             .try_into()
-            .map_err(|_| TimestampConversionError::ExceededRangeOfI64(value))
+            .map_err(|_| SecondsConversionError::ExceededPositiveRangeOfI64(value))
     }
 }
 
