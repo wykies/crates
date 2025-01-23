@@ -48,7 +48,7 @@ impl Display for WsConnId {
 
 impl Debug for WsConnTxRx {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "WebSocketConnection {{ tx, rx }} ")
+        write!(f, "WsConnTxRx {{ tx, rx }} ")
     }
 }
 
