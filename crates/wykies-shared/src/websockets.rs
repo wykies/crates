@@ -3,6 +3,7 @@ use anyhow::{bail, Context as _};
 use ewebsock::{WsEvent, WsMessage};
 use std::{
     fmt::{Debug, Display},
+    ops::{Deref, DerefMut},
     time::{Duration, Instant},
 };
 use tracing::{instrument, warn};
@@ -162,5 +163,31 @@ impl WsConnTxRx {
                 bail!("{base_err_msg} Closed event")
             }
         }
+    }
+}
+
+impl AsRef<WsConnWithId> for WsConnWithId {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+impl AsMut<WsConnWithId> for WsConnWithId {
+    fn as_mut(&mut self) -> &mut Self {
+        self
+    }
+}
+
+impl Deref for WsConnWithId {
+    type Target = WsConnTxRx;
+
+    fn deref(&self) -> &Self::Target {
+        &self.conn
+    }
+}
+
+impl DerefMut for WsConnWithId {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.conn
     }
 }
