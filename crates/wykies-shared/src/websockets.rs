@@ -19,6 +19,7 @@ pub struct WsConnTxRx {
     rx: ewebsock::WsReceiver,
 }
 
+#[derive(Debug)]
 pub struct WsConnWithId {
     pub id: WsConnId,
     pub conn: WsConnTxRx,
