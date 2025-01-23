@@ -94,11 +94,9 @@ impl WSConnTxRx {
         let timeout_duration: Duration = timeout.into();
         while start.elapsed() < timeout_duration {
             if let Some(msg) = self.try_recv() {
-                // TODO 1: Remove empty vec
-                let _empty_vec = Vec::<u8>::new();
                 if matches!(
                     &msg,
-                    ewebsock::WsEvent::Message(ewebsock::WsMessage::Ping(_empty_vec))
+                    ewebsock::WsEvent::Message(ewebsock::WsMessage::Ping(_))
                 ) {
                     continue; // Skip ping messages
                 }
