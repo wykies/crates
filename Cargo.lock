@@ -7665,7 +7665,6 @@ name = "wykies-client-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "ewebsock",
  "getrandom",
  "reqwest-cross",
  "secrecy",
@@ -7708,11 +7707,9 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "argon2",
- "ewebsock",
  "rand",
  "serde",
  "sqlx",
- "tokio",
  "uuid",
  "wykies-server",
  "wykies-shared",

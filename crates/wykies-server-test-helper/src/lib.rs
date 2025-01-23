@@ -1,6 +1,6 @@
 #![warn(unused_crate_dependencies)]
 
-use anyhow::{bail, Context};
+use anyhow::Context;
 use argon2::password_hash::SaltString;
 use argon2::PasswordHasher;
 use serde::de::DeserializeOwned;
@@ -8,7 +8,6 @@ use sqlx::{Connection, Executor};
 use std::fmt::Debug;
 use std::ops::Deref;
 use std::sync::LazyLock;
-use std::time::{Duration, Instant};
 use uuid::Uuid;
 use wykies_server::Configuration;
 use wykies_server::{
@@ -27,7 +26,7 @@ use wykies_time::Seconds;
 
 mod macros;
 
-const MSG_WAIT_TIMEOUT: Seconds = Seconds::new(2);
+pub const TEST_MSG_WAIT_TIMEOUT: Seconds = Seconds::new(2);
 
 // Ensure that the `tracing` stack is only initialised once
 pub static TRACING: LazyLock<String> = LazyLock::new(|| {
@@ -321,31 +320,6 @@ impl TestUser {
             validate_one_row_affected(&sql_result).expect("failed to store test user");
         }
     }
-}
-
-pub async fn wait_for_message(
-    rx: &ewebsock::WsReceiver,
-    should_ignore_ping: bool,
-) -> anyhow::Result<ewebsock::WsEvent> {
-    let start = Instant::now();
-    let timeout: Duration = MSG_WAIT_TIMEOUT.into();
-    while start.elapsed() < timeout {
-        if let Some(msg) = rx.try_recv() {
-            let _empty_vec = Vec::<u8>::new();
-            if should_ignore_ping
-                && matches!(
-                    &msg,
-                    ewebsock::WsEvent::Message(ewebsock::WsMessage::Ping(_empty_vec))
-                )
-            {
-                continue; // Skip ping messages
-            }
-            return Ok(msg);
-        } else {
-            tokio::time::sleep(Duration::from_millis(1)).await;
-        }
-    }
-    bail!("Timed out after {MSG_WAIT_TIMEOUT:?}")
 }
 
 pub async fn store_host_branch<C>(test_app: &TestApp<C>) {

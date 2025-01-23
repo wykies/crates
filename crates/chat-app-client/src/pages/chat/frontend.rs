@@ -80,7 +80,7 @@ impl FrontEnd {
     }
 
     fn check_for_server_msgs(&mut self, connection: &mut WSConnTxRx) {
-        while let Some(event) = connection.rx.try_recv() {
+        while let Some(event) = connection.try_recv() {
             info!(?event, "Event received");
             match event {
                 WsEvent::Opened => {
@@ -263,7 +263,7 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
             timestamp: Timestamp::now(),
             content,
         });
-        connection.tx.send(WsMessage::Text(
+        connection.send(WsMessage::Text(
             serde_json::to_string(&chat_msg).expect("failed to serialize chat msg for IM"),
         ));
         self.request_scroll_to_bottom();
@@ -402,7 +402,7 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
             qty,
             latest_timestamp: current_earliest_timestamp,
         });
-        connection.tx.send(WsMessage::Text(
+        connection.send(WsMessage::Text(
             serde_json::to_string(&chat_msg)
                 .expect("failed to serialize chat msg for history request"),
         ));

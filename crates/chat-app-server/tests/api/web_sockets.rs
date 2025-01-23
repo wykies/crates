@@ -1,10 +1,13 @@
 //! Happy path tested in other modules just testing authentication here
 
 use ewebsock::WsEvent;
-use wykies_client_core::{ws_expose_internal, DUMMY_ARGUMENT};
-use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, token::AuthToken};
+use wykies_client_core::DUMMY_ARGUMENT;
+use wykies_server_test_helper::TEST_MSG_WAIT_TIMEOUT;
+use wykies_shared::{
+    const_config::path::PATH_WS_TOKEN_CHAT, token::AuthToken, websockets::WSConnTxRx,
+};
 
-use crate::helpers::{no_cb, spawn_app, wait_for_message};
+use crate::helpers::{no_cb, spawn_app};
 
 #[tokio::test]
 async fn rejected_without_requesting_token() {
@@ -16,10 +19,13 @@ async fn rejected_without_requesting_token() {
         .expose_internal_ws_url_from(&PATH_WS_TOKEN_CHAT);
 
     // Try to connect
-    let conn = ws_expose_internal::initiate_ws_connection(ws_url, no_cb).unwrap();
+    let conn = WSConnTxRx::initiate_connection(ws_url, no_cb).unwrap();
 
     // Get response
-    let response = wait_for_message(&conn.rx, false).await.unwrap();
+    let response = conn
+        .recv_with_timeout_ignoring_ping(TEST_MSG_WAIT_TIMEOUT)
+        .await
+        .unwrap();
 
     // Assert
     assert_eq!(
@@ -49,19 +55,20 @@ async fn fails_to_connect_without_correct_token() {
         .expect("failed to extract token");
 
     // Initiate connection
-    let mut conn = ws_expose_internal::initiate_ws_connection(ws_url, no_cb).unwrap();
+    let mut conn = WSConnTxRx::initiate_connection(ws_url, no_cb).unwrap();
 
     // Wait for connection to be opened
-    ws_expose_internal::wait_for_connection_to_open(&mut conn)
-        .await
-        .unwrap();
+    conn.wait_for_connection_to_open().await.unwrap();
 
     // Send wrong token
     let token = AuthToken::new_rand();
-    conn.tx.send(token.into());
+    conn.send(token.into());
 
     // Get response
-    let response = wait_for_message(&conn.rx, false).await.unwrap();
+    let response = conn
+        .recv_with_timeout_ignoring_ping(TEST_MSG_WAIT_TIMEOUT)
+        .await
+        .unwrap();
 
     // Assert - Assert that `Closed` is received. Note anything but `Closed` is an
     // error including `Ping`

@@ -1,21 +1,14 @@
 use super::{process_json_body, DUMMY_ARGUMENT};
 use crate::Client;
-use anyhow::{bail, Context as _};
-use ewebsock::WsEvent;
-use reqwest_cross::fetch_plus;
-use reqwest_cross::oneshot;
-use reqwest_cross::reqwest;
+use reqwest_cross::{fetch_plus, oneshot, reqwest};
 use tracing::warn;
-use wykies_shared::websockets::WSConnTxRx;
 use wykies_shared::{
     const_config::path::{PathSpec, PATH_WS_PREFIX},
     token::AuthToken,
+    websockets::{WSConnTxRx, WakeFn},
 };
 
 const WS_CONNECTION_PREFIX: &str = "/ws";
-
-pub trait WakeFn: Fn() + Send + Sync + 'static + Clone {}
-impl<T> WakeFn for T where T: Fn() + Send + Sync + 'static + Clone {}
 
 impl Client {
     #[tracing::instrument(skip(wake_up))]
@@ -69,86 +62,9 @@ async fn do_connect_ws<F: WakeFn>(
     let token = extract_token(response).await?;
 
     // Initiate connection
-    let mut result = initiate_ws_connection(ws_url, wake_up)?;
-
-    // Wait for connection to complete before sending token
-    wait_for_connection_to_open(&mut result).await?;
-
-    // Send token
-    result.tx.send(token.into());
-
-    Ok(result)
-}
-
-#[tracing::instrument(ret, err(Debug))]
-async fn wait_for_connection_to_open(conn: &mut WSConnTxRx) -> anyhow::Result<()> {
-    let event = wait_for_ws_event(conn)
-        .await
-        .context("any message while waiting for connection to open")?;
-
-    let base_err_msg = "expected first websocket event to be opened but instead got a";
-
-    match event {
-        WsEvent::Opened => Ok(()),
-        WsEvent::Message(ws_message) => {
-            bail!("{base_err_msg} message: {ws_message:?}")
-        }
-        WsEvent::Error(err_msg) => {
-            // Using I'm A Tea Pot as unable to send more detailed error back
-            if err_msg.contains("418") {
-                // Using I'm a teapot to communicate it's an Unexpected Client as we can only
-                // get the status code
-                warn!("UnexpectedClient");
-                bail!("Server Reported Expected Connection (This may happen sometimes but should not happen very often)")
-            } else {
-                bail!("{base_err_msg}n error: {err_msg}")
-            }
-        }
-        WsEvent::Closed => {
-            bail!("{base_err_msg} Closed event")
-        }
-    }
-}
-
-/// Provides a wrapper when we need to wait on a response in an async context
-pub async fn wait_for_ws_event(conn: &mut WSConnTxRx) -> anyhow::Result<WsEvent> {
-    // TODO 4: Add a timeout (that's why it returns a result right now)
-    loop {
-        if let Some(m) = conn.rx.try_recv() {
-            break Ok(m);
-        } else {
-            reqwest_cross::yield_now().await;
-        }
-    }
+    WSConnTxRx::initiate_connection_with_auth(token, ws_url, wake_up).await
 }
 
 async fn extract_token(response: reqwest::Result<reqwest::Response>) -> anyhow::Result<AuthToken> {
     process_json_body(response).await
-}
-
-fn initiate_ws_connection<F>(ws_url: String, wake_up: F) -> anyhow::Result<WSConnTxRx>
-where
-    F: WakeFn,
-{
-    let (tx, rx) = ewebsock::connect_with_wakeup(ws_url, Default::default(), wake_up)
-        .map_err(|e| anyhow::anyhow!("{e}"))
-        .context("failed to connect web socket")?;
-    Ok(WSConnTxRx { tx, rx })
-}
-
-#[cfg(feature = "expose_internal")]
-pub mod expose_internal {
-
-    use super::{WSConnTxRx, WakeFn};
-
-    pub fn initiate_ws_connection<F>(ws_url: String, wake_up: F) -> anyhow::Result<WSConnTxRx>
-    where
-        F: WakeFn,
-    {
-        super::initiate_ws_connection(ws_url, wake_up)
-    }
-
-    pub async fn wait_for_connection_to_open(conn: &mut WSConnTxRx) -> anyhow::Result<()> {
-        super::wait_for_connection_to_open(conn).await
-    }
 }

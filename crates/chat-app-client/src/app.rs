@@ -2,7 +2,6 @@ use egui::ScrollArea;
 use egui_helpers::UiHelpers;
 use tracing::{debug, error, instrument};
 use tracing::{info, warn};
-use wykies_client_core::WakeFn;
 use wykies_shared::uac::{init_permissions_to_defaults, DisplayName};
 use wykies_time::Timestamp;
 
@@ -409,11 +408,6 @@ impl ChatApp {
 
 fn do_organize_pages(ui: &mut egui::Ui) {
     ui.ctx().memory_mut(|mem| mem.reset_areas());
-}
-
-#[inline]
-pub fn wake_fn(ctx: egui::Context) -> impl WakeFn {
-    move || ctx.request_repaint()
 }
 
 impl Default for ChatApp {

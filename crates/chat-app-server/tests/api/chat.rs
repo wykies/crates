@@ -1,4 +1,4 @@
-use crate::helpers::{no_cb, spawn_app, wait_for_message};
+use crate::helpers::{no_cb, spawn_app};
 use ewebsock::{WsEvent, WsMessage};
 use plugin_chat::{
     consts::{CHAT_HISTORY_RECENT_CAPACITY, CHAT_HISTORY_REQUEST_SIZE},
@@ -7,7 +7,7 @@ use plugin_chat::{
 use pretty_assertions::{assert_eq, assert_ne};
 use std::time::Duration;
 use tokio::time::sleep;
-use wykies_server_test_helper::expect_ok;
+use wykies_server_test_helper::{expect_ok, TEST_MSG_WAIT_TIMEOUT};
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, uac::Username};
 use wykies_time::Timestamp;
 
@@ -35,7 +35,8 @@ async fn sent_messages_received() {
     ));
 
     // Act - Wait for initial message
-    let actual_initial_state = wait_for_message(&conn2.rx, true)
+    let actual_initial_state = conn2
+        .recv_with_timeout_ignoring_ping(TEST_MSG_WAIT_TIMEOUT)
         .await
         .expect("failed to receive initial state");
 
@@ -46,9 +47,10 @@ async fn sent_messages_received() {
     );
 
     // Act
-    conn1.tx.send(msg.clone());
+    conn1.send(msg.clone());
 
-    let incoming = wait_for_message(&conn2.rx, true)
+    let incoming = conn2
+        .recv_with_timeout_ignoring_ping(TEST_MSG_WAIT_TIMEOUT)
         .await
         .expect("failed to receive message");
 
@@ -97,18 +99,19 @@ async fn chat_initial_buffered_history() {
             content: im.clone(),
         });
         let msg = WsMessage::Text(serde_json::to_string(&msg).unwrap());
-        conn.tx.send(msg);
+        conn.send(msg);
     }
     tokio::time::sleep(std::time::Duration::from_millis(100)).await; //Wait for message to be sent before dropping sender
 
     // Act - Close connection
-    conn.tx.close();
+    conn.close();
 
     // Act - Start a new connection to see if messages are included in the history
     conn = expect_ok!(app.core_client.ws_connect(PATH_WS_TOKEN_CHAT, no_cb));
 
     // Act - Wait for initial state message
-    let incoming = wait_for_message(&conn.rx, true)
+    let incoming = conn
+        .recv_with_timeout_ignoring_ping(TEST_MSG_WAIT_TIMEOUT)
         .await
         .expect("failed to receive message");
 
@@ -157,7 +160,7 @@ async fn chat_overflowing_server_history_buffer() {
             content: im.clone(),
         });
         let msg = WsMessage::Text(serde_json::to_string(&msg).unwrap());
-        conn.tx.send(msg);
+        conn.send(msg);
         if count % sleep_interval == 0 {
             // Sleep to ensure all messages do not have the same timestamp
             sleep(Duration::from_secs(1)).await;
@@ -170,13 +173,14 @@ async fn chat_overflowing_server_history_buffer() {
     .await;
 
     // Act - Close connection
-    conn.tx.close();
+    conn.close();
 
     // Act - Start a new connection to see if messages are included in the history
     conn = expect_ok!(app.core_client.ws_connect(PATH_WS_TOKEN_CHAT, no_cb));
 
     // Act - Wait for initial state message
-    let incoming = wait_for_message(&conn.rx, true)
+    let incoming = conn
+        .recv_with_timeout_ignoring_ping(TEST_MSG_WAIT_TIMEOUT)
         .await
         .expect("failed to receive message");
 
@@ -204,9 +208,9 @@ async fn chat_overflowing_server_history_buffer() {
             qty,
             latest_timestamp: current_earliest_timestamp,
         });
-        conn.tx
-            .send(WsMessage::Text(serde_json::to_string(&chat_msg).unwrap()));
-        let incoming = wait_for_message(&conn.rx, true)
+        conn.send(WsMessage::Text(serde_json::to_string(&chat_msg).unwrap()));
+        let incoming = conn
+            .recv_with_timeout_ignoring_ping(TEST_MSG_WAIT_TIMEOUT)
             .await
             .expect("failed to receive message");
         let more_history = match incoming {

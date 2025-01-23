@@ -12,7 +12,7 @@ use wykies_server_test_helper::{
 };
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, db_types::DbPool};
 
-pub use wykies_server_test_helper::{no_cb, wait_for_message};
+pub use wykies_server_test_helper::no_cb;
 
 #[derive(Debug)]
 pub struct TestApp(wykies_server_test_helper::TestApp<wykies_client_core::Client>);
