@@ -191,3 +191,9 @@ impl DerefMut for WsConnWithId {
         &mut self.conn
     }
 }
+
+impl WsConnWithId {
+    pub fn close(self) {
+        self.conn.close();
+    }
+}
