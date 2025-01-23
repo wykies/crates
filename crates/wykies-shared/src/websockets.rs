@@ -19,6 +19,11 @@ pub struct WSConnTxRx {
     rx: ewebsock::WsReceiver,
 }
 
+pub struct WSConnWithID {
+    pub id: WSConnId,
+    pub conn: WSConnTxRx,
+}
+
 impl WSConnId {
     pub fn new_rand() -> Self {
         Self(Uuid::new_v4())
