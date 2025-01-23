@@ -12,7 +12,7 @@ use plugin_chat::{
     ChatIM, ChatImText, ChatMsg, ChatMsgsHistory, ReqHistoryBody,
 };
 use tracing::{error, info};
-use wykies_shared::{internal_error, uac::Username, websockets::WSConnTxRx};
+use wykies_shared::{internal_error, uac::Username, websockets::WsConnTxRx};
 use wykies_time::Timestamp;
 
 mod connected_users;
@@ -56,7 +56,7 @@ impl FrontEnd {
         }
     }
 
-    pub fn show(&mut self, ui: &mut eframe::egui::Ui, connection: &mut WSConnTxRx) {
+    pub fn show(&mut self, ui: &mut eframe::egui::Ui, connection: &mut WsConnTxRx) {
         if self.error_status.is_none() {
             self.check_for_server_msgs(connection);
         }
@@ -79,7 +79,7 @@ impl FrontEnd {
         egui::CentralPanel::default().show_inside(ui, |ui| self.ui_messages(ui, connection));
     }
 
-    fn check_for_server_msgs(&mut self, connection: &mut WSConnTxRx) {
+    fn check_for_server_msgs(&mut self, connection: &mut WsConnTxRx) {
         while let Some(event) = connection.try_recv() {
             info!(?event, "Event received");
             match event {
@@ -189,7 +189,7 @@ impl FrontEnd {
         Ok(())
     }
 
-    fn ui_send_area(&mut self, ui: &mut egui::Ui, connection: &mut WSConnTxRx) {
+    fn ui_send_area(&mut self, ui: &mut egui::Ui, connection: &mut WsConnTxRx) {
         ui.with_layout(egui::Layout::right_to_left(egui::Align::BOTTOM), |ui| {
             let bytes_left = ChatImText::MAX_LENGTH as i32 - self.text_to_send.len() as i32;
             if bytes_left <= ChatImText::MAX_LENGTH as i32 / 10 {
@@ -234,7 +234,7 @@ impl FrontEnd {
         });
     }
 
-    fn send_msg(&mut self, connection: &mut WSConnTxRx) {
+    fn send_msg(&mut self, connection: &mut WsConnTxRx) {
         if self.text_to_send.is_empty() {
             return;
         }
@@ -269,7 +269,7 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
         self.request_scroll_to_bottom();
     }
 
-    fn ui_messages(&mut self, ui: &mut egui::Ui, connection: &mut WSConnTxRx) {
+    fn ui_messages(&mut self, ui: &mut egui::Ui, connection: &mut WsConnTxRx) {
         ScrollArea::vertical()
             .auto_shrink(false)
             .stick_to_bottom(true)
@@ -394,7 +394,7 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
         })
     }
 
-    fn request_more_history(&mut self, connection: &mut WSConnTxRx) {
+    fn request_more_history(&mut self, connection: &mut WsConnTxRx) {
         self.last_history_request = Timestamp::now();
         let qty = CHAT_HISTORY_REQUEST_SIZE;
         let current_earliest_timestamp = self.history.earliest_timestamp_or_now();

@@ -4,7 +4,7 @@ use ewebsock::WsEvent;
 use wykies_client_core::DUMMY_ARGUMENT;
 use wykies_server_test_helper::TEST_MSG_WAIT_TIMEOUT;
 use wykies_shared::{
-    const_config::path::PATH_WS_TOKEN_CHAT, token::AuthToken, websockets::WSConnTxRx,
+    const_config::path::PATH_WS_TOKEN_CHAT, token::AuthToken, websockets::WsConnTxRx,
 };
 
 use crate::helpers::{no_cb, spawn_app};
@@ -19,7 +19,7 @@ async fn rejected_without_requesting_token() {
         .expose_internal_ws_url_from(&PATH_WS_TOKEN_CHAT);
 
     // Try to connect
-    let conn = WSConnTxRx::initiate_connection(ws_url, no_cb).unwrap();
+    let conn = WsConnTxRx::initiate_connection(ws_url, no_cb).unwrap();
 
     // Get response
     let response = conn
@@ -55,7 +55,7 @@ async fn fails_to_connect_without_correct_token() {
         .expect("failed to extract token");
 
     // Initiate connection
-    let mut conn = WSConnTxRx::initiate_connection(ws_url, no_cb).unwrap();
+    let mut conn = WsConnTxRx::initiate_connection(ws_url, no_cb).unwrap();
 
     // Wait for connection to be opened
     conn.wait_for_connection_to_open().await.unwrap();

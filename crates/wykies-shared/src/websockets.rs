@@ -12,19 +12,19 @@ use wykies_time::Seconds;
 #[derive(
     Debug, Clone, Copy, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord,
 )]
-pub struct WSConnId(Uuid);
+pub struct WsConnId(Uuid);
 
-pub struct WSConnTxRx {
+pub struct WsConnTxRx {
     tx: ewebsock::WsSender,
     rx: ewebsock::WsReceiver,
 }
 
-pub struct WSConnWithID {
-    pub id: WSConnId,
-    pub conn: WSConnTxRx,
+pub struct WsConnWithId {
+    pub id: WsConnId,
+    pub conn: WsConnTxRx,
 }
 
-impl WSConnId {
+impl WsConnId {
     pub fn new_rand() -> Self {
         Self(Uuid::new_v4())
     }
@@ -38,21 +38,21 @@ pub fn wake_fn(ctx: egui::Context) -> impl WakeFn {
     move || ctx.request_repaint()
 }
 
-impl Display for WSConnId {
+impl Display for WsConnId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.0)
     }
 }
 
-impl Debug for WSConnTxRx {
+impl Debug for WsConnTxRx {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "WebSocketConnection {{ tx, rx }} ")
     }
 }
 
-impl WSConnTxRx {
+impl WsConnTxRx {
     #[instrument(skip(wake_up))]
-    pub fn initiate_connection<F, S>(ws_url: S, wake_up: F) -> anyhow::Result<WSConnTxRx>
+    pub fn initiate_connection<F, S>(ws_url: S, wake_up: F) -> anyhow::Result<WsConnTxRx>
     where
         F: WakeFn,
         S: Into<String> + Debug,
@@ -60,7 +60,7 @@ impl WSConnTxRx {
         let (tx, rx) = ewebsock::connect_with_wakeup(ws_url, Default::default(), wake_up)
             .map_err(|e| anyhow::anyhow!("{e}"))
             .context("failed to connect web socket")?;
-        Ok(WSConnTxRx { tx, rx })
+        Ok(WsConnTxRx { tx, rx })
     }
 
     #[inline]
@@ -118,13 +118,13 @@ impl WSConnTxRx {
         token: AuthToken,
         ws_url: S,
         wake_up: F,
-    ) -> anyhow::Result<WSConnTxRx>
+    ) -> anyhow::Result<WsConnTxRx>
     where
         F: WakeFn,
         S: Into<String> + Debug,
     {
         // Initiate connection
-        let mut result = WSConnTxRx::initiate_connection(ws_url, wake_up)?;
+        let mut result = WsConnTxRx::initiate_connection(ws_url, wake_up)?;
 
         // Wait for connection to open before sending token
         result.wait_for_connection_to_open().await?;

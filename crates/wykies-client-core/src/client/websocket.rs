@@ -5,7 +5,7 @@ use tracing::warn;
 use wykies_shared::{
     const_config::path::{PathSpec, PATH_WS_PREFIX},
     token::AuthToken,
-    websockets::{WSConnTxRx, WakeFn},
+    websockets::{WakeFn, WsConnTxRx},
 };
 
 const WS_CONNECTION_PREFIX: &str = "/ws";
@@ -16,7 +16,7 @@ impl Client {
         &self,
         path_spec: PathSpec,
         wake_up: F,
-    ) -> oneshot::Receiver<anyhow::Result<WSConnTxRx>> {
+    ) -> oneshot::Receiver<anyhow::Result<WsConnTxRx>> {
         let ws_url = self.ws_url_from(&path_spec);
         let req = self.create_request_builder(path_spec, &DUMMY_ARGUMENT);
         let response_handler = move |resp: reqwest::Result<reqwest::Response>| async {
@@ -57,12 +57,12 @@ async fn do_connect_ws<F: WakeFn>(
     response: reqwest::Result<reqwest::Response>,
     ws_url: String,
     wake_up: F,
-) -> anyhow::Result<WSConnTxRx> {
+) -> anyhow::Result<WsConnTxRx> {
     // Get token from response passed in
     let token = extract_token(response).await?;
 
     // Initiate connection
-    WSConnTxRx::initiate_connection_with_auth(token, ws_url, wake_up).await
+    WsConnTxRx::initiate_connection_with_auth(token, ws_url, wake_up).await
 }
 
 async fn extract_token(response: reqwest::Result<reqwest::Response>) -> anyhow::Result<AuthToken> {

@@ -6,7 +6,7 @@ use std::fmt::Debug;
 use wykies_shared::{
     const_config::path::PATH_WS_TOKEN_CHAT,
     uac::get_required_permissions,
-    websockets::{wake_fn, WSConnTxRx},
+    websockets::{wake_fn, WsConnTxRx},
 };
 
 mod frontend;
@@ -19,7 +19,7 @@ pub struct UiChat {
     #[serde(skip)]
     frontend: Option<FrontEnd>,
     #[serde(skip)]
-    data_state: DataState<WSConnTxRx>,
+    data_state: DataState<WsConnTxRx>,
 }
 
 impl DisplayablePage for UiChat {
