@@ -38,8 +38,17 @@ macro_rules! string_wrapper {
             }
         }
 
+
         impl $name {
             pub const MAX_LENGTH: usize = $max_length;
+
+            pub fn try_from_opt(value: Option<String>) -> Result<Option<Self>, ConversionError> {
+                match value {
+                    Some(value) if value.is_empty() => Ok(None),
+                    Some(value) => Ok(Some(value.try_into()?)),
+                    None => Ok(None),
+                }
+            }
         }
 
         impl From<$name> for String {
@@ -92,6 +101,7 @@ macro_rules! string_wrapper {
         }
     };
 }
+
 #[macro_export]
 macro_rules! char_array_wrapper {
     ($name: ident, $length: expr, $always_case: expr) => {
@@ -102,6 +112,14 @@ macro_rules! char_array_wrapper {
 
         impl $name {
             pub const LENGTH: usize = $length;
+
+            pub fn try_from_opt(value: Option<String>) -> Result<Option<Self>, ConversionError> {
+                match value {
+                    Some(value) if value.is_empty() => Ok(None),
+                    Some(value) => Ok(Some(value.try_into()?)),
+                    None => Ok(None),
+                }
+            }
         }
 
         impl std::fmt::Display for $name {
