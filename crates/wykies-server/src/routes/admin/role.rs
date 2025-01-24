@@ -2,9 +2,9 @@ use crate::db_utils::validate_one_row_affected;
 use actix_web::{web, HttpResponse};
 use anyhow::Context;
 use wykies_shared::db_types::DbPool;
+use wykies_shared::id::RoleId;
 use wykies_shared::{
     e400, e500,
-    id::DbId,
     req_args::api::admin::role::{self, AssignReqArgs},
     uac::{Role, RoleDraft},
 };
@@ -54,7 +54,7 @@ pub async fn role(
 pub async fn role_create(
     pool: web::Data<DbPool>,
     web::Json(draft_role): web::Json<RoleDraft>,
-) -> actix_web::Result<web::Json<DbId>> {
+) -> actix_web::Result<web::Json<RoleId>> {
     let pool: &DbPool = &pool;
     let permissions: String = draft_role.permissions.into();
     #[cfg(feature = "mysql")]

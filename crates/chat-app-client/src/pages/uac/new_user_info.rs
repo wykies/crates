@@ -1,7 +1,7 @@
 use reqwest_cross::{Awaiting, DataState};
 use secrecy::SecretString;
 use wykies_client_core::Client;
-use wykies_shared::{id::DbId, req_args::api::admin::user::NewUserReqArgs};
+use wykies_shared::{id::RoleId, req_args::api::admin::user::NewUserReqArgs};
 
 use super::SaveState;
 
@@ -10,7 +10,7 @@ pub struct NewUserInfo {
     pub username: String,
     pub display_name: String,
     pub password: SecretString,
-    pub assigned_role: Option<DbId>,
+    pub assigned_role: Option<RoleId>,
     save_status: DataState<()>,
 }
 

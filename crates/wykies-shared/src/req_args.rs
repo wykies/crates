@@ -4,10 +4,11 @@
 //! [`api::ChangePasswordReqArgs`] Some structs are not serializable but are
 //! still here to included here to know what needs to be sent
 
-use crate::id::DbId;
 use anyhow::Context;
 use secrecy::{ExposeSecret, SecretString};
 use std::fmt::Debug;
+
+use crate::id::BranchId;
 
 pub mod api;
 
@@ -36,7 +37,7 @@ pub struct LoginReqArgs {
     /// saved in the database. Will be ignored if the branch is already set
     /// in the database. Will also not be used even if it's needed and the
     /// user doesn't have the required permissions.
-    pub branch_to_set: Option<DbId>,
+    pub branch_to_set: Option<BranchId>,
 }
 
 impl LoginReqArgs {
@@ -48,7 +49,11 @@ impl LoginReqArgs {
         }
     }
 
-    pub fn new_with_branch(username: String, password: SecretString, branch_to_set: DbId) -> Self {
+    pub fn new_with_branch(
+        username: String,
+        password: SecretString,
+        branch_to_set: BranchId,
+    ) -> Self {
         Self {
             username,
             password,
@@ -66,7 +71,7 @@ impl LoginReqArgs {
         self
     }
 
-    pub fn branch_to_set(mut self, branch_to_set: Option<DbId>) -> Self {
+    pub fn branch_to_set(mut self, branch_to_set: Option<BranchId>) -> Self {
         self.branch_to_set = branch_to_set;
         self
     }

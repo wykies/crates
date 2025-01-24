@@ -206,6 +206,69 @@ macro_rules! char_array_wrapper {
     };
 }
 
+#[macro_export]
+macro_rules! id_wrapper {
+    ($name: ident, $error_name: ident) => {
+        #[derive(Debug, thiserror::Error, PartialEq, Eq)]
+        pub enum $error_name {
+            #[error("Negative values not supported as Id's. Value: {0}")]
+            NegativeI32(i32),
+            #[error("Internal value of $name is too large for I32. Value: {0:?}")]
+            TooBigForI32($name),
+        }
+
+        #[derive(
+            Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, Copy,
+        )]
+        pub struct $name(u64);
+
+        impl From<u64> for $name {
+            fn from(value: u64) -> Self {
+                Self(value)
+            }
+        }
+
+        impl TryFrom<i32> for $name {
+            type Error = $error_name;
+
+            fn try_from(value: i32) -> Result<Self, Self::Error> {
+                if value >= 0 {
+                    Ok(Self(value as u64))
+                } else {
+                    Err($error_name::NegativeI32(value))
+                }
+            }
+        }
+
+        impl From<$name> for u64 {
+            fn from(value: $name) -> Self {
+                value.0
+            }
+        }
+
+        impl TryFrom<$name> for i32 {
+            type Error = $error_name;
+
+            fn try_from(value: $name) -> Result<Self, Self::Error> {
+                value
+                    .0
+                    .try_into()
+                    .map_err(|_| $error_name::TooBigForI32(value))
+            }
+        }
+
+        #[cfg(feature = "server_only")]
+        db_types::impl_encode_for_newtype_around_u64!($name, "mysql", "postgres");
+
+        #[cfg(feature = "server_only")]
+        impl actix_web::error::ResponseError for $error_name {
+            fn status_code(&self) -> actix_web::http::StatusCode {
+                actix_web::http::StatusCode::INTERNAL_SERVER_ERROR
+            }
+        }
+    }
+}
+
 pub enum AlwaysCase {
     Any,
     Lower,

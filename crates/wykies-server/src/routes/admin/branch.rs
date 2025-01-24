@@ -3,10 +3,10 @@ use crate::db_utils::validate_one_row_affected;
 use actix_web::web;
 use anyhow::Context;
 use wykies_shared::db_types::DbPool;
+use wykies_shared::id::BranchId;
 use wykies_shared::{
     branch::{Branch, BranchDraft},
     e500,
-    id::DbId,
 };
 
 #[tracing::instrument(skip(pool))]
@@ -49,7 +49,7 @@ pub async fn branch_list(pool: web::Data<DbPool>) -> actix_web::Result<web::Json
 pub async fn branch_create(
     pool: web::Data<DbPool>,
     web::Json(draft): web::Json<BranchDraft>,
-) -> actix_web::Result<web::Json<DbId>> {
+) -> actix_web::Result<web::Json<BranchId>> {
     let pool: &DbPool = &pool;
     #[cfg(feature = "mysql")]
     let result = {

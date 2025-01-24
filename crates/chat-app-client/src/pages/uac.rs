@@ -10,10 +10,10 @@ use reqwest_cross::DataState;
 use secrecy::ExposeSecret;
 use std::ops::ControlFlow;
 use wykies_client_core::Client;
+use wykies_shared::id::RoleId;
 use wykies_shared::internal_error;
 use wykies_shared::{
     const_config::{error::err_role_name, path::PATH_API_ADMIN_USERS_LIST_AND_ROLES},
-    id::DbId,
     uac::{
         get_required_permissions, DisplayName, ListUsersRoles, RoleName, UserMetadata, Username,
     },
@@ -447,8 +447,8 @@ fn ui_user_enabled(ui: &mut egui::Ui, org: Option<&bool>, edit: &mut bool) {
 
 fn ui_user_role(
     ui: &mut egui::Ui,
-    org: Option<&Option<DbId>>,
-    edit: &mut Option<DbId>,
+    org: Option<&Option<RoleId>>,
+    edit: &mut Option<RoleId>,
     data: &ListUsersRoles,
 ) {
     ui.horizontal(|ui| {

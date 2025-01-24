@@ -7,8 +7,8 @@ use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVe
 use secrecy::{ExposeSecret, SecretString};
 use tracing::info;
 use wykies_shared::db_types::DbPool;
+use wykies_shared::id::BranchId;
 use wykies_shared::{
-    id::DbId,
     telemetry::spawn_blocking_with_tracing,
     uac::{AuthError, LoginResponse, Permissions, UserInfo, Username},
 };
@@ -120,7 +120,7 @@ pub struct AuthUserInfo {
 }
 
 impl AuthUserInfo {
-    pub fn into_login_response(self, branch_id: DbId) -> anyhow::Result<LoginResponse> {
+    pub fn into_login_response(self, branch_id: BranchId) -> anyhow::Result<LoginResponse> {
         let username = self.username.try_into()?;
         let display_name = self.display_name.try_into()?;
         let user_info = UserInfo {

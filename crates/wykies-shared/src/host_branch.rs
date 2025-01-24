@@ -1,13 +1,13 @@
 #[cfg(feature = "server_only")]
 use crate::db_types::Db;
-use crate::{errors::ConversionError, id::DbId, string_wrapper, AlwaysCase};
+use crate::{errors::ConversionError, id::BranchId, string_wrapper, AlwaysCase};
 
 string_wrapper!(HostId, 50, AlwaysCase::Any);
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
 pub struct HostBranchPair {
     pub host_id: HostId,
-    pub branch_id: DbId,
+    pub branch_id: BranchId,
 }
 
 #[cfg(not(target_arch = "wasm32"))]

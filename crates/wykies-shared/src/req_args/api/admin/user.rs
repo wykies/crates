@@ -1,7 +1,7 @@
 use secrecy::SecretString;
 
 use crate::{
-    id::DbId,
+    id::RoleId,
     uac::{DisplayName, Username},
 };
 
@@ -15,7 +15,7 @@ pub struct NewUserReqArgs {
     pub username: Username,
     pub display_name: DisplayName,
     pub password: SecretString,
-    pub assigned_role: Option<DbId>,
+    pub assigned_role: Option<RoleId>,
 }
 
 #[derive(Debug, serde::Deserialize, Clone)]

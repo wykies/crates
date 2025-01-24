@@ -1,7 +1,7 @@
 use super::Permissions;
 #[cfg(feature = "server_only")]
 use crate::db_types::Db;
-use crate::{errors::ConversionError, id::DbId, string_wrapper, AlwaysCase};
+use crate::{errors::ConversionError, id::RoleId, string_wrapper, AlwaysCase};
 use serde::{Deserialize, Serialize};
 use std::sync::LazyLock;
 
@@ -19,7 +19,7 @@ impl RoleName {
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Role {
-    pub id: DbId,
+    pub id: RoleId,
     pub name: RoleName,
     pub description: RoleDescription,
     pub permissions: Permissions,
@@ -27,7 +27,7 @@ pub struct Role {
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct RoleIdAndName {
-    pub id: DbId,
+    pub id: RoleId,
     pub name: RoleName,
 }
 

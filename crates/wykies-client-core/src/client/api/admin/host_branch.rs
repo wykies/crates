@@ -5,7 +5,7 @@ use wykies_shared::{
         PATH_API_ADMIN_HOSTBRANCH_LIST, PATH_API_ADMIN_HOSTBRANCH_SET, PATH_API_HOSTBRANCH_LOOKUP,
     },
     host_branch::HostBranchPair,
-    id::DbId,
+    id::BranchId,
     req_args::api::admin::host_branch,
 };
 
@@ -29,7 +29,7 @@ impl Client {
     pub fn get_host_branch_pair(
         &self,
         args: &host_branch::LookupReqArgs,
-    ) -> oneshot::Receiver<anyhow::Result<Option<DbId>>> {
+    ) -> oneshot::Receiver<anyhow::Result<Option<BranchId>>> {
         self.send_request_expect_json(PATH_API_HOSTBRANCH_LOOKUP, args)
     }
 }

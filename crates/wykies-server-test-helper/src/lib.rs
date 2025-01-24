@@ -14,10 +14,10 @@ use wykies_server::{
     db_utils::validate_one_row_affected, get_configuration, get_db_connection_pool,
     DatabaseSettings,
 };
+use wykies_shared::id::BranchId;
 use wykies_shared::{
     db_types::{DbConnection, DbPool},
     host_branch::HostBranchPair,
-    id::DbId,
     req_args::LoginReqArgs,
     telemetry::{self, get_subscriber, init_subscriber},
     uac::Username,
@@ -138,7 +138,7 @@ fn start_tracing() {
     println!("{logging_msg}");
 }
 
-async fn get_seed_branch_from_db(pool: &DbPool) -> DbId {
+async fn get_seed_branch_from_db(pool: &DbPool) -> BranchId {
     #[cfg(feature = "mysql")]
     let branch_id = sqlx::query!("SELECT `BranchID` FROM branch LIMIT 1;")
         .fetch_one(pool)

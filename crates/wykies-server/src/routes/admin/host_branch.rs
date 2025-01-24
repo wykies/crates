@@ -1,9 +1,8 @@
 use actix_web::{web, HttpResponse};
 use anyhow::Context as _;
 use wykies_shared::db_types::DbPool;
-use wykies_shared::{
-    e500, host_branch::HostBranchPair, id::DbId, req_args::api::admin::host_branch,
-};
+use wykies_shared::id::BranchId;
+use wykies_shared::{e500, host_branch::HostBranchPair, req_args::api::admin::host_branch};
 
 #[tracing::instrument(ret, err(Debug), skip(pool))]
 pub async fn set_host_branch_pair(
@@ -82,7 +81,7 @@ pub async fn list_host_branch_pairs(
 pub async fn host_branch_pair_lookup(
     pool: web::Data<DbPool>,
     web::Query(host_branch::LookupReqArgs { host_id }): web::Query<host_branch::LookupReqArgs>,
-) -> actix_web::Result<web::Json<Option<DbId>>> {
+) -> actix_web::Result<web::Json<Option<BranchId>>> {
     let pool: &DbPool = &pool;
     #[cfg(feature = "mysql")]
     let query = sqlx::query!(

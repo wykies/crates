@@ -164,7 +164,7 @@ mod tests {
     use std::time::Duration;
 
     use wykies_shared::{
-        id::DbId,
+        id::BranchId,
         random_string, random_string_def_len,
         uac::{DisplayName, Username},
     };
@@ -189,7 +189,7 @@ mod tests {
         Arc::new(UserSessionInfo {
             username,
             display_name,
-            branch_id: DbId::from(1),
+            branch_id: BranchId::from(1),
             permissions: Default::default(),
         })
     }

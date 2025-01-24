@@ -1,5 +1,5 @@
 use crate::{
-    id::DbId,
+    id::BranchId,
     uac::{DisplayName, Permissions, Username},
 };
 
@@ -7,6 +7,6 @@ use crate::{
 pub struct UserSessionInfo {
     pub username: Username,
     pub display_name: DisplayName,
-    pub branch_id: DbId,
+    pub branch_id: BranchId,
     pub permissions: Permissions,
 }

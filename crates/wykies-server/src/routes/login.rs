@@ -6,15 +6,14 @@ use crate::{
 };
 use actix_web::{dev::ConnectionInfo, web, HttpResponse};
 use anyhow::{anyhow, Context};
-use wykies_shared::db_types::DbPool;
 use wykies_shared::session::UserSessionInfo;
 use wykies_shared::{
     const_config::path::{PATH_API_ADMIN_HOSTBRANCH_SET, PATH_API_HOSTBRANCH_LOOKUP},
     host_branch::{HostBranchPair, HostId},
-    id::DbId,
     req_args::{api::admin::host_branch, LoginReqArgs},
     uac::{AuthError, LoginResponse},
 };
+use wykies_shared::{db_types::DbPool, id::BranchId};
 
 /// Provides a way for users to create a login session
 ///
@@ -78,7 +77,7 @@ async fn set_user_branch(
     pool: &DbPool,
     auth_user_info: AuthUserInfo,
     conn: ConnectionInfo,
-    branch_to_set: Option<DbId>,
+    branch_to_set: Option<BranchId>,
 ) -> Result<LoginResponse, AuthError> {
     // Extract Client Host Identifier
     let client_identifier: HostId = conn.try_into().context("failed to get host_id")?;
@@ -96,7 +95,7 @@ async fn set_user_branch(
             )
         },
     )?;
-    let branch_id: DbId = match lookup_result.await {
+    let branch_id: BranchId = match lookup_result.await {
         Ok(web::Json(looked_up_id)) => match looked_up_id {
             Some(id) => id,
             None => {

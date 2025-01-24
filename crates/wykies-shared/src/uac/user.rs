@@ -1,7 +1,11 @@
 use super::{Permissions, RoleIdAndName, RoleName};
 #[cfg(feature = "server_only")]
 use crate::db_types::Db;
-use crate::{errors::ConversionError, id::DbId, string_wrapper, AlwaysCase};
+use crate::{
+    errors::ConversionError,
+    id::{BranchId, RoleId},
+    string_wrapper, AlwaysCase,
+};
 use anyhow::bail;
 use chrono::NaiveDate;
 
@@ -14,7 +18,7 @@ pub struct UserInfo {
     pub username: Username,
     pub display_name: DisplayName,
     pub permissions: Permissions,
-    pub branch_id: DbId,
+    pub branch_id: BranchId,
 }
 
 /// Stores metadata about a user for representation on management screens
@@ -23,7 +27,7 @@ pub struct UserMetadata {
     pub username: Username,
     pub display_name: DisplayName,
     pub force_pass_change: bool,
-    pub assigned_role: Option<DbId>,
+    pub assigned_role: Option<RoleId>,
     pub enabled: bool,
     pub locked_out: bool,
     pub failed_attempts: u8,
@@ -44,7 +48,7 @@ pub struct UserMetadataDiff {
     pub username: Username,
     pub display_name: Option<DisplayName>,
     pub force_pass_change: Option<bool>,
-    pub assigned_role: Option<Option<DbId>>,
+    pub assigned_role: Option<Option<RoleId>>,
     pub enabled: Option<bool>,
     pub locked_out: Option<bool>,
     pub failed_attempts: Option<u8>,
@@ -63,7 +67,7 @@ pub struct ListUsersRoles {
 impl ListUsersRoles {
     /// Converts a role ID into a Name using the contained list and errors if
     /// the ID cannot be found
-    pub fn role_id_to_name(&self, id: DbId) -> anyhow::Result<&RoleName> {
+    pub fn role_id_to_name(&self, id: RoleId) -> anyhow::Result<&RoleName> {
         match self.roles.iter().find(|role| role.id == id) {
             Some(x) => Ok(&x.name),
             None => bail!("didn't find a role with ID: {id:?}"),
