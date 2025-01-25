@@ -11,7 +11,7 @@ chrono.workspace = true
 db-types = { workspace = true, optional = true }
 egui.workspace = true
 rand = { workspace = true, features = ["std_rng"] }
-reqwest-cross.workspace = true
+reqwest-cross = { workspace = true, features = ["yield_now"] }
 ron.workspace = true
 secrecy.workspace = true
 serde.workspace = true
