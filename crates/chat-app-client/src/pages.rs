@@ -122,7 +122,9 @@ pub trait DisplayablePage: Default + serde::Serialize + serde::de::DeserializeOw
     fn page_permissions() -> &'static [Permission];
 
     fn has_permissions(user_permissions: &Permissions) -> bool {
-        user_permissions.includes(Self::page_permissions())
+        user_permissions
+            .includes(Self::page_permissions())
+            .has_required_permissions()
     }
 }
 

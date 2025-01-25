@@ -7,10 +7,7 @@ use actix_web::{
 };
 use tracing::info;
 use wykies_shared::{
-    e500,
-    errors::NotLoggedInError,
-    session::UserSessionInfo,
-    uac::{get_required_permissions, PermissionsError},
+    e500, errors::NotLoggedInError, session::UserSessionInfo, uac::PermissionsError,
 };
 
 /// Ensures the user is logged in and has the required permissions to get to the
@@ -52,14 +49,9 @@ async fn check_permissions(
     req: &ServiceRequest,
     user_info: &UserSessionInfo,
 ) -> Result<(), PermissionsError> {
-    let Some(required_perms) = get_required_permissions(req.path()) else {
-        return Err(PermissionsError::PathNotFound(req.path().to_string()));
-    };
-    if user_info.permissions.includes(required_perms) {
-        Ok(())
-    } else {
-        Err(PermissionsError::MissingPermissions(
-            required_perms.to_vec(),
-        ))
-    }
+    user_info
+        .permissions
+        .is_allowed_access(req.path())?
+        .converting_missing_perms_to_error()?;
+    Ok(())
 }

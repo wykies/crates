@@ -2,7 +2,6 @@
 // useful warnings but couldn't figure out how to make it more local)
 #![allow(deprecated)]
 
-use anyhow::bail;
 use std::{
     collections::{BTreeSet, HashMap},
     fmt::{Debug, Display},
@@ -12,6 +11,8 @@ use strum::{EnumCount, IntoEnumIterator};
 use tracing::instrument;
 
 use crate::{const_config::path::*, errors::PermissionConversionError};
+
+use super::PermissionsError;
 
 #[derive(
     Debug,
@@ -79,6 +80,12 @@ pub enum Permission {
 
 pub type PermissionMap = HashMap<&'static str, Vec<Permission>>;
 
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub enum PermissionCheckOutcome {
+    HasRequiredPermissions,
+    MissingPermissions(Vec<Permission>),
+}
+
 static PERMISSION_MAP: OnceLock<PermissionMap> = OnceLock::new();
 
 pub fn default_permissions() -> PermissionMap {
@@ -126,6 +133,7 @@ pub fn init_permissions_to_defaults() {
 /// accessed even if it is 0 permissions
 #[tracing::instrument(ret)]
 pub fn get_required_permissions(path: &str) -> Option<&'static [Permission]> {
+    // TODO 2: Test that this still works for private endpoints
     PERMISSION_MAP
         .get()
         .expect("permissions were not initialized")
@@ -134,15 +142,32 @@ pub fn get_required_permissions(path: &str) -> Option<&'static [Permission]> {
 }
 
 impl Permissions {
-    pub fn includes(&self, perms: &[Permission]) -> bool {
-        perms.iter().all(|x| self.0.contains(x))
+    pub fn includes(&self, perms: &[Permission]) -> PermissionCheckOutcome {
+        if perms.iter().all(|x| self.0.contains(x)) {
+            PermissionCheckOutcome::HasRequiredPermissions
+        } else {
+            let required_perms = perms
+                .iter()
+                .filter_map(|x| {
+                    if self.0.contains(x) {
+                        None
+                    } else {
+                        Some(x.to_owned())
+                    }
+                })
+                .collect();
+            PermissionCheckOutcome::MissingPermissions(required_perms)
+        }
     }
 
     #[instrument(ret, err(Debug))]
-    pub fn is_allowed_access(&self, path: &str) -> anyhow::Result<bool> {
+    pub fn is_allowed_access(
+        &self,
+        path: &str,
+    ) -> Result<PermissionCheckOutcome, PermissionsError> {
         match get_required_permissions(path) {
             Some(required_permissions) => Ok(self.includes(required_permissions)),
-            None => bail!("lookup of permissions for other endpoint failed"),
+            None => Err(PermissionsError::PathNotFound(path.to_owned())),
         }
     }
 }
@@ -276,6 +301,44 @@ impl Debug for Permissions {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let text: String = self.into();
         f.debug_tuple("Permissions").field(&text).finish()
+    }
+}
+
+impl Display for PermissionCheckOutcome {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            PermissionCheckOutcome::HasRequiredPermissions => write!(f, "Has Required Permissions"),
+            PermissionCheckOutcome::MissingPermissions(vec) => {
+                write!(
+                    f,
+                    "Missing the following permissions: {}",
+                    vec.iter()
+                        .map(|x| x.to_string())
+                        .collect::<Vec<String>>()
+                        .join(",")
+                )
+            }
+        }
+    }
+}
+
+impl PermissionCheckOutcome {
+    /// Converts an outcome of missing permissions into an error
+    pub fn converting_missing_perms_to_error(self) -> Result<(), PermissionsError> {
+        match self {
+            PermissionCheckOutcome::HasRequiredPermissions => Ok(()),
+            PermissionCheckOutcome::MissingPermissions(vec) => {
+                Err(PermissionsError::MissingPermissions(vec))
+            }
+        }
+    }
+
+    /// Returns `true` if the permission check outcome is [`HasRequiredPermissions`].
+    ///
+    /// [`HasRequiredPermissions`]: PermissionCheckOutcome::HasRequiredPermissions
+    #[must_use]
+    pub fn has_required_permissions(&self) -> bool {
+        matches!(self, Self::HasRequiredPermissions)
     }
 }
 

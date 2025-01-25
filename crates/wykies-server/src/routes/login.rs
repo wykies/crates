@@ -104,7 +104,9 @@ async fn set_user_branch(
                 // Check if user has permissions to set branch and branch provided to be set
                 let does_user_have_permission = auth_user_info
                     .permissions
-                    .is_allowed_access(PATH_API_ADMIN_HOSTBRANCH_SET.path)?;
+                    .is_allowed_access(PATH_API_ADMIN_HOSTBRANCH_SET.path)
+                    .map_err(anyhow::Error::new)?
+                    .has_required_permissions();
                 match (does_user_have_permission, branch_to_set) {
                     (false, _) => {
                         return Err(AuthError::BranchNotSetAndUnableToSet { client_identifier })

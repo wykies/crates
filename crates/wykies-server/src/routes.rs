@@ -12,31 +12,24 @@ pub use admin::{
     role::{role, role_assign, role_create},
     user::{list_users_and_roles, password_reset, user, user_new, user_update},
 };
-use anyhow::{bail, Context};
+use anyhow::Context;
 pub use health_check::health_check;
 pub use login::login;
 pub use logout::log_out;
 pub use password::change_password;
 pub use status::status;
-use wykies_shared::{
-    debug_panic,
-    uac::{get_required_permissions, Permissions, PermissionsError},
-};
+use wykies_shared::{debug_panic, uac::Permissions};
 
 pub fn execute_chained_handler<T>(
     path: &str,
     permissions: &Permissions,
     f: impl FnOnce() -> T,
 ) -> anyhow::Result<T> {
-    let Some(required_permissions) = get_required_permissions(path) else {
-        bail!("lookup of permissions for other endpoint failed");
-    };
-    if !permissions.includes(required_permissions) {
-        return Err(PermissionsError::MissingPermissions(
-            required_permissions.to_vec(),
-        ))
-        .context("chaining failed for permissions")?;
-    }
+    permissions
+        .is_allowed_access(path)
+        .context("unable to determine permissions needed for other endpoint")?
+        .converting_missing_perms_to_error()
+        .context("permissions not held to access other endpoint")?;
     Ok(f())
 }
 

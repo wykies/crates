@@ -9,7 +9,7 @@ mod user;
 pub use errors::{AuthError, ChangePasswordError, PermissionsError, ResetPasswordError};
 pub use permissions::{
     default_permissions, get_required_permissions, init_permissions_to_defaults,
-    try_set_permissions, Permission, PermissionMap, Permissions,
+    try_set_permissions, Permission, PermissionCheckOutcome, PermissionMap, Permissions,
 };
 pub use responses::LoginResponse;
 pub use role::{Role, RoleDescription, RoleDraft, RoleIdAndName, RoleName};
