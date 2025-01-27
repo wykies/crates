@@ -461,7 +461,7 @@ fn ui_user_role(
         .selected_text(
             edit.map(|id| {
                 data.role_id_to_name(id).unwrap_or_else(|e| {
-                    internal_error!(format!("unable to find Role ID {:?}. {e:?}", edit));
+                    internal_error!("unable to find Role ID {:?}. {e:?}", edit);
                     err_role_name()
                 })
             })
@@ -595,10 +595,10 @@ fn ui_show_user_list(ui: &mut egui::Ui, data: &mut ListUsersRoles, user_op: &mut
                     user.assigned_role
                         .map(|id| {
                             data.role_id_to_name(id).unwrap_or_else(|e| {
-                                internal_error!(format!(
+                                internal_error!(
                                     "unable to find Role ID {:?}. {e:?}",
                                     user.assigned_role
-                                ));
+                                );
                                 err_role_name()
                             })
                         })

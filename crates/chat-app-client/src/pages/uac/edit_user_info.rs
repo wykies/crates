@@ -88,7 +88,7 @@ impl EditUserInfo {
     pub fn time_before_auto_unload_user(&mut self) -> Option<Seconds> {
         let timestamp = self.load_time?;
         let elapsed = timestamp.elapsed().unwrap_or_else(|| {
-            internal_error!(format!("timestamp in future: {timestamp:?}"));
+            internal_error!("timestamp in future: {timestamp:?}");
             0u64.into()
         });
         Some(user_edit::EDIT_WINDOW.saturating_sub(elapsed))
@@ -121,7 +121,7 @@ impl EditUserInfo {
                 }
             },
             Err(e) => {
-                self.save_status = DataState::Failed(internal_error!(e.to_string()).into());
+                self.save_status = DataState::Failed(internal_error!("{e}").into());
                 return;
             }
         };

@@ -12,10 +12,11 @@ macro_rules! debug_panic {
 
 #[macro_export]
 macro_rules! internal_error {
-    ($arg: expr) => {{
+    ($($arg:tt)*) => {{
+        let res = format!($($arg)*);
         let internal_error_msg = format!(
             "{}\ninternal error: {}:{}:{}",
-            $arg,
+            res,
             file!(),
             line!(),
             column!()
