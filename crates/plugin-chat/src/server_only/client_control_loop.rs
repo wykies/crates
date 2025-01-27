@@ -1,9 +1,8 @@
 //! Code related to the loop that handles incoming and outgoing messages to the
 //! client (Outgoing messages include those from other threads)
 
-use crate::{ChatIM, ChatMsg};
-
 use super::server::ChatServerHandle;
+use crate::{ChatIM, ChatMsg};
 use actix_ws::{AggregatedMessage, CloseCode, CloseReason, ProtocolError, Session};
 use anyhow::{bail, Context};
 use futures_util::StreamExt as _;

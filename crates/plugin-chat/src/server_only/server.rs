@@ -1,3 +1,4 @@
+use super::{history::ChatHistory, ChatSettings};
 use crate::{
     consts::{CHAT_HISTORY_RECENT_CAPACITY, CHAT_MAX_IMS_BEFORE_SAVE, CHAT_MAX_TIME_BEFORE_SAVE},
     ChatIM, ChatMsg, ChatMsgsHistory, ChatUser, InitialStateBody, ReqHistoryBody,
@@ -16,8 +17,6 @@ use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE, db_types::DbPool, debug_panic, log_err_as_error,
     log_err_as_warn, session::UserSessionInfo,
 };
-
-use super::{history::ChatHistory, ChatSettings};
 
 /// A command received by the [`ChatServer`].
 #[derive(Debug)]
