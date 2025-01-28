@@ -7664,9 +7664,12 @@ dependencies = [
 name = "ws-helpers"
 version = "0.1.0"
 dependencies = [
+ "actix-ws",
+ "anyhow",
  "serde",
  "tokio",
  "tracing",
+ "wykies-shared",
  "wykies-time",
 ]
 

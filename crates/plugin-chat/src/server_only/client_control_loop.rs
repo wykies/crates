@@ -6,9 +6,10 @@ use crate::{ChatIM, ChatMsg};
 use actix_ws::{AggregatedMessage, CloseCode, CloseReason, ProtocolError, Session};
 use anyhow::{bail, Context};
 use futures_util::StreamExt as _;
-use std::{pin::pin, sync::Arc, time::Instant};
+use std::{pin::pin, sync::Arc};
 use tokio::{select, sync::mpsc};
 use tracing::{debug, error, info, instrument, warn, Span};
+use ws_helpers::heartbeat::HeartbeatMonitor;
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE, debug_panic, log_err_as_error, session::UserSessionInfo,
     uac::Username, websockets::WsConnId,
@@ -22,8 +23,7 @@ pub async fn chat_ws_start_client_handler_loop(
     msg_stream: actix_ws::AggregatedMessageStream,
     user_info: UserSessionInfo,
 ) {
-    let mut last_heartbeat = Instant::now();
-    let mut heartbeat_interval = chat_server_handle.heartbeat_config.interval();
+    let mut heartbeat = chat_server_handle.heartbeat_config.start_new_monitor();
     let username = user_info.username.clone();
 
     let (conn_tx, mut conn_rx) = mpsc::channel(CHANNEL_BUFFER_SIZE);
@@ -43,8 +43,8 @@ pub async fn chat_ws_start_client_handler_loop(
             }
 
             // Handle heartbeat ticks
-            _ = heartbeat_interval.tick() => {
-                if let Some(reason) = process_heartbeat_tick(last_heartbeat, &chat_server_handle, &mut session).await{
+            _ = heartbeat.tick() => {
+                if let Some(reason) = heartbeat.process_tick(&mut session).await{
                     break reason;
                 };
             }
@@ -56,7 +56,7 @@ pub async fn chat_ws_start_client_handler_loop(
             }
 
             stream_msg = msg_stream.next() => {
-                let reason_opt = process_stream_from_client(stream_msg, &mut last_heartbeat, &mut session, &chat_server_handle, &conn_id, &username).await;
+                let reason_opt = process_stream_from_client(stream_msg, &mut heartbeat, &mut session, &chat_server_handle, &conn_id, &username).await;
                 if let Some(reason) = reason_opt {
                     break reason;
                 }
@@ -109,7 +109,7 @@ async fn process_message_from_server(
 /// Handle stream messages received - commands & messages received from client
 async fn process_stream_from_client(
     msg: Option<Result<AggregatedMessage, ProtocolError>>,
-    last_heartbeat: &mut Instant,
+    heartbeat: &mut HeartbeatMonitor,
     session: &mut Session,
     chat_server: &ChatServerHandle,
     conn_id: &WsConnId,
@@ -122,14 +122,14 @@ async fn process_stream_from_client(
 
             match msg {
                 AggregatedMessage::Ping(bytes) => {
-                    *last_heartbeat = Instant::now();
+                    heartbeat.response_received();
                     let r = session.pong(&bytes).await.context("failed to send pong");
                     log_err_as_error!(r);
                     None
                 }
 
                 AggregatedMessage::Pong(_) => {
-                    *last_heartbeat = Instant::now();
+                    heartbeat.response_received();
                     None
                 }
 
@@ -164,31 +164,6 @@ async fn process_stream_from_client(
         // client WebSocket stream ended
         None => Some(CloseCode::Normal.into()),
     }
-}
-
-#[instrument(level = "debug", skip(session))]
-/// if no heartbeat ping/pong received recently, close the connection
-async fn process_heartbeat_tick(
-    last_heartbeat: Instant,
-    chat_server: &ChatServerHandle,
-    session: &mut Session,
-) -> Option<CloseReason> {
-    if Instant::now().duration_since(last_heartbeat) > chat_server.heartbeat_config.client_timeout()
-    {
-        info!(
-            "client has not sent heartbeat in over {}; disconnecting",
-            chat_server.heartbeat_config.client_timeout_display()
-        );
-        return Some(CloseReason {
-            code: CloseCode::Policy,
-            description: Some("Failed to respond to ping".into()),
-        });
-    }
-
-    // send heartbeat ping
-    let r = session.ping(b"").await.context("failed to send ping");
-    log_err_as_error!(r);
-    None
 }
 
 #[instrument]

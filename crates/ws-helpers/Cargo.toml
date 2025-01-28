@@ -5,7 +5,10 @@ edition = "2021"
 description = "To provide reusable functionality across Websocket services"
 
 [dependencies]
+actix-ws.workspace = true
+anyhow.workspace = true
 serde.workspace = true
 tokio.workspace = true
 tracing.workspace = true
+wykies-shared.workspace = true
 wykies-time.workspace = true
