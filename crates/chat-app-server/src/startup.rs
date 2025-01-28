@@ -1,4 +1,4 @@
-use crate::websocket::WsIds;
+use crate::websocket::WsServiceIds;
 use actix_web::web::{self, ServiceConfig};
 use anyhow::Context;
 use plugin_chat::server_only::{
@@ -43,7 +43,7 @@ pub async fn start_servers(
         handle: chat_server_handle,
     } = ChatPlugin::setup(
         &ChatPluginConfig {
-            ws_id: WsIds::CHAT,
+            ws_id: WsServiceIds::CHAT,
             settings: configuration.custom.chat.clone(),
         },
         api_server_builder.db_pool.clone(),
@@ -54,7 +54,7 @@ pub async fn start_servers(
 
     // Setup Routes / Server Resources
     let (chat_open_add, chat_protected_add) =
-        ws_get_route_add_closures("chat", WsIds::CHAT, chat_ws_start_client_handler_loop);
+        ws_get_route_add_closures("chat", WsServiceIds::CHAT, chat_ws_start_client_handler_loop);
     let open_resources = move |cfg: &mut ServiceConfig| {
         cfg.service(web::scope("/ws").configure(chat_open_add.clone()))
             .app_data(web::Data::from(chat_server_handle.clone()));

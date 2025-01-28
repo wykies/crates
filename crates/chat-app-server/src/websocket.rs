@@ -1,7 +1,7 @@
 use ws_auth::WsServiceId;
 
-pub struct WsIds;
+pub struct WsServiceIds;
 
-impl WsIds {
+impl WsServiceIds {
     pub const CHAT: WsServiceId = WsServiceId::new(1);
 }
