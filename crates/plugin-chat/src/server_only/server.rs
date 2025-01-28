@@ -203,14 +203,12 @@ impl ChatServer {
         // messages
         let mut result = ChatMsgsHistory { ims };
         result.sort_by_timestamp();
-        self.send_to_client(conn_id, ChatMsg::RespHistory(result))
+        self.send_to_client(conn_id, Arc::new(ChatMsg::RespHistory(result)))
             .await;
     }
 
     #[instrument]
-    async fn send_to_client(&self, conn_id: WsConnId, msg: ChatMsg) {
-        let msg = Arc::new(msg);
-
+    async fn send_to_client(&self, conn_id: WsConnId, msg: Arc<ChatMsg>) {
         let Some((_, tx)) = self.connections.get(&conn_id) else {
             error!("failed to send message to client because unable to locate connection for ID: {conn_id:?}");
             debug_panic!("connection id not found");
@@ -218,7 +216,7 @@ impl ChatServer {
         };
 
         let r = tx
-            .send(Arc::clone(&msg))
+            .send(msg)
             .await
             .with_context(|| format!("failed to send message to connection with id {conn_id:?}"));
         log_err_as_error!(r);
