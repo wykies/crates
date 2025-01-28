@@ -7668,6 +7668,7 @@ dependencies = [
  "anyhow",
  "bytestring",
  "serde",
+ "serde_json",
  "tokio",
  "tracing",
  "wykies-shared",

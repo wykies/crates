@@ -2,6 +2,7 @@ use crate::heartbeat::HeartbeatMonitor;
 use actix_ws::{AggregatedMessage, CloseCode, CloseReason, ProtocolError, Session};
 use anyhow::Context;
 use bytestring::ByteString;
+use std::fmt::Debug;
 use tracing::{debug, error, info, instrument, warn};
 use wykies_shared::{debug_panic, log_err_as_error};
 
@@ -62,5 +63,29 @@ pub async fn process_stream_from_client(
 
         // client WebSocket stream ended
         None => StreamOutcome::CloseSession(CloseCode::Normal.into()),
+    }
+}
+
+#[instrument(skip(session))]
+/// Forward messages received from the server to client
+pub async fn send_message_to_client<T>(
+    server_msg: Option<T>,
+    session: &mut Session,
+) -> Option<CloseReason>
+where
+    T: serde::Serialize + Debug,
+{
+    match server_msg {
+        Some(chat_msg) => {
+            let r = session
+                .text(serde_json::to_string(&chat_msg).expect("failed to serialize msg"))
+                .await
+                .context("failed to send text msg");
+            log_err_as_error!(r);
+            None
+        }
+
+        // Server dropped the sender, it has been shutdown
+        None => Some(CloseCode::Away.into()),
     }
 }

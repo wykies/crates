@@ -3,13 +3,15 @@
 
 use super::server::ChatServerHandle;
 use crate::{ChatIM, ChatMsg};
-use actix_ws::{CloseCode, CloseReason, Session};
+use actix_ws::{CloseCode, CloseReason};
 use anyhow::{bail, Context};
 use futures_util::StreamExt as _;
 use std::{pin::pin, sync::Arc};
 use tokio::{select, sync::mpsc};
 use tracing::{error, info, instrument, Span};
-use ws_helpers::client_control_loop::{process_stream_from_client, StreamOutcome};
+use ws_helpers::client_control_loop::{
+    process_stream_from_client, send_message_to_client, StreamOutcome,
+};
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE, debug_panic, log_err_as_error, session::UserSessionInfo,
     uac::Username, websockets::WsConnId,
@@ -49,8 +51,8 @@ pub async fn chat_ws_start_client_handler_loop(
                 };
             }
 
-            chat_msg = conn_rx.recv() => {
-                if let Some(reason) = process_message_from_server(chat_msg, &mut session).await{
+            server_msg = conn_rx.recv() => {
+                if let Some(reason) = send_message_to_client(server_msg, &mut session).await{
                     break reason;
                 }
             }
@@ -87,27 +89,6 @@ pub async fn chat_ws_start_client_handler_loop(
 
     // attempt to close connection gracefully
     let _ = session.close(Some(close_reason)).await;
-}
-
-#[instrument(skip(session))]
-/// Handle chat messages received - From Server like chat from other users
-async fn process_message_from_server(
-    msg: Option<Arc<ChatMsg>>,
-    session: &mut Session,
-) -> Option<CloseReason> {
-    match msg {
-        Some(chat_msg) => {
-            let r = session
-                .text(serde_json::to_string(&chat_msg).expect("failed to serialize msg"))
-                .await
-                .context("failed to send text msg");
-            log_err_as_error!(r);
-            None
-        }
-
-        // Server dropped the sender, it has been shutdown
-        None => Some(CloseCode::Away.into()),
-    }
 }
 
 #[instrument]

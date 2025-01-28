@@ -9,6 +9,7 @@ actix-ws.workspace = true
 anyhow.workspace = true
 bytestring.workspace = true
 serde.workspace = true
+serde_json.workspace = true
 tokio.workspace = true
 tracing.workspace = true
 wykies-shared.workspace = true
