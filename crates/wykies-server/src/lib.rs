@@ -4,6 +4,9 @@
 
 #![warn(unused_crate_dependencies)]
 
+// See Cargo.toml for reason
+use wykies_time as _;
+
 #[cfg(all(feature = "disable-cors", not(debug_assertions)))]
 mod warning_suppress_release {
     // Needed to prevent warning on release build testing in CI as we force CORS not
@@ -21,9 +24,8 @@ pub mod plugin;
 pub mod routes;
 mod session_state;
 mod startup;
-pub mod ws;
 
-pub use configuration::{get_configuration, Configuration, DatabaseSettings, WebSocketSettings};
+pub use configuration::{get_configuration, Configuration, DatabaseSettings};
 pub use startup::{
     get_db_connection_pool, get_socket_address, initialize_tracing, ApiServerBuilder,
     ApiServerInitBundle, ServerTask,

@@ -1,6 +1,7 @@
-use crate::{ServerTask, WebSocketSettings};
+use crate::ServerTask;
 use std::sync::Arc;
 use tracked_cancellations::TrackedCancellationToken;
+use ws_helpers::WebSocketSettings;
 use wykies_shared::db_types::DbPool;
 
 pub struct ServerPluginArtifacts<T, H>

@@ -11,7 +11,8 @@ use tokio::{
 };
 use tracing::{error, info, instrument, warn};
 use tracked_cancellations::TrackedCancellationToken;
-use wykies_server::{ws::HeartbeatConfig, ServerTask, WebSocketSettings};
+use ws_helpers::{heartbeat::HeartbeatConfig, WebSocketSettings};
+use wykies_server::ServerTask;
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE, db_types::DbPool, debug_panic, log_err_as_error,
     log_err_as_warn, session::UserSessionInfo, websockets::WsConnId,

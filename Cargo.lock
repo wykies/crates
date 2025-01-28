@@ -4319,6 +4319,7 @@ dependencies = [
  "tracing",
  "tracked-cancellations",
  "ws-auth",
+ "ws-helpers",
  "wykies-server",
  "wykies-shared",
  "wykies-time",
@@ -7662,6 +7663,12 @@ dependencies = [
 [[package]]
 name = "ws-helpers"
 version = "0.1.0"
+dependencies = [
+ "serde",
+ "tokio",
+ "tracing",
+ "wykies-time",
+]
 
 [[package]]
 name = "wykies-client-core"
@@ -7694,12 +7701,12 @@ dependencies = [
  "serde",
  "serde-aux",
  "sqlx",
- "tokio",
  "tracing",
  "tracing-actix-web",
  "tracing-subscriber",
  "tracked-cancellations",
  "ws-auth",
+ "ws-helpers",
  "wykies-shared",
  "wykies-time",
 ]

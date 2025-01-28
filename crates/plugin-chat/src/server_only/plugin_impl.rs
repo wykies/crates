@@ -2,6 +2,7 @@ use super::server::{ChatServer, ChatServerHandle};
 use std::sync::Arc;
 use tracked_cancellations::TrackedCancellationToken;
 use ws_auth::WsServiceId;
+use ws_helpers::WebSocketSettings;
 use wykies_server::plugin::{ServerPlugin, ServerPluginArtifacts};
 use wykies_shared::db_types::DbPool;
 
@@ -28,7 +29,7 @@ impl ServerPlugin for ChatPlugin {
         config: &Self::Config,
         db_pool: DbPool,
         cancellation_token: TrackedCancellationToken,
-        ws_config: &wykies_server::WebSocketSettings,
+        ws_config: &WebSocketSettings,
     ) -> anyhow::Result<wykies_server::plugin::ServerPluginArtifacts<Self::Task, Self::Handle>>
     {
         let (chat_server, chat_server_handle) =

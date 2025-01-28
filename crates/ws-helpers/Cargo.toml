@@ -5,3 +5,7 @@ edition = "2021"
 description = "To provide reusable functionality across Websocket services"
 
 [dependencies]
+serde.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+wykies-time.workspace = true

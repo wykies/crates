@@ -1,4 +1,5 @@
 //! Houses code to make using WebSockets easier and extracts out the boilerplate
+//! related to authentication
 
 use std::{future::Future, sync::Arc};
 

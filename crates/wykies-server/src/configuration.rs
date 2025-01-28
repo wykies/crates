@@ -3,7 +3,7 @@ use serde::de::DeserializeOwned;
 use serde_aux::field_attributes::deserialize_number_from_string;
 use sqlx::ConnectOptions;
 use std::convert::{TryFrom, TryInto};
-use wykies_time::Seconds;
+use ws_helpers::WebSocketSettings;
 
 use wykies_shared::db_types::{DbConnectOptions, DbSslMode};
 
@@ -45,13 +45,6 @@ pub struct DatabaseSettings {
 #[derive(serde::Deserialize, Clone)]
 pub struct UserAuthSettings {
     pub login_attempt_limit: u8,
-}
-
-#[derive(serde::Deserialize, Clone, Debug)]
-pub struct WebSocketSettings {
-    pub token_lifetime_secs: Seconds,
-    pub heartbeat_times_missed_allowance: u8,
-    pub heartbeat_additional_buffer_time_secs: Seconds,
 }
 
 impl DatabaseSettings {

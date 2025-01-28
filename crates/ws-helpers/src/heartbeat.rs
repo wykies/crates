@@ -1,6 +1,5 @@
-use std::{fmt::Display, time::Duration};
-
 use crate::WebSocketSettings;
+use std::{fmt::Display, time::Duration};
 use tracing::instrument;
 use wykies_time::Seconds;
 
