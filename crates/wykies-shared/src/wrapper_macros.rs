@@ -213,8 +213,10 @@ macro_rules! id_wrapper {
         pub enum $error_name {
             #[error("Negative values not supported as Id's. Value: {0}")]
             NegativeI32(i32),
-            #[error("Internal value of $name is too large for I32. Value: {0:?}")]
+            #[error("Internal value of $name is too large for i32. Value: {0:?}")]
             TooBigForI32($name),
+            #[error("Unable to convert str into $name: {0:?}")]
+            InvalidStr(#[from] std::num::ParseIntError),
         }
 
         #[derive(
@@ -252,6 +254,15 @@ macro_rules! id_wrapper {
         impl From<$name> for u64 {
             fn from(value: $name) -> Self {
                 value.0
+            }
+        }
+
+        impl TryFrom<&str> for $name {
+            type Error = $error_name;
+
+            fn try_from(value: &str) -> Result<Self, Self::Error> {
+                let value: u64 = value.parse()?;
+                Ok(Self(value))
             }
         }
 
