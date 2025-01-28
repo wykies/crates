@@ -17,18 +17,13 @@ pub struct ChatServerHandle {
     pub heartbeat_config: HeartbeatConfig,
 }
 impl ChatServerHandle {
-    pub(crate) fn new(
-        cmd_tx: mpsc::Sender<super::server::Command>,
-        heartbeat_config: HeartbeatConfig,
-    ) -> Self {
+    pub(crate) fn new(cmd_tx: mpsc::Sender<Command>, heartbeat_config: HeartbeatConfig) -> Self {
         Self {
             cmd_tx,
             heartbeat_config,
         }
     }
-}
 
-impl ChatServerHandle {
     /// Register client message sender and obtain connection ID.
     #[instrument(skip())]
     pub async fn register(
