@@ -70,7 +70,7 @@ impl ServerTask for ChatServer {
                     info!("shutting down ChatServer because of cancellation request");
                     return Ok(())
                 }
-                cmd = self.cmd_rx.recv() => self.process_cmd(cmd, cancellation_token.clone()).await.context("fatal error in ChatServer, shutting down")?,
+                cmd = self.cmd_rx.recv() => self.process_cmd(cmd, &cancellation_token).await.context("fatal error in ChatServer, shutting down")?,
             }
         }
     }
@@ -310,7 +310,7 @@ impl ChatServer {
     async fn process_cmd(
         &mut self,
         cmd: Option<Command>,
-        cancellation_token: TrackedCancellationToken,
+        cancellation_token: &TrackedCancellationToken,
     ) -> anyhow::Result<()> {
         let Some(cmd) = cmd else {
             bail!(
@@ -329,7 +329,7 @@ impl ChatServer {
                     .register_connection(conn_tx, user_info)
                     .await
                     .context("failed to registering connection")?;
-                self.send_response(res_tx, (conn_id, cancellation_token))
+                self.send_response(res_tx, (conn_id, cancellation_token.clone()))
                     .await;
             }
 
