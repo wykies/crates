@@ -7,6 +7,7 @@ description = "To provide reusable functionality across Websocket services"
 [dependencies]
 actix-ws.workspace = true
 anyhow.workspace = true
+bytestring.workspace = true
 serde.workspace = true
 tokio.workspace = true
 tracing.workspace = true

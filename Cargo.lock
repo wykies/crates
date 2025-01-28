@@ -7666,6 +7666,7 @@ version = "0.1.0"
 dependencies = [
  "actix-ws",
  "anyhow",
+ "bytestring",
  "serde",
  "tokio",
  "tracing",

@@ -3,13 +3,13 @@
 
 use super::server::ChatServerHandle;
 use crate::{ChatIM, ChatMsg};
-use actix_ws::{AggregatedMessage, CloseCode, CloseReason, ProtocolError, Session};
+use actix_ws::{CloseCode, CloseReason, Session};
 use anyhow::{bail, Context};
 use futures_util::StreamExt as _;
 use std::{pin::pin, sync::Arc};
 use tokio::{select, sync::mpsc};
-use tracing::{debug, error, info, instrument, warn, Span};
-use ws_helpers::heartbeat::HeartbeatMonitor;
+use tracing::{error, info, instrument, Span};
+use ws_helpers::client_control_loop::{process_stream_from_client, StreamOutcome};
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE, debug_panic, log_err_as_error, session::UserSessionInfo,
     uac::Username, websockets::WsConnId,
@@ -56,16 +56,14 @@ pub async fn chat_ws_start_client_handler_loop(
             }
 
             stream_msg = msg_stream.next() => {
-                let reason_opt = process_stream_from_client(
-                    stream_msg,
-                    &mut heartbeat,
-                    &mut session,
-                    &chat_server_handle,
-                    &conn_id,
-                    &username
-                ).await;
-                if let Some(reason) = reason_opt {
-                    break reason;
+                let outcome = process_stream_from_client(stream_msg, &mut heartbeat, &mut session).await;
+                match outcome{
+                    StreamOutcome::MsgFromClient(msg) => {
+                        let r = process_msg_from_client(&chat_server_handle, &msg, &conn_id, &username).await;
+                        log_err_as_error!(r);
+                    },
+                    StreamOutcome::CloseSession(close_reason) => break close_reason,
+                    StreamOutcome::None => {},
                 }
             }
         }
@@ -109,67 +107,6 @@ async fn process_message_from_server(
 
         // Server dropped the sender, it has been shutdown
         None => Some(CloseCode::Away.into()),
-    }
-}
-
-#[instrument(skip(session))]
-/// Handle stream messages received - commands & messages received from client
-async fn process_stream_from_client(
-    msg: Option<Result<AggregatedMessage, ProtocolError>>,
-    heartbeat: &mut HeartbeatMonitor,
-    session: &mut Session,
-    chat_server: &ChatServerHandle,
-    conn_id: &WsConnId,
-    username: &Username,
-) -> Option<CloseReason> {
-    match msg {
-        // Message from remote client
-        Some(Ok(msg)) => {
-            debug!("msg: {msg:?}");
-
-            match msg {
-                AggregatedMessage::Ping(bytes) => {
-                    heartbeat.response_received();
-                    let r = session.pong(&bytes).await.context("failed to send pong");
-                    log_err_as_error!(r);
-                    None
-                }
-
-                AggregatedMessage::Pong(_) => {
-                    heartbeat.response_received();
-                    None
-                }
-
-                AggregatedMessage::Text(text) => {
-                    let r = process_msg_from_client(chat_server, &text, conn_id, username).await;
-                    log_err_as_error!(r);
-                    None
-                }
-
-                AggregatedMessage::Binary(_bin) => {
-                    warn!("unexpected binary message. Closing connection");
-                    Some(CloseCode::Unsupported.into())
-                }
-
-                AggregatedMessage::Close(reason) => {
-                    info!("Received close message from client with reason: {reason:?}");
-                    Some(CloseCode::Normal.into())
-                }
-            }
-        }
-
-        // client WebSocket stream error
-        Some(Err(err)) => {
-            error!("{:?}", err);
-            debug_panic!(err);
-            Some(CloseReason {
-                code: CloseCode::Error,
-                description: Some(err.to_string()),
-            })
-        }
-
-        // client WebSocket stream ended
-        None => Some(CloseCode::Normal.into()),
     }
 }
 

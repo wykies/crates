@@ -27,7 +27,7 @@ wykies-shared = { workspace = true, features = ["server_only"] }
 chrono.workspace = true
 ewebsock.workspace = true
 insta = { workspace = true, features = ["serde", "redactions", "json"] }
-pretty_assertions = "1.4.1"
+pretty_assertions.workspace = true
 secrecy.workspace = true
 serde_json.workspace = true
 uuid.workspace = true
