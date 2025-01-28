@@ -28,8 +28,8 @@ macro_rules! internal_error {
     }};
 }
 
-/// Use this version if we don't know any reason why this might happen under
-/// normal circumstances but it's not worth crashing for and execution can go on
+/// Use this version if we don't want to crash during prod but we do want to
+/// crash during development and log if it was an error either way
 #[macro_export]
 macro_rules! log_err_as_error {
     ($arg: expr) => {
