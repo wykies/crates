@@ -18,10 +18,10 @@ use wykies_shared::{
 };
 use wykies_time::Timestamp;
 
-#[instrument(skip(session, msg_stream, chat_server_handle), fields(ws_conn_id))]
+#[instrument(skip(ws_session, msg_stream, chat_server_handle), fields(ws_conn_id))]
 pub async fn chat_ws_start_client_handler_loop(
     chat_server_handle: Arc<ChatServerHandle>,
-    mut session: actix_ws::Session,
+    mut ws_session: actix_ws::Session,
     msg_stream: actix_ws::AggregatedMessageStream,
     user_info: UserSessionInfo,
 ) {
@@ -46,19 +46,19 @@ pub async fn chat_ws_start_client_handler_loop(
 
             // Handle heartbeat ticks
             _ = heartbeat.tick() => {
-                if let Some(reason) = heartbeat.process_tick(&mut session).await{
+                if let Some(reason) = heartbeat.process_tick(&mut ws_session).await{
                     break reason;
                 };
             }
 
             server_msg = conn_rx.recv() => {
-                if let Some(reason) = send_message_to_client(server_msg, &mut session).await{
+                if let Some(reason) = send_message_to_client(server_msg, &mut ws_session).await{
                     break reason;
                 }
             }
 
             stream_msg = msg_stream.next() => {
-                let outcome = process_stream_from_client(stream_msg, &mut heartbeat, &mut session).await;
+                let outcome = process_stream_from_client(stream_msg, &mut heartbeat, &mut ws_session).await;
                 match outcome{
                     StreamOutcome::MsgFromClient(msg) => {
                         let r = process_msg_from_client(&chat_server_handle, &msg, &conn_id, &username).await;
@@ -88,7 +88,7 @@ pub async fn chat_ws_start_client_handler_loop(
     }
 
     // attempt to close connection gracefully
-    let _ = session.close(Some(close_reason)).await;
+    let _ = ws_session.close(Some(close_reason)).await;
 }
 
 #[instrument]
