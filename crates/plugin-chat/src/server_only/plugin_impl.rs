@@ -1,7 +1,6 @@
 use super::{server::ChatServer, ChatServerHandle};
 use std::sync::Arc;
 use tracked_cancellations::TrackedCancellationToken;
-use ws_auth::WsServiceId;
 use ws_helpers::WebSocketSettings;
 use wykies_server::plugin::{ServerPlugin, ServerPluginArtifacts};
 use wykies_shared::db_types::DbPool;
@@ -12,7 +11,6 @@ pub struct ChatSettings {
 }
 
 pub struct ChatPluginConfig {
-    pub ws_id: WsServiceId,
     pub settings: ChatSettings,
 }
 

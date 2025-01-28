@@ -43,7 +43,6 @@ pub async fn start_servers(
         handle: chat_server_handle,
     } = ChatPlugin::setup(
         &ChatPluginConfig {
-            ws_id: WsServiceIds::CHAT,
             settings: configuration.custom.chat.clone(),
         },
         api_server_builder.db_pool.clone(),
