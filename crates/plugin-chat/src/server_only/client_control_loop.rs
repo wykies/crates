@@ -56,7 +56,14 @@ pub async fn chat_ws_start_client_handler_loop(
             }
 
             stream_msg = msg_stream.next() => {
-                let reason_opt = process_stream_from_client(stream_msg, &mut heartbeat, &mut session, &chat_server_handle, &conn_id, &username).await;
+                let reason_opt = process_stream_from_client(
+                    stream_msg,
+                    &mut heartbeat,
+                    &mut session,
+                    &chat_server_handle,
+                    &conn_id,
+                    &username
+                ).await;
                 if let Some(reason) = reason_opt {
                     break reason;
                 }
