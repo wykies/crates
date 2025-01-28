@@ -55,6 +55,27 @@ pub struct ChatServer {
     db_pool: DbPool,
 }
 
+impl ServerTask for ChatServer {
+    fn name(&self) -> &'static str {
+        "Chat Server"
+    }
+
+    #[instrument(err(Debug))]
+    async fn run(mut self, cancellation_token: TrackedCancellationToken) -> anyhow::Result<()> {
+        // Ensure that exiting causes the rest of the app to shut down
+        let _drop_guard = cancellation_token.clone().drop_guard();
+        loop {
+            select! {
+                _ = cancellation_token.cancelled() => {
+                    info!("shutting down ChatServer because of cancellation request");
+                    return Ok(())
+                }
+                cmd = self.cmd_rx.recv() => self.process_cmd(cmd, cancellation_token.clone()).await.context("fatal error in ChatServer, shutting down")?,
+            }
+        }
+    }
+}
+
 impl ChatServer {
     pub fn new(
         config: &ChatSettings,
@@ -343,26 +364,5 @@ impl ChatServer {
             .send(result)
             .map_err(|val| anyhow!("failed to send value in response: {val:?}"));
         log_err_as_error!(r);
-    }
-}
-
-impl ServerTask for ChatServer {
-    fn name(&self) -> &'static str {
-        "Chat Server"
-    }
-
-    #[instrument(err(Debug))]
-    async fn run(mut self, cancellation_token: TrackedCancellationToken) -> anyhow::Result<()> {
-        // Ensure that exiting causes the rest of the app to shut down
-        let _drop_guard = cancellation_token.clone().drop_guard();
-        loop {
-            select! {
-                _ = cancellation_token.cancelled() => {
-                    info!("shutting down ChatServer because of cancellation request");
-                    return Ok(())
-                }
-                cmd = self.cmd_rx.recv() => self.process_cmd(cmd, cancellation_token.clone()).await.context("fatal error in ChatServer, shutting down")?,
-            }
-        }
     }
 }
