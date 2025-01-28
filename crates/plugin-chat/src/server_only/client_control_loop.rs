@@ -1,7 +1,7 @@
 //! Code related to the loop that handles incoming and outgoing messages to the
 //! client (Outgoing messages include those from other threads)
 
-use super::server::ChatServerHandle;
+use super::ChatServerHandle;
 use crate::{ChatIM, ChatMsg};
 use actix_ws::{CloseCode, CloseReason};
 use anyhow::{bail, Context};
