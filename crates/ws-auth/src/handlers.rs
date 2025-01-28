@@ -2,7 +2,7 @@ use crate::{
     runtime_utils::{
         pre_screen_incoming_ws_req, validate_connection_then_start_client_handler_loop,
     },
-    AuthTokenManager, ClientLoopController, WebSocketAuthError, WsId,
+    AuthTokenManager, ClientLoopController, WebSocketAuthError, WsServiceId,
 };
 use actix_web::{
     dev::ConnectionInfo,
@@ -19,7 +19,7 @@ pub async fn get_ws_token(
     auth_manager: web::Data<AuthTokenManager>,
     conn: ConnectionInfo,
     user_info: web::ReqData<UserSessionInfo>,
-    ws_id: WsId,
+    ws_id: WsServiceId,
 ) -> actix_web::Result<web::Json<AuthToken>> {
     let result = AuthToken::new_rand();
     let host_id: HostId = conn
@@ -43,7 +43,7 @@ pub async fn ws_start_session<WsServerHandle, Output>(
     ws_server_handle: web::Data<WsServerHandle>,
     auth_manager: web::Data<AuthTokenManager>,
     conn: ConnectionInfo,
-    ws_id: WsId,
+    ws_id: WsServiceId,
     ws_start_client_handler_loop: impl ClientLoopController<WsServerHandle, Output> + 'static,
 ) -> Result<HttpResponse, WebSocketAuthError>
 where
@@ -69,7 +69,7 @@ where
 
 pub fn ws_get_route_add_closures<WsServerHandle, Output>(
     name: &'static str,
-    ws_id: WsId,
+    ws_id: WsServiceId,
     ws_start_client_handler_loop: impl ClientLoopController<WsServerHandle, Output> + 'static + Clone,
 ) -> (
     impl Fn(&mut ServiceConfig) + 'static + Clone,

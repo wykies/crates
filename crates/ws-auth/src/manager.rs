@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 
-use super::WsId;
+use super::WsServiceId;
 use anyhow::{bail, Context as _};
 use futures_util::StreamExt as _;
 use tokio::time::timeout;
@@ -31,7 +31,7 @@ struct AuthRecord {
     timestamp: Timestamp,
     host_id: HostId,
     user_info: Arc<UserSessionInfo>,
-    ws_id: WsId,
+    ws_id: WsServiceId,
     token: AuthToken,
 }
 
@@ -48,7 +48,7 @@ impl AuthTokenManager {
     pub fn record_token(
         &self,
         host_id: HostId,
-        ws_id: WsId,
+        ws_id: WsServiceId,
         user_info: Arc<UserSessionInfo>,
         token: AuthToken,
     ) {
@@ -69,7 +69,7 @@ impl AuthTokenManager {
 
     /// Returns true if at least 1 token is stored for this host
     #[tracing::instrument(ret)]
-    pub fn is_expected_host(&self, host_id: &HostId, ws_id: WsId) -> bool {
+    pub fn is_expected_host(&self, host_id: &HostId, ws_id: WsServiceId) -> bool {
         self.purge_stale();
         self.auth_records
             .lock()
@@ -84,7 +84,7 @@ impl AuthTokenManager {
     pub fn validate_token(
         &self,
         host_id: &HostId,
-        ws_id: WsId,
+        ws_id: WsServiceId,
         token: &AuthToken,
     ) -> Option<Arc<UserSessionInfo>> {
         self.purge_stale();
@@ -126,7 +126,7 @@ pub async fn validate_ws_connection(
     msg_stream: actix_ws::MessageStream,
     auth_manager: actix_web::web::Data<AuthTokenManager>,
     client_identifier: &HostId,
-    ws_id: WsId,
+    ws_id: WsServiceId,
 ) -> anyhow::Result<(Arc<UserSessionInfo>, actix_ws::AggregatedMessageStream)> {
     let mut msg_stream = msg_stream
         .max_frame_size(WS_MAX_FRAME_SIZE)
@@ -204,13 +204,13 @@ mod tests {
             (new_manager(), random_host(), new_user(), new_token());
         manager.record_token(
             host_id.clone(),
-            WsId::TEST1,
+            WsServiceId::TEST1,
             user_info.clone(),
             token.clone(),
         );
-        assert!(manager.is_expected_host(&host_id, WsId::TEST1));
+        assert!(manager.is_expected_host(&host_id, WsServiceId::TEST1));
         assert_eq!(
-            manager.validate_token(&host_id, WsId::TEST1, &token),
+            manager.validate_token(&host_id, WsServiceId::TEST1, &token),
             Some(user_info)
         );
     }
@@ -221,12 +221,12 @@ mod tests {
             (new_manager(), random_host(), new_user(), new_token());
         let host_id2 = random_host();
         assert!(
-            !manager.is_expected_host(&host_id2, WsId::TEST1),
+            !manager.is_expected_host(&host_id2, WsServiceId::TEST1),
             "not expected when empty"
         );
-        manager.record_token(host_id1, WsId::TEST1, user_info, token);
+        manager.record_token(host_id1, WsServiceId::TEST1, user_info, token);
         assert!(
-            !manager.is_expected_host(&host_id2, WsId::TEST1),
+            !manager.is_expected_host(&host_id2, WsServiceId::TEST1),
             "not expected when not empty but not inserted"
         );
     }
@@ -237,33 +237,33 @@ mod tests {
             (new_manager(), random_host(), new_user(), new_token());
         manager.record_token(
             host_id.clone(),
-            WsId::TEST1,
+            WsServiceId::TEST1,
             user_info.clone(),
             token.clone(),
         );
-        assert!(manager.is_expected_host(&host_id, WsId::TEST1));
+        assert!(manager.is_expected_host(&host_id, WsServiceId::TEST1));
 
         // Sleep for token to get stale
         std::thread::sleep(TEST_RECORD_LIFETIME.into());
         std::thread::sleep(Duration::from_secs(1)); // Add 1 more second to ensure it's stale
 
         // Old token rejected
-        assert!(!manager.is_expected_host(&host_id, WsId::TEST1));
+        assert!(!manager.is_expected_host(&host_id, WsServiceId::TEST1));
         assert!(manager
-            .validate_token(&host_id, WsId::TEST1, &token)
+            .validate_token(&host_id, WsServiceId::TEST1, &token)
             .is_none());
 
         // Insert another token for the same host
-        manager.record_token(host_id.clone(), WsId::TEST1, user_info, new_token());
+        manager.record_token(host_id.clone(), WsServiceId::TEST1, user_info, new_token());
 
         // Ensure old token is still rejected
         assert!(
-            manager.is_expected_host(&host_id, WsId::TEST1),
+            manager.is_expected_host(&host_id, WsServiceId::TEST1),
             "host should be valid now we just inserted a new record for it"
         );
         assert!(
             manager
-                .validate_token(&host_id, WsId::TEST1, &token)
+                .validate_token(&host_id, WsServiceId::TEST1, &token)
                 .is_none(),
             "token should still be invalid we inserted a new token"
         );
@@ -279,25 +279,25 @@ mod tests {
 
         manager.record_token(
             host_id.clone(),
-            WsId::TEST1,
+            WsServiceId::TEST1,
             user_info.clone(),
             token1.clone(),
         );
         manager.record_token(
             host_id.clone(),
-            WsId::TEST1,
+            WsServiceId::TEST1,
             user_info.clone(),
             token2.clone(),
         );
 
-        assert!(manager.is_expected_host(&host_id, WsId::TEST1));
+        assert!(manager.is_expected_host(&host_id, WsServiceId::TEST1));
 
         assert_eq!(
-            manager.validate_token(&host_id, WsId::TEST1, &token1),
+            manager.validate_token(&host_id, WsServiceId::TEST1, &token1),
             Some(user_info.clone())
         );
         assert_eq!(
-            manager.validate_token(&host_id, WsId::TEST1, &token2),
+            manager.validate_token(&host_id, WsServiceId::TEST1, &token2),
             Some(user_info)
         );
     }
@@ -310,11 +310,16 @@ mod tests {
         let token1 = new_token();
         let token2 = new_token();
 
-        manager.record_token(host_id.clone(), WsId::TEST1, user_info, token1.clone());
+        manager.record_token(
+            host_id.clone(),
+            WsServiceId::TEST1,
+            user_info,
+            token1.clone(),
+        );
 
-        assert!(manager.is_expected_host(&host_id, WsId::TEST1));
+        assert!(manager.is_expected_host(&host_id, WsServiceId::TEST1));
         assert!(manager
-            .validate_token(&host_id, WsId::TEST1, &token2)
+            .validate_token(&host_id, WsServiceId::TEST1, &token2)
             .is_none());
     }
 
@@ -324,20 +329,20 @@ mod tests {
             (new_manager(), random_host(), new_user(), new_token());
         manager.record_token(
             host_id.clone(),
-            WsId::TEST1,
+            WsServiceId::TEST1,
             user_info.clone(),
             token.clone(),
         );
 
-        assert!(manager.is_expected_host(&host_id, WsId::TEST1));
+        assert!(manager.is_expected_host(&host_id, WsServiceId::TEST1));
         assert_eq!(
-            manager.validate_token(&host_id, WsId::TEST1, &token),
+            manager.validate_token(&host_id, WsServiceId::TEST1, &token),
             Some(user_info)
         );
 
-        assert!(!manager.is_expected_host(&host_id, WsId::TEST1));
+        assert!(!manager.is_expected_host(&host_id, WsServiceId::TEST1));
         assert!(manager
-            .validate_token(&host_id, WsId::TEST1, &token)
+            .validate_token(&host_id, WsServiceId::TEST1, &token)
             .is_none());
     }
 

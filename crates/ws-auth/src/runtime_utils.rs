@@ -3,7 +3,7 @@
 use std::{future::Future, sync::Arc};
 
 use crate::{
-    validate_ws_connection, AuthTokenManager, ClientLoopController, WebSocketAuthError, WsId,
+    validate_ws_connection, AuthTokenManager, ClientLoopController, WebSocketAuthError, WsServiceId,
 };
 use actix_web::{dev::ConnectionInfo, web, HttpRequest, HttpResponse};
 use actix_ws::CloseCode;
@@ -19,7 +19,7 @@ pub fn pre_screen_incoming_ws_req(
     stream: web::Payload,
     conn: ConnectionInfo,
     auth_manager: &AuthTokenManager,
-    ws_id: WsId,
+    ws_id: WsServiceId,
 ) -> Result<
     (
         actix_ws::Session,
@@ -52,7 +52,7 @@ pub async fn validate_connection_then_start_client_handler_loop<WsServerHandle, 
     msg_stream: actix_ws::MessageStream,
     auth_manager: web::Data<AuthTokenManager>,
     client_identifier: HostId,
-    ws_id: WsId,
+    ws_id: WsServiceId,
     ws_start_client_handler_loop: impl ClientLoopController<WsServerHandle, Output>,
 ) where
     Output: Future<Output = ()>,

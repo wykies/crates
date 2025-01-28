@@ -1,4 +1,4 @@
-use crate::WsId;
+use crate::WsServiceId;
 use wykies_shared::host_branch::HostId;
 
 #[derive(thiserror::Error, Debug)]
@@ -7,12 +7,12 @@ pub enum WebSocketAuthError {
     #[error("Unexpected Client")]
     UnexpectedClient {
         client_identifier: HostId,
-        ws_id: WsId,
+        ws_id: WsServiceId,
     },
     #[error("Invalid Token")]
     InvalidToken {
         client_identifier: HostId,
-        ws_id: WsId,
+        ws_id: WsServiceId,
     },
     #[error("Unable to start session")]
     FailedToStartSession(anyhow::Error),

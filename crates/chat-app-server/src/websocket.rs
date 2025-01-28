@@ -1,7 +1,7 @@
-use ws_auth::WsId;
+use ws_auth::WsServiceId;
 
 pub struct WsIds;
 
 impl WsIds {
-    pub const CHAT: WsId = WsId::new(1);
+    pub const CHAT: WsServiceId = WsServiceId::new(1);
 }
