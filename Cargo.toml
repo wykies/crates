@@ -9,6 +9,7 @@ members = [
   "crates/switch-db",
   "crates/tracked-cancellations",
   "crates/ws-auth",
+  "crates/ws-helpers",
   "crates/wykies-client-core",
   "crates/wykies-server",
   "crates/wykies-server-test-helper",
@@ -68,6 +69,7 @@ wasm-bindgen-test = "0.3.42"
 web-sys = "0.3.72"
 web-time = "1.1.0"
 ws-auth = { version = "*", path = "crates/ws-auth" }
+ws-helpers = { version = "*", path = "crates/ws-helpers" }
 wykies-client-core = { version = "*", path = "crates/wykies-client-core" }
 wykies-server = { version = "*", path = "crates/wykies-server", default-features = false }
 wykies-server-test-helper = { version = "*", path = "crates/wykies-server-test-helper" }

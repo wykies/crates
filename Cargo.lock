@@ -7660,6 +7660,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "ws-helpers"
+version = "0.1.0"
+
+[[package]]
 name = "wykies-client-core"
 version = "0.1.0"
 dependencies = [
