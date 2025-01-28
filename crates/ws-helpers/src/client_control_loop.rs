@@ -6,6 +6,7 @@ use std::fmt::Debug;
 use tracing::{debug, error, info, instrument, warn};
 use wykies_shared::{debug_panic, log_err_as_error};
 
+#[derive(Debug)]
 pub enum StreamOutcome {
     MsgFromClient(ByteString),
     CloseSession(CloseReason),
