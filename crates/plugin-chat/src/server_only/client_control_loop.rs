@@ -9,9 +9,9 @@ use futures_util::StreamExt as _;
 use std::{pin::pin, sync::Arc, time::Instant};
 use tokio::{select, sync::mpsc};
 use tracing::{debug, error, info, instrument, warn, Span};
-use ws_auth::WsConnId;
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE, debug_panic, log_err_as_error, session::UserSessionInfo,
+    uac::Username, websockets::WsConnId,
 };
 use wykies_time::Timestamp;
 
@@ -20,10 +20,11 @@ pub async fn chat_ws_start_client_handler_loop(
     chat_server_handle: Arc<ChatServerHandle>,
     mut session: actix_ws::Session,
     msg_stream: actix_ws::AggregatedMessageStream,
-    user_info: Arc<UserSessionInfo>,
+    user_info: UserSessionInfo,
 ) {
     let mut last_heartbeat = Instant::now();
     let mut heartbeat_interval = chat_server_handle.heartbeat_config.interval();
+    let username = user_info.username.clone();
 
     let (conn_tx, mut conn_rx) = mpsc::channel(CHANNEL_BUFFER_SIZE);
 
@@ -55,13 +56,8 @@ pub async fn chat_ws_start_client_handler_loop(
             }
 
             stream_msg = msg_stream.next() => {
-                if let Some(reason) = process_stream_from_client(
-                    stream_msg,
-                    &mut last_heartbeat,
-                    &mut session,
-                    &chat_server_handle,
-                    &conn_id
-                ).await {
+                let reason_opt = process_stream_from_client(stream_msg, &mut last_heartbeat, &mut session, &chat_server_handle, &conn_id, &username).await;
+                if let Some(reason) = reason_opt {
                     break reason;
                 }
             }
@@ -117,6 +113,7 @@ async fn process_stream_from_client(
     session: &mut Session,
     chat_server: &ChatServerHandle,
     conn_id: &WsConnId,
+    username: &Username,
 ) -> Option<CloseReason> {
     match msg {
         // Message from remote client
@@ -137,7 +134,7 @@ async fn process_stream_from_client(
                 }
 
                 AggregatedMessage::Text(text) => {
-                    let r = process_msg_from_client(chat_server, &text, conn_id.clone()).await;
+                    let r = process_msg_from_client(chat_server, &text, conn_id, username).await;
                     log_err_as_error!(r);
                     None
                 }
@@ -198,7 +195,8 @@ async fn process_heartbeat_tick(
 async fn process_msg_from_client(
     chat_server: &ChatServerHandle,
     text: &str,
-    conn_id: WsConnId,
+    conn_id: &WsConnId,
+    username: &Username,
 ) -> anyhow::Result<()> {
     let chat_msg: ChatMsg =
         serde_json::from_str(text).context("failed to deserialize chat msg received")?;
@@ -211,10 +209,9 @@ async fn process_msg_from_client(
             bail!("unexpected message type received from the client: {chat_msg:?}")
         }
         ChatMsg::IM(mut chat_im) => {
-            validate_im_from_client(&mut chat_im, &conn_id).context("IM validation failed")?;
+            validate_im_from_client(&mut chat_im, username).context("IM validation failed")?;
 
-            // Provide no skip so that author also receives the message to get the correct
-            // timestamp
+            // Also send to original author so they receive the correct timestamp
             chat_server.send_msg_to_clients(ChatMsg::IM(chat_im)).await;
         }
         ChatMsg::ReqHistory(req) => chat_server.process_history_request(conn_id, req).await,
@@ -222,16 +219,16 @@ async fn process_msg_from_client(
     Ok(())
 }
 
-fn validate_im_from_client(im: &mut ChatIM, conn_id: &WsConnId) -> anyhow::Result<()> {
+fn validate_im_from_client(im: &mut ChatIM, username: &Username) -> anyhow::Result<()> {
     im.timestamp = Timestamp::now(); // Replace timestamp with server time to ensure monotonicity
 
-    if im.author != conn_id.user_info.username {
+    if &im.author != username {
         error!(
-            "unexpected message author (Author reset to expected). Expected '{}' Found: '{}'",
-            conn_id.user_info.username, im.author,
+            "unexpected message author found. Author has been reset to expected value. Expected '{}' Found: '{}'",
+            username, im.author,
         );
         debug_panic!("user name doesn't match");
-        im.author = conn_id.user_info.username.clone();
+        im.author = username.clone();
     }
 
     Ok(())

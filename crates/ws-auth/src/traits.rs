@@ -7,7 +7,7 @@ pub trait ClientLoopController<WsServerHandle, Output>:
     Arc<WsServerHandle>,
     actix_ws::Session,
     actix_ws::AggregatedMessageStream,
-    Arc<UserSessionInfo>,
+    UserSessionInfo,
 ) -> Output
 where
     Output: Future<Output = ()>,
@@ -19,7 +19,7 @@ where
         Arc<WsServerHandle>,
         actix_ws::Session,
         actix_ws::AggregatedMessageStream,
-        Arc<UserSessionInfo>,
+        UserSessionInfo,
     ) -> Output,
     Output: Future<Output = ()>,
 {

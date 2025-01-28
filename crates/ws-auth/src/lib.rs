@@ -15,6 +15,6 @@ mod traits;
 
 pub use errors::WebSocketAuthError;
 pub use handlers::ws_get_route_add_closures;
-pub use id::{WsConnId, WsServiceId};
+pub use id::WsServiceId;
 pub use manager::{validate_ws_connection, AuthTokenManager};
 pub use traits::ClientLoopController;

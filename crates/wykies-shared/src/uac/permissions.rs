@@ -333,7 +333,8 @@ impl PermissionCheckOutcome {
         }
     }
 
-    /// Returns `true` if the permission check outcome is [`HasRequiredPermissions`].
+    /// Returns `true` if the permission check outcome is
+    /// [`HasRequiredPermissions`].
     ///
     /// [`HasRequiredPermissions`]: PermissionCheckOutcome::HasRequiredPermissions
     #[must_use]

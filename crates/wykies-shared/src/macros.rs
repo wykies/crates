@@ -10,7 +10,8 @@ macro_rules! debug_panic {
     };
 }
 
-/// Logs the error and includes the line in the code in the error message but does NOT panic
+/// Logs the error and includes the line in the code in the error message but
+/// does NOT panic
 #[macro_export]
 macro_rules! internal_error {
     ($($arg:tt)*) => {{

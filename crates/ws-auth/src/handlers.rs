@@ -26,12 +26,7 @@ pub async fn get_ws_token(
         .try_into()
         .context("failed to get host_id")
         .map_err(e500)?;
-    auth_manager.record_token(
-        host_id,
-        ws_id,
-        Arc::new(user_info.into_inner()),
-        result.clone(),
-    );
+    auth_manager.record_token(host_id, ws_id, user_info.into_inner(), result.clone());
     Ok(web::Json(result))
 }
 

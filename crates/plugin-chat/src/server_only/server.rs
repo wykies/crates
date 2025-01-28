@@ -11,11 +11,10 @@ use tokio::{
 };
 use tracing::{error, info, instrument, warn};
 use tracked_cancellations::TrackedCancellationToken;
-use ws_auth::WsConnId;
 use wykies_server::{ws::HeartbeatConfig, ServerTask, WebSocketSettings};
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE, db_types::DbPool, debug_panic, log_err_as_error,
-    log_err_as_warn, session::UserSessionInfo,
+    log_err_as_warn, session::UserSessionInfo, websockets::WsConnId,
 };
 
 /// A command received by the [`ChatServer`].
@@ -23,7 +22,7 @@ use wykies_shared::{
 enum Command {
     Connect {
         conn_tx: mpsc::Sender<Arc<ChatMsg>>,
-        user_info: Arc<UserSessionInfo>,
+        user_info: UserSessionInfo,
         res_tx: oneshot::Sender<(WsConnId, TrackedCancellationToken)>,
     },
 
@@ -46,7 +45,7 @@ enum Command {
 #[derive(Debug)]
 pub struct ChatServer {
     /// Map of connection IDs to their message receivers.
-    connections: HashMap<WsConnId, mpsc::Sender<Arc<ChatMsg>>>,
+    connections: HashMap<WsConnId, (UserSessionInfo, mpsc::Sender<Arc<ChatMsg>>)>,
 
     /// Command receiver.
     cmd_rx: mpsc::Receiver<Command>,
@@ -111,7 +110,7 @@ impl ChatServer {
                 .context("failed to add IM to history")?;
         }
 
-        for (conn_id, tx) in self.connections.iter() {
+        for (conn_id, (_, tx)) in self.connections.iter() {
             // errors if client disconnected abruptly and hasn't been timed-out yet
             let r = tx.send(Arc::clone(&msg)).await.with_context(|| {
                 format!("failed to send message to one of the clients. Connection id {conn_id:?}")
@@ -211,7 +210,7 @@ impl ChatServer {
     async fn send_to_client(&self, conn_id: WsConnId, msg: ChatMsg) {
         let msg = Arc::new(msg);
 
-        let Some(tx) = self.connections.get(&conn_id) else {
+        let Some((_, tx)) = self.connections.get(&conn_id) else {
             error!("failed to send message to client because unable to locate connection for ID: {conn_id:?}");
             debug_panic!("connection id not found");
             return;
@@ -229,7 +228,7 @@ impl ChatServer {
     async fn register_connection(
         &mut self,
         tx: mpsc::Sender<Arc<ChatMsg>>,
-        user_info: Arc<UserSessionInfo>,
+        user_info: UserSessionInfo,
     ) -> anyhow::Result<WsConnId> {
         // notify all users
         self.send_msg_to_clients(ChatMsg::UserJoined(ChatUser::new(
@@ -239,8 +238,8 @@ impl ChatServer {
         .context("failed to send msg to clients")?;
 
         // register session using a connection ID
-        let id = WsConnId::new(user_info);
-        self.connections.insert(id.clone(), tx.clone());
+        let id = WsConnId::new_rand();
+        self.connections.insert(id, (user_info, tx.clone()));
 
         // Send initial connection information
         self.send_initial_state(tx).await;
@@ -253,8 +252,8 @@ impl ChatServer {
     #[instrument]
     fn get_connected_users(&self) -> Vec<(ChatUser, u8)> {
         self.connections
-            .keys()
-            .map(|id| ChatUser::new(id.user_info.username.clone()))
+            .values()
+            .map(|(user_info, _)| ChatUser::new(user_info.username.clone()))
             .fold(HashMap::<ChatUser, u8>::new(), |mut map, user| {
                 let freq = map.entry(user).or_default();
                 *freq = freq.saturating_add(1);
@@ -285,15 +284,16 @@ impl ChatServer {
     async fn unregister_connection(&mut self, conn_id: WsConnId) -> anyhow::Result<()> {
         // remove sender
         let remove_result = self.connections.remove(&conn_id);
-        if remove_result.is_none() {
-            warn!("Failed to remove connection with ID: {conn_id:?}");
+
+        if let Some((user_info, _)) = remove_result {
+            // Notify other users of disconnect
+            self.send_msg_to_clients(ChatMsg::UserLeft(ChatUser::new(user_info.username)))
+                .await
+                .context("failed to unregister connection")
+        } else {
+            error!("Unable to send disconnection message because user info and connection not found for {conn_id:?}");
+            Ok(())
         }
-        // Notify other users of disconnect
-        self.send_msg_to_clients(ChatMsg::UserLeft(ChatUser::new(
-            conn_id.user_info.username.clone(),
-        )))
-        .await
-        .context("failed to unregister connection")
     }
 
     /// This is the code used by the server to process commands received over
@@ -365,7 +365,7 @@ impl ChatServerHandle {
     pub async fn register(
         &self,
         conn_tx: mpsc::Sender<Arc<ChatMsg>>,
-        user_info: Arc<UserSessionInfo>,
+        user_info: UserSessionInfo,
     ) -> (WsConnId, TrackedCancellationToken) {
         let (res_tx, res_rx) = oneshot::channel();
 
@@ -392,13 +392,13 @@ impl ChatServerHandle {
     }
 
     #[instrument]
-    pub async fn process_history_request(&self, conn_id: WsConnId, req: ReqHistoryBody) {
+    pub async fn process_history_request(&self, conn_id: &WsConnId, req: ReqHistoryBody) {
         let (res_tx, res_rx) = oneshot::channel();
 
         self.send_cmd_to_server(
             Command::HistoryReq {
                 req,
-                conn_id,
+                conn_id: conn_id.to_owned(),
                 res_tx,
             },
             res_rx,

@@ -1,4 +1,4 @@
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 
 use super::WsServiceId;
 use anyhow::{bail, Context as _};
@@ -30,7 +30,7 @@ pub struct AuthTokenManager {
 struct AuthRecord {
     timestamp: Timestamp,
     host_id: HostId,
-    user_info: Arc<UserSessionInfo>,
+    user_info: UserSessionInfo,
     ws_id: WsServiceId,
     token: AuthToken,
 }
@@ -49,7 +49,7 @@ impl AuthTokenManager {
         &self,
         host_id: HostId,
         ws_id: WsServiceId,
-        user_info: Arc<UserSessionInfo>,
+        user_info: UserSessionInfo,
         token: AuthToken,
     ) {
         self.purge_stale();
@@ -86,7 +86,7 @@ impl AuthTokenManager {
         host_id: &HostId,
         ws_id: WsServiceId,
         token: &AuthToken,
-    ) -> Option<Arc<UserSessionInfo>> {
+    ) -> Option<UserSessionInfo> {
         self.purge_stale();
         let mut guard = self.auth_records.lock().expect("mutex poisoned");
         let position = guard
@@ -127,7 +127,7 @@ pub async fn validate_ws_connection(
     auth_manager: actix_web::web::Data<AuthTokenManager>,
     client_identifier: &HostId,
     ws_id: WsServiceId,
-) -> anyhow::Result<(Arc<UserSessionInfo>, actix_ws::AggregatedMessageStream)> {
+) -> anyhow::Result<(UserSessionInfo, actix_ws::AggregatedMessageStream)> {
     let mut msg_stream = msg_stream
         .max_frame_size(WS_MAX_FRAME_SIZE)
         .aggregate_continuations()
@@ -183,15 +183,15 @@ mod tests {
         )
     }
 
-    fn new_user() -> Arc<UserSessionInfo> {
+    fn new_user() -> UserSessionInfo {
         let username = random_string(Username::MAX_LENGTH).try_into().unwrap();
         let display_name = random_string(DisplayName::MAX_LENGTH).try_into().unwrap();
-        Arc::new(UserSessionInfo {
+        UserSessionInfo {
             username,
             display_name,
             branch_id: BranchId::from(1),
             permissions: Default::default(),
-        })
+        }
     }
 
     fn new_token() -> AuthToken {
