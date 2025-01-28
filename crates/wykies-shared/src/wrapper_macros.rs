@@ -218,7 +218,16 @@ macro_rules! id_wrapper {
         }
 
         #[derive(
-            Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, Copy,
+            Debug,
+            serde::Serialize,
+            serde::Deserialize,
+            Clone,
+            PartialEq,
+            Eq,
+            PartialOrd,
+            Ord,
+            Copy,
+            Hash,
         )]
         pub struct $name(u64);
 
@@ -266,7 +275,7 @@ macro_rules! id_wrapper {
                 actix_web::http::StatusCode::INTERNAL_SERVER_ERROR
             }
         }
-    }
+    };
 }
 
 pub enum AlwaysCase {

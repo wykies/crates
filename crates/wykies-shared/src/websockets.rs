@@ -11,7 +11,7 @@ use uuid::Uuid;
 use wykies_time::Seconds;
 
 #[derive(
-    Debug, Clone, Copy, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord,
+    Debug, Clone, Copy, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
 )]
 pub struct WsConnId(Uuid);
 
