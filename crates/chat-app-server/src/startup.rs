@@ -53,8 +53,11 @@ pub async fn start_servers(
     .expect("failed to start Chat Server");
 
     // Setup Routes / Server Resources
-    let (chat_open_add, chat_protected_add) =
-        ws_get_route_add_closures("chat", WsServiceIds::CHAT, chat_ws_start_client_handler_loop);
+    let (chat_open_add, chat_protected_add) = ws_get_route_add_closures(
+        "chat",
+        WsServiceIds::CHAT,
+        chat_ws_start_client_handler_loop,
+    );
     let open_resources = move |cfg: &mut ServiceConfig| {
         cfg.service(web::scope("/ws").configure(chat_open_add.clone()))
             .app_data(web::Data::from(chat_server_handle.clone()));
