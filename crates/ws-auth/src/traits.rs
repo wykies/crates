@@ -1,6 +1,6 @@
 use std::{future::Future, sync::Arc};
 
-use wykies_shared::session::UserSessionInfo;
+use wykies_shared::{host_branch::HostId, session::UserSessionInfo};
 
 pub trait ClientLoopController<WsServerHandle, Output>:
     FnOnce(
@@ -8,6 +8,7 @@ pub trait ClientLoopController<WsServerHandle, Output>:
     actix_ws::Session,
     actix_ws::AggregatedMessageStream,
     UserSessionInfo,
+    HostId,
 ) -> Output
 where
     Output: Future<Output = ()>,
@@ -20,6 +21,7 @@ where
         actix_ws::Session,
         actix_ws::AggregatedMessageStream,
         UserSessionInfo,
+        HostId,
     ) -> Output,
     Output: Future<Output = ()>,
 {

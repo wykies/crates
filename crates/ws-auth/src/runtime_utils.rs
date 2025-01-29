@@ -70,5 +70,12 @@ pub async fn validate_connection_then_start_client_handler_loop<WsServerHandle, 
             }
         };
 
-    ws_start_client_handler_loop(ws_server_handle, session, msg_stream, user_info).await;
+    ws_start_client_handler_loop(
+        ws_server_handle,
+        session,
+        msg_stream,
+        user_info,
+        client_identifier,
+    )
+    .await;
 }

@@ -13,8 +13,8 @@ use ws_helpers::client_control_loop::{
     process_stream_from_client, send_message_to_client, StreamOutcome,
 };
 use wykies_shared::{
-    const_config::CHANNEL_BUFFER_SIZE, debug_panic, log_err_as_error, session::UserSessionInfo,
-    uac::Username, websockets::WsConnId,
+    const_config::CHANNEL_BUFFER_SIZE, debug_panic, host_branch::HostId, log_err_as_error,
+    session::UserSessionInfo, uac::Username, websockets::WsConnId,
 };
 use wykies_time::Timestamp;
 
@@ -24,6 +24,7 @@ pub async fn chat_ws_start_client_handler_loop(
     mut ws_session: actix_ws::Session,
     msg_stream: actix_ws::AggregatedMessageStream,
     user_info: UserSessionInfo,
+    _host_id: HostId,
 ) {
     let mut heartbeat = chat_server_handle.heartbeat_config.start_new_monitor();
     let username = user_info.username.clone();
