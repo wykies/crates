@@ -48,7 +48,7 @@ impl Timestamp {
         self.as_local_datetime().format("%c").to_string()
     }
 
-    pub fn display_as_locale_datetime_short(&self) -> String {
+    pub fn display_as_local_datetime_short(&self) -> String {
         self.as_local_datetime().format("%F %H:%M").to_string()
     }
 
