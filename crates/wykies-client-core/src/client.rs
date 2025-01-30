@@ -32,10 +32,7 @@ struct ClientInner {
 
 impl Default for Client {
     fn default() -> Self {
-        // TODO 3: Load url from server config into binary at compile time
-        // TODO 3: Add test to ensure URL starts with "http" so when we replace "http"
-        //          with "ws"  it will not be a problem. Ignore the following s as both
-        //          would need it. Both https and wss.
+        // TODO 4: Load url from server config into binary at compile time
         if cfg!(debug_assertions) {
             Self::new("http://localhost:8789".to_string())
         } else {
