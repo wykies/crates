@@ -11,6 +11,7 @@ pub mod errors;
 pub mod host_branch;
 pub mod id;
 mod macros_debugging;
+mod macros_enums;
 mod macros_wrappers;
 pub mod random;
 pub mod req_args;
