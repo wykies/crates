@@ -10,19 +10,19 @@ mod error_wrappers;
 pub mod errors;
 pub mod host_branch;
 pub mod id;
-mod macros;
+mod macros_debugging;
+mod macros_wrappers;
 pub mod random;
 pub mod req_args;
 pub mod session;
 pub mod token;
 pub mod uac;
 pub mod websockets;
-mod wrapper_macros;
 
 #[cfg(feature = "server_only")]
 pub use db_types;
 
-pub use wrapper_macros::AlwaysCase;
+pub use macros_wrappers::AlwaysCase;
 
 pub use random::{random_string, random_string_def_len};
 
