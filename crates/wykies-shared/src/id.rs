@@ -1,6 +1,5 @@
 use crate::id_wrapper;
 
-id_wrapper!(SparePartId, SparePartIdConversionError);
 id_wrapper!(BranchId, BranchIdConversionError);
 id_wrapper!(RoleId, RoleIdConversionError);
 id_wrapper!(StockCheckSessionId, StockCheckSessionIdConversionError);
