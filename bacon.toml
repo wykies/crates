@@ -2,8 +2,6 @@
 #
 # Complete help on configuration: https://dystroy.org/bacon/config/
 
-default_job = "clippy-all"
-
 [jobs.run-server-standalone-mysql]
 command = [
   "cargo",
@@ -14,12 +12,7 @@ command = [
   "--features",
   "standalone,mysql,running-from-workspace-root",
 ]
-need_stdout = true
 allow_warnings = true
-background = false
-on_change_strategy = "kill_then_restart"
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 [jobs.run-server-standalone-postgres]
 command = [
@@ -31,54 +24,28 @@ command = [
   "--features",
   "standalone,postgres,running-from-workspace-root",
 ]
-need_stdout = true
 allow_warnings = true
-background = false
-on_change_strategy = "kill_then_restart"
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 [jobs.run-server-shuttle]
 command = ["shuttle", "run"]
-need_stdout = true
 allow_warnings = true
-background = false
 kill = ["pkill", "-TERM", "-P"]
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 [jobs.run-client-egui]
 command = ["cargo", "run", "--bin", "chat-app-client", "--all-features"]
-need_stdout = true
 allow_warnings = true
-background = false
-on_change_strategy = "kill_then_restart"
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 [jobs.run-client-egui-release]
 command = ["cargo", "run", "-r", "--bin", "chat-app-client", "--all-features"]
-need_stdout = true
 allow_warnings = true
-background = false
-on_change_strategy = "kill_then_restart"
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 [jobs.include-ignored]
 command = ["cargo", "test", "--", "--include-ignored"]
-need_stdout = true
-background = false
 env.TEST_LOG = "true"
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 [jobs.test-trace]
 command = ["cargo", "test"]
-need_stdout = true
 env.TEST_LOG = "true"
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 [jobs.check-wasm-client]
 command = [
@@ -89,9 +56,6 @@ command = [
   "--package",
   "chat-app-client",
 ]
-need_stdout = false
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 [jobs.test-chat-server-standalone-mysql]
 command = [
@@ -103,9 +67,6 @@ command = [
   "--features",
   "standalone,mysql",
 ]
-need_stdout = true
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 [jobs.test-chat-server-standalone-mysql-trace]
 command = [
@@ -117,10 +78,7 @@ command = [
   "--features",
   "standalone,mysql",
 ]
-need_stdout = true
 env.TEST_LOG = "true"
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 # To test Shuttle mode
 [jobs.test-chat-server-standalone-pg]
@@ -133,9 +91,6 @@ command = [
   "--features",
   "standalone,postgres",
 ]
-need_stdout = true
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 [jobs.test-chat-server-standalone-pg-trace]
 command = [
@@ -147,10 +102,7 @@ command = [
   "--features",
   "standalone,postgres",
 ]
-need_stdout = true
 env.TEST_LOG = "true"
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 [jobs.check-shuttle]
 command = [
@@ -162,9 +114,6 @@ command = [
   "--features",
   "shuttle",
 ]
-need_stdout = false
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 [jobs.clippy-shuttle]
 command = [
@@ -176,9 +125,6 @@ command = [
   "--features",
   "shuttle",
 ]
-need_stdout = false
-on_success = "play-sound(name=90s-game-ui-6,volume=10)"
-on_failure = "play-sound(name=short-beep-tone,volume=30)"
 
 [keybindings]
 alt-t = "job:test-trace"
