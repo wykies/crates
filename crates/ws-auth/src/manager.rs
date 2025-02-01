@@ -164,7 +164,7 @@ mod tests {
     use std::time::Duration;
 
     use wykies_shared::{
-        id::BranchId,
+        branch::BranchId,
         random_string, random_string_def_len,
         uac::{DisplayName, Username},
     };

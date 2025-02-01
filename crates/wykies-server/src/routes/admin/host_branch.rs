@@ -1,8 +1,9 @@
 use actix_web::{web, HttpResponse};
 use anyhow::Context as _;
-use wykies_shared::db_types::DbPool;
-use wykies_shared::id::BranchId;
-use wykies_shared::{e500, host_branch::HostBranchPair, req_args::api::admin::host_branch};
+use wykies_shared::{
+    branch::BranchId, db_types::DbPool, e500, host_branch::HostBranchPair,
+    req_args::api::admin::host_branch,
+};
 
 #[tracing::instrument(ret, err(Debug), skip(pool))]
 pub async fn set_host_branch_pair(

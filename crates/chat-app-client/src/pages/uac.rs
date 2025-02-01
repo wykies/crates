@@ -10,12 +10,12 @@ use reqwest_cross::DataState;
 use secrecy::ExposeSecret;
 use std::ops::ControlFlow;
 use wykies_client_core::Client;
-use wykies_shared::id::RoleId;
-use wykies_shared::internal_error;
 use wykies_shared::{
     const_config::{error::err_role_name, path::PATH_API_ADMIN_USERS_LIST_AND_ROLES},
+    internal_error,
     uac::{
-        get_required_permissions, DisplayName, ListUsersRoles, RoleName, UserMetadata, Username,
+        get_required_permissions, DisplayName, ListUsersRoles, RoleId, RoleName, UserMetadata,
+        Username,
     },
 };
 use wykies_time::Seconds;

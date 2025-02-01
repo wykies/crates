@@ -1,5 +1,5 @@
 use crate::{
-    id::BranchId,
+    branch::BranchId,
     uac::{DisplayName, Permissions, Username},
 };
 

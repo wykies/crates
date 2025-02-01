@@ -1,10 +1,11 @@
 use super::Permissions;
 #[cfg(feature = "server_only")]
 use crate::db_types::Db;
-use crate::{errors::ConversionError, id::RoleId, string_wrapper, AlwaysCase};
+use crate::{errors::ConversionError, id_wrapper, string_wrapper, AlwaysCase};
 use serde::{Deserialize, Serialize};
 use std::sync::LazyLock;
 
+id_wrapper!(RoleId, RoleIdConversionError);
 string_wrapper!(RoleName, 16, AlwaysCase::Any);
 string_wrapper!(RoleDescription, 50, AlwaysCase::Any);
 

@@ -4,8 +4,8 @@ use wykies_shared::{
     const_config::path::{
         PATH_API_ADMIN_ROLE, PATH_API_ADMIN_ROLE_ASSIGN, PATH_API_ADMIN_ROLE_CREATE,
     },
-    id::RoleId,
     req_args::api::admin::role::{self, AssignReqArgs},
+    uac::RoleId,
     uac::{Role, RoleDraft},
 };
 

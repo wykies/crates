@@ -1,4 +1,4 @@
-use crate::{id::RoleId, uac::Username};
+use crate::uac::{RoleId, Username};
 
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct AssignReqArgs {

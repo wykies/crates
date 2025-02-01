@@ -6,8 +6,8 @@ use argon2::password_hash::SaltString;
 use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version};
 use secrecy::{ExposeSecret, SecretString};
 use tracing::info;
+use wykies_shared::branch::BranchId;
 use wykies_shared::db_types::DbPool;
-use wykies_shared::id::BranchId;
 use wykies_shared::{
     telemetry::spawn_blocking_with_tracing,
     uac::{AuthError, LoginResponse, Permissions, UserInfo, Username},

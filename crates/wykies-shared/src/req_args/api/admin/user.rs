@@ -1,9 +1,5 @@
+use crate::uac::{DisplayName, RoleId, Username};
 use secrecy::SecretString;
-
-use crate::{
-    id::RoleId,
-    uac::{DisplayName, Username},
-};
 
 #[derive(serde::Serialize, serde::Deserialize, Debug)]
 pub struct LookupReqArgs {

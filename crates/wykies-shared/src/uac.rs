@@ -12,5 +12,5 @@ pub use permissions::{
     try_set_permissions, Permission, PermissionCheckOutcome, PermissionMap, Permissions,
 };
 pub use responses::LoginResponse;
-pub use role::{Role, RoleDescription, RoleDraft, RoleIdAndName, RoleName};
+pub use role::{Role, RoleDescription, RoleDraft, RoleId, RoleIdAndName, RoleName};
 pub use user::{DisplayName, ListUsersRoles, UserInfo, UserMetadata, UserMetadataDiff, Username};

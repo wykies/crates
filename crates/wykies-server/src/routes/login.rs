@@ -6,14 +6,15 @@ use crate::{
 };
 use actix_web::{dev::ConnectionInfo, web, HttpResponse};
 use anyhow::{anyhow, Context};
-use wykies_shared::session::UserSessionInfo;
 use wykies_shared::{
+    branch::BranchId,
     const_config::path::{PATH_API_ADMIN_HOSTBRANCH_SET, PATH_API_HOSTBRANCH_LOOKUP},
+    db_types::DbPool,
     host_branch::{HostBranchPair, HostId},
     req_args::{api::admin::host_branch, LoginReqArgs},
+    session::UserSessionInfo,
     uac::{AuthError, LoginResponse},
 };
-use wykies_shared::{db_types::DbPool, id::BranchId};
 
 /// Provides a way for users to create a login session
 ///

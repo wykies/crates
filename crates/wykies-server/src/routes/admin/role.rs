@@ -1,12 +1,11 @@
 use crate::db_utils::validate_one_row_affected;
 use actix_web::{web, HttpResponse};
 use anyhow::Context;
-use wykies_shared::db_types::DbPool;
-use wykies_shared::id::RoleId;
 use wykies_shared::{
+    db_types::DbPool,
     e400, e500,
     req_args::api::admin::role::{self, AssignReqArgs},
-    uac::{Role, RoleDraft},
+    uac::{Role, RoleDraft, RoleId},
 };
 
 #[tracing::instrument(ret, err(Debug), skip(pool))]

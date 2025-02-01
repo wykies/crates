@@ -4,11 +4,10 @@
 //! [`api::ChangePasswordReqArgs`] Some structs are not serializable but are
 //! still here to included here to know what needs to be sent
 
+use crate::branch::BranchId;
 use anyhow::Context;
 use secrecy::{ExposeSecret, SecretString};
 use std::fmt::Debug;
-
-use crate::id::BranchId;
 
 pub mod api;
 

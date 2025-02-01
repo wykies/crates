@@ -2,10 +2,10 @@
 use crate::db_utils::validate_one_row_affected;
 use actix_web::web;
 use anyhow::Context;
-use wykies_shared::db_types::DbPool;
-use wykies_shared::id::BranchId;
 use wykies_shared::{
+    branch::BranchId,
     branch::{Branch, BranchDraft},
+    db_types::DbPool,
     e500,
 };
 

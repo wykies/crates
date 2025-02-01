@@ -9,7 +9,6 @@ pub mod const_config;
 mod error_wrappers;
 pub mod errors;
 pub mod host_branch;
-pub mod id;
 mod macros_debugging;
 mod macros_enums;
 mod macros_wrappers;

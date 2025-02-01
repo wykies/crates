@@ -14,8 +14,8 @@ use wykies_server::{
     db_utils::validate_one_row_affected, get_configuration, get_db_connection_pool,
     DatabaseSettings,
 };
-use wykies_shared::id::BranchId;
 use wykies_shared::{
+    branch::BranchId,
     db_types::{DbConnection, DbPool},
     host_branch::HostBranchPair,
     req_args::LoginReqArgs,

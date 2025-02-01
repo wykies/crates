@@ -1,11 +1,11 @@
 use crate::{client::DUMMY_ARGUMENT, Client};
 use reqwest_cross::oneshot;
 use wykies_shared::{
+    branch::BranchId,
     const_config::path::{
         PATH_API_ADMIN_HOSTBRANCH_LIST, PATH_API_ADMIN_HOSTBRANCH_SET, PATH_API_HOSTBRANCH_LOOKUP,
     },
     host_branch::HostBranchPair,
-    id::BranchId,
     req_args::api::admin::host_branch,
 };
 

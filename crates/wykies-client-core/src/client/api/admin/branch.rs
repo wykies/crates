@@ -1,7 +1,7 @@
 use crate::Client;
 use reqwest_cross::oneshot;
 use wykies_shared::{
-    branch::BranchDraft, const_config::path::PATH_API_ADMIN_BRANCH_CREATE, id::BranchId,
+    branch::BranchDraft, branch::BranchId, const_config::path::PATH_API_ADMIN_BRANCH_CREATE,
 };
 
 impl Client {
