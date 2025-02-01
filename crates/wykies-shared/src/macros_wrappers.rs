@@ -278,7 +278,7 @@ macro_rules! id_wrapper {
         }
 
         #[cfg(feature = "server_only")]
-        db_types::impl_encode_for_newtype_around_u64!($name, "mysql", "postgres");
+        $crate::db_types::impl_encode_for_newtype_around_u64!($name, "mysql", "postgres");
 
         #[cfg(feature = "server_only")]
         impl actix_web::error::ResponseError for $error_name {
