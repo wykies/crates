@@ -81,7 +81,9 @@ impl WsConnTxRx {
         self.tx.close();
     }
 
-    /// Provides a cancellation safe way to wait until a message is received
+    /// Provides a cancellation safe way to wait until a any message is received
+    /// including ping. See [`Self::recv_with_timeout_ignoring_ping`] if ping
+    /// should not be included
     pub async fn recv(&mut self, timeout: Seconds) -> anyhow::Result<WsEvent> {
         let start = Instant::now();
         let limit: Duration = timeout.into();
