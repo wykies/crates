@@ -215,8 +215,8 @@ macro_rules! id_wrapper {
             NegativeI32(i32),
             #[error("Internal value of {name} is too large for i32. Value: {0:?}", name = stringify!($name))]
             TooBigForI32($name),
-            #[error("Unable to convert str into {name}: {0:?}", name = stringify!($name))]
-            InvalidStr(#[from] std::num::ParseIntError),
+            #[error("Unable to convert str into {name}. str:{1} err_msg: {0:?}", name = stringify!($name))]
+            InvalidStr(std::num::ParseIntError, String),
         }
 
         #[derive(
@@ -261,7 +261,7 @@ macro_rules! id_wrapper {
             type Error = $error_name;
 
             fn try_from(value: &str) -> Result<Self, Self::Error> {
-                let value: u64 = value.parse()?;
+                let value: u64 = value.parse().map_err(|x| Self::Error::InvalidStr(x, value.to_string()))?;
                 Ok(Self(value))
             }
         }
