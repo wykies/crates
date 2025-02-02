@@ -13,6 +13,7 @@ use anyhow::Context as _;
 use std::{future::Future, sync::Arc};
 use tokio::task::spawn_local;
 use wykies_shared::{e500, host_branch::HostId, session::UserSessionInfo, token::AuthToken};
+use wykies_time::Seconds;
 
 #[tracing::instrument(ret, err(Debug))]
 pub async fn get_ws_token(
@@ -31,6 +32,7 @@ pub async fn get_ws_token(
 }
 
 /// Handshake and start WebSocket handler
+#[expect(clippy::too_many_arguments)] // All arguments are well typed, no material benefit from creating a type
 #[tracing::instrument(skip(stream, ws_start_client_handler_loop, ws_server_handle))]
 pub async fn ws_start_session<WsServerHandle, Output>(
     req: HttpRequest,
@@ -39,6 +41,7 @@ pub async fn ws_start_session<WsServerHandle, Output>(
     auth_manager: web::Data<AuthTokenManager>,
     conn: ConnectionInfo,
     ws_id: WsServiceId,
+    initial_msg_timeout: Seconds,
     ws_start_client_handler_loop: impl ClientLoopController<WsServerHandle, Output> + 'static,
 ) -> Result<HttpResponse, WebSocketAuthError>
 where
@@ -56,6 +59,7 @@ where
         auth_manager,
         client_identifier,
         ws_id,
+        initial_msg_timeout,
         ws_start_client_handler_loop,
     ));
 
@@ -65,6 +69,7 @@ where
 pub fn ws_get_route_add_closures<WsServerHandle, Output>(
     name: &'static str,
     ws_id: WsServiceId,
+    initial_msg_timeout: Seconds,
     ws_start_client_handler_loop: impl ClientLoopController<WsServerHandle, Output> + 'static + Clone,
 ) -> (
     impl Fn(&mut ServiceConfig) + 'static + Clone,
@@ -86,6 +91,7 @@ where
             auth_manager,
             conn,
             ws_id,
+            initial_msg_timeout,
             ws_start_client_handler_loop.clone(),
         )
     };

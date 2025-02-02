@@ -7,11 +7,10 @@
 //! one of the following to execute the tests
 //! - `wasm-pack test --headless --firefox`
 //! - `wasm-pack test --headless --chrome`
-use wasm_bindgen_test::wasm_bindgen_test;
-use wasm_bindgen_test::wasm_bindgen_test_configure;
+use wasm_bindgen_test::{wasm_bindgen_test, wasm_bindgen_test_configure};
 use wykies_client_core::{Client, LoginOutcome};
-use wykies_shared::const_config::path::PATH_WS_TOKEN_CHAT;
-use wykies_shared::req_args::LoginReqArgs;
+use wykies_server_test_helper::TEST_MSG_WAIT_TIMEOUT;
+use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, req_args::LoginReqArgs};
 
 wasm_bindgen_test_configure!(run_in_browser);
 fn main() {
@@ -56,7 +55,7 @@ async fn is_logged_in(client: &Client) -> bool {
     // Also tests if able to establish a websocket connection but this was the
     // simplest alternative that didn't need any permissions
     client
-        .ws_connect(PATH_WS_TOKEN_CHAT, || {})
+        .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, || {})
         .await
         .expect("failed to receive on rx")
         .is_ok()

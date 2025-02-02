@@ -220,6 +220,7 @@ impl Display for Seconds {
         self.0.fmt(f)
     }
 }
+
 #[cfg(any(feature = "mysql", feature = "postgres"))]
 pub mod sql {
     use super::*;

@@ -58,7 +58,9 @@ async fn fails_to_connect_without_correct_token() {
     let mut conn = WsConnTxRx::initiate_connection(ws_url, no_cb).unwrap();
 
     // Wait for connection to be opened
-    conn.wait_for_connection_to_open().await.unwrap();
+    conn.wait_for_connection_to_open(TEST_MSG_WAIT_TIMEOUT)
+        .await
+        .unwrap();
 
     // Send wrong token
     let token = AuthToken::new_rand();

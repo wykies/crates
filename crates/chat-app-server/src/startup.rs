@@ -14,7 +14,9 @@ use wykies_server::{
     plugin::{ServerPlugin, ServerPluginArtifacts},
     ApiServerBuilder, ServerTask as _,
 };
-use wykies_shared::uac::init_permissions_to_defaults;
+use wykies_shared::{
+    const_config::web_socket::WS_INITIAL_MSG_TIMEOUT, uac::init_permissions_to_defaults,
+};
 
 #[derive(Clone, serde::Deserialize)]
 pub struct CustomConfiguration {
@@ -55,6 +57,7 @@ pub async fn start_servers(
     let (chat_open_add, chat_protected_add) = ws_get_route_add_closures(
         "chat",
         WsServiceIds::CHAT,
+        WS_INITIAL_MSG_TIMEOUT,
         chat_ws_start_client_handler_loop,
     );
     let open_resources = move |cfg: &mut ServiceConfig| {

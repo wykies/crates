@@ -9,6 +9,7 @@ use wykies_server::{ApiServerBuilder, ApiServerInitBundle, Configuration};
 use wykies_server_test_helper::{
     build_test_app, convert_port_to_test_address, expect_ok,
     spawn_app_without_host_branch_stored_before_migration, store_host_branch, TestUser,
+    TEST_MSG_WAIT_TIMEOUT,
 };
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, db_types::DbPool};
 
@@ -118,7 +119,7 @@ impl TestApp {
         // Also tests if able to establish a websocket connection but this was the
         // simplest alternative that didn't need any permissions
         self.core_client
-            .ws_connect(PATH_WS_TOKEN_CHAT, no_cb)
+            .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb)
             .await
             .expect("failed to receive on rx")
             .is_ok()

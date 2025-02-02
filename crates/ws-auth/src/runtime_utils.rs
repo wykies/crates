@@ -11,6 +11,7 @@ use actix_ws::CloseCode;
 use anyhow::Context as _;
 use tracing::{error, instrument};
 use wykies_shared::{debug_panic, host_branch::HostId};
+use wykies_time::Seconds;
 
 /// Does a prescreening to see if the request is expected and then starts a WS
 /// session to be able to check the token
@@ -47,6 +48,7 @@ pub fn pre_screen_incoming_ws_req(
 }
 
 #[instrument(skip(session, msg_stream, ws_server_handle, ws_start_client_handler_loop))]
+#[expect(clippy::too_many_arguments)] // All arguments are well typed, no material benefit from creating a type
 pub async fn validate_connection_then_start_client_handler_loop<WsServerHandle, Output>(
     ws_server_handle: Arc<WsServerHandle>,
     session: actix_ws::Session,
@@ -54,6 +56,7 @@ pub async fn validate_connection_then_start_client_handler_loop<WsServerHandle, 
     auth_manager: web::Data<AuthTokenManager>,
     client_identifier: HostId,
     ws_id: WsServiceId,
+    initial_msg_timeout: Seconds,
     ws_start_client_handler_loop: impl ClientLoopController<WsServerHandle, Output>,
 ) where
     Output: Future<Output = ()>,
@@ -76,6 +79,7 @@ pub async fn validate_connection_then_start_client_handler_loop<WsServerHandle, 
         msg_stream,
         user_info,
         client_identifier,
+        initial_msg_timeout,
     )
     .await;
 }

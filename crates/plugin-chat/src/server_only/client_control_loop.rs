@@ -16,7 +16,7 @@ use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE, debug_panic, host_branch::HostId, log_err_as_error,
     session::UserSessionInfo, uac::Username, websockets::WsConnId,
 };
-use wykies_time::Timestamp;
+use wykies_time::{Seconds, Timestamp};
 
 #[instrument(skip(ws_session, msg_stream, chat_server_handle), fields(ws_conn_id))]
 pub async fn chat_ws_start_client_handler_loop(
@@ -25,6 +25,7 @@ pub async fn chat_ws_start_client_handler_loop(
     msg_stream: actix_ws::AggregatedMessageStream,
     user_info: UserSessionInfo,
     _host_id: HostId,
+    initial_msg_timeout: Seconds,
 ) {
     let mut heartbeat = chat_server_handle.heartbeat_config.start_new_monitor();
     let username = user_info.username.clone();

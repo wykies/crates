@@ -4,7 +4,7 @@ use frontend::FrontEnd;
 use reqwest_cross::DataState;
 use std::fmt::Debug;
 use wykies_shared::{
-    const_config::path::PATH_WS_TOKEN_CHAT,
+    const_config::{path::PATH_WS_TOKEN_CHAT, web_socket::WS_INITIAL_MSG_TIMEOUT},
     uac::get_required_permissions,
     websockets::{wake_fn, WsConnTxRx},
 };
@@ -46,9 +46,11 @@ impl DisplayablePage for UiChat {
         if self.data_state.is_none() {
             let ctx = ui.ctx().clone();
             self.data_state.egui_start_request(ui, || {
-                data_shared
-                    .client
-                    .ws_connect(PATH_WS_TOKEN_CHAT, wake_fn(ctx))
+                data_shared.client.ws_connect(
+                    PATH_WS_TOKEN_CHAT,
+                    WS_INITIAL_MSG_TIMEOUT,
+                    wake_fn(ctx),
+                )
             });
         }
         if let Some(connection) = self.data_state.egui_poll_mut(ui, Some("Reconnect")) {

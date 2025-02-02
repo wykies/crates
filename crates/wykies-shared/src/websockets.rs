@@ -82,15 +82,17 @@ impl WsConnTxRx {
     }
 
     /// Provides a cancellation safe way to wait until a message is received
-    pub async fn recv(&mut self) -> WsEvent {
-        // TODO 4: Review uses of recv and add timeout
-        loop {
+    pub async fn recv(&mut self, timeout: Seconds) -> anyhow::Result<WsEvent> {
+        let start = Instant::now();
+        let limit: Duration = timeout.into();
+        while start.elapsed() < limit {
             if let Some(m) = self.try_recv() {
-                break m;
+                return Ok(m);
             } else {
                 reqwest_cross::yield_now().await;
             }
         }
+        bail!("timed out waiting for response after {timeout} seconds")
     }
 
     pub async fn recv_with_timeout_ignoring_ping(
@@ -119,6 +121,7 @@ impl WsConnTxRx {
     pub async fn initiate_connection_with_auth<F, S>(
         token: AuthToken,
         ws_url: S,
+        timeout: Seconds,
         wake_up: F,
     ) -> anyhow::Result<WsConnTxRx>
     where
@@ -129,7 +132,10 @@ impl WsConnTxRx {
         let mut result = WsConnTxRx::initiate_connection(ws_url, wake_up)?;
 
         // Wait for connection to open before sending token
-        result.wait_for_connection_to_open().await?;
+        result
+            .wait_for_connection_to_open(timeout)
+            .await
+            .context("failed to get an open WS connection")?;
 
         // Send token
         result.send(token.into());
@@ -138,8 +144,8 @@ impl WsConnTxRx {
     }
 
     #[tracing::instrument(ret, err(Debug))]
-    pub async fn wait_for_connection_to_open(&mut self) -> anyhow::Result<()> {
-        let event = self.recv().await;
+    pub async fn wait_for_connection_to_open(&mut self, timeout: Seconds) -> anyhow::Result<()> {
+        let event = self.recv(timeout).await?;
 
         let base_err_msg = "expected first websocket event to be opened but instead got a";
 

@@ -7,6 +7,7 @@ use wykies_shared::{
     token::AuthToken,
     websockets::{WakeFn, WsConnTxRx},
 };
+use wykies_time::Seconds;
 
 const WS_CONNECTION_PREFIX: &str = "/ws";
 
@@ -15,12 +16,13 @@ impl Client {
     pub fn ws_connect<F: WakeFn>(
         &self,
         path_spec: PathSpec,
+        timeout: Seconds,
         wake_up: F,
     ) -> oneshot::Receiver<anyhow::Result<WsConnTxRx>> {
         let ws_url = self.ws_url_from(&path_spec);
         let req = self.create_request_builder(path_spec, &DUMMY_ARGUMENT);
-        let response_handler = move |resp: reqwest::Result<reqwest::Response>| async {
-            do_connect_ws(resp, ws_url, wake_up).await
+        let response_handler = move |resp: reqwest::Result<reqwest::Response>| async move {
+            do_connect_ws(resp, ws_url, timeout, wake_up).await
         };
         fetch_plus(req, response_handler, || {})
     }
@@ -56,13 +58,14 @@ impl Client {
 async fn do_connect_ws<F: WakeFn>(
     response: reqwest::Result<reqwest::Response>,
     ws_url: String,
+    timeout: Seconds,
     wake_up: F,
 ) -> anyhow::Result<WsConnTxRx> {
     // Get token from response passed in
     let token = extract_token(response).await?;
 
     // Initiate connection
-    WsConnTxRx::initiate_connection_with_auth(token, ws_url, wake_up).await
+    WsConnTxRx::initiate_connection_with_auth(token, ws_url, timeout, wake_up).await
 }
 
 async fn extract_token(response: reqwest::Result<reqwest::Response>) -> anyhow::Result<AuthToken> {

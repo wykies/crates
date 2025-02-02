@@ -13,6 +13,7 @@ mod suppress_wasm_warnings {
 #[cfg(test)] // Included to prevent unused crate warning
 mod warning_suppress {
     use wasm_bindgen_test as _;
+    use wykies_server_test_helper as _;
 }
 
 mod client;
