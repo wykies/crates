@@ -20,7 +20,7 @@ async fn sent_messages_received() {
         expect_ok!(app
             .core_client
             .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb));
-    let conn2 =
+    let mut conn2 =
         expect_ok!(app
             .core_client
             .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb));

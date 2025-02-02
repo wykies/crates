@@ -19,7 +19,7 @@ async fn rejected_without_requesting_token() {
         .expose_internal_ws_url_from(&PATH_WS_TOKEN_CHAT);
 
     // Try to connect
-    let conn = WsConnTxRx::initiate_connection(ws_url, no_cb).unwrap();
+    let mut conn = WsConnTxRx::initiate_connection(ws_url, no_cb).unwrap();
 
     // Get response
     let response = conn
