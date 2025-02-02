@@ -211,11 +211,11 @@ macro_rules! id_wrapper {
     ($name: ident, $error_name: ident) => {
         #[derive(Debug, thiserror::Error, PartialEq, Eq)]
         pub enum $error_name {
-            #[error("Negative values not supported as Id's. Value: {0}")]
+            #[error("Negative values not supported as {name}. Value: {0}", name = stringify!($name))]
             NegativeI32(i32),
-            #[error("Internal value of $name is too large for i32. Value: {0:?}")]
+            #[error("Internal value of {name} is too large for i32. Value: {0:?}", name = stringify!($name))]
             TooBigForI32($name),
-            #[error("Unable to convert str into $name: {0:?}")]
+            #[error("Unable to convert str into {name}: {0:?}", name = stringify!($name))]
             InvalidStr(#[from] std::num::ParseIntError),
         }
 

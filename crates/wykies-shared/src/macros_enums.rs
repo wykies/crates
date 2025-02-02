@@ -3,7 +3,7 @@ macro_rules! enum_repr_u8_impls {
     ($name: ident, $error_name: ident) => {
         #[derive(Debug, thiserror::Error, PartialEq, Eq)]
         pub enum $error_name {
-            #[error("Invalid discriminant for $name: {0}")]
+            #[error("Invalid discriminant for {name}: {0}", name = stringify!($name))]
             InvalidDiscriminant(u8),
         }
 
