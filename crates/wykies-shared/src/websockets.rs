@@ -98,15 +98,12 @@ impl WsConnTxRx {
     pub async fn recv_with_timeout_ignoring_ping(
         &self,
         timeout: Seconds,
-    ) -> anyhow::Result<ewebsock::WsEvent> {
+    ) -> anyhow::Result<WsEvent> {
         let start = Instant::now();
         let timeout_duration: Duration = timeout.into();
         while start.elapsed() < timeout_duration {
             if let Some(msg) = self.try_recv() {
-                if matches!(
-                    &msg,
-                    ewebsock::WsEvent::Message(ewebsock::WsMessage::Ping(_))
-                ) {
+                if matches!(&msg, WsEvent::Message(ewebsock::WsMessage::Ping(_))) {
                     continue; // Skip ping messages
                 }
                 return Ok(msg);
