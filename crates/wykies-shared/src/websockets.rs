@@ -98,7 +98,7 @@ impl WsConnTxRx {
     }
 
     pub async fn recv_with_timeout_ignoring_ping(
-        &self,
+        &mut self,
         timeout: Seconds,
     ) -> anyhow::Result<WsEvent> {
         let start = Instant::now();
