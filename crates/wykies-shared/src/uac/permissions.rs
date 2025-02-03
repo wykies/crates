@@ -133,7 +133,6 @@ pub fn init_permissions_to_defaults() {
 /// accessed even if it is 0 permissions
 #[tracing::instrument(ret)]
 pub fn get_required_permissions(path: &str) -> Option<&'static [Permission]> {
-    // TODO 2: Test that this still works for private endpoints
     PERMISSION_MAP
         .get()
         .expect("permissions were not initialized")
