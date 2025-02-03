@@ -4,7 +4,7 @@ use anyhow::{bail, Context};
 use ringbuffer::{AllocRingBuffer, RingBuffer};
 use sqlx::QueryBuilder;
 use tokio::{select, sync::mpsc, time::Sleep};
-use tracing::{error, info, instrument};
+use tracing::{debug, error, info, instrument};
 use tracked_cancellations::TrackedCancellationToken;
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE,
@@ -179,6 +179,7 @@ impl ChatDbWriter {
                 .push_bind(im.timestamp)
                 .push_bind(im.content);
         });
+        debug!(query_builder.sql = query_builder.sql(), "Query Builder SQL");
 
         // TODO 5: Optimizations left on the table are to try to have the size sent be
         // more similar so caching would work and reusing the query_builder (see reset)
