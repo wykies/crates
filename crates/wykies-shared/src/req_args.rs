@@ -20,8 +20,9 @@ pub struct RonWrapper {
     data_as_ron_str: String,
 }
 
-/// This struct exists to wrap types that trigger error: "[reqwest's] top-level serializer supports only
-/// maps and structs". Triggered by repr(u8) enums and tuple structs
+/// This struct exists to wrap types that trigger error: "[reqwest's] top-level
+/// serializer supports only maps and structs". Triggered by repr(u8) enums and
+/// tuple structs
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct TopWrapper<T: Debug> {
     pub inner: T,
