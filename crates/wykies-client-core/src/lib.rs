@@ -17,5 +17,7 @@ mod warning_suppress {
 }
 
 mod client;
+mod error_helpers;
 
 pub use client::{Client, LoginOutcome, DUMMY_ARGUMENT};
+pub use error_helpers::ErrorStore;
