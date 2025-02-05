@@ -85,7 +85,7 @@ impl WsConnTxRx {
     /// including ping. See [`Self::recv_with_timeout_ignoring_ping`] if ping
     /// should not be included
     pub async fn recv(&mut self, timeout: Seconds) -> anyhow::Result<WsEvent> {
-        let start = Instant::now();
+        let start = Instant::now(); // FIXME 1: Remove use of Instant
         let limit: Duration = timeout.into();
         while start.elapsed() < limit {
             if let Some(m) = self.try_recv() {
@@ -101,7 +101,7 @@ impl WsConnTxRx {
         &mut self,
         timeout: Seconds,
     ) -> anyhow::Result<WsEvent> {
-        let start = Instant::now();
+        let start = Instant::now(); // FIXME 1: Remove use of Instant
         let timeout_duration: Duration = timeout.into();
         while start.elapsed() < timeout_duration {
             if let Some(msg) = self.try_recv() {
