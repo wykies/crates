@@ -75,6 +75,12 @@ macro_rules! string_wrapper {
             }
         }
 
+        impl From<&$name> for egui::RichText {
+            fn from(value: &$name) -> Self {
+                value.to_string().into()
+            }
+        }
+
         impl std::ops::Deref for $name {
             type Target = str;
 
@@ -182,6 +188,12 @@ macro_rules! char_array_wrapper {
         }
 
         impl From<&$name> for egui::WidgetText {
+            fn from(value: &$name) -> Self {
+                value.to_string().into()
+            }
+        }
+
+        impl From<&$name> for egui::RichText {
             fn from(value: &$name) -> Self {
                 value.to_string().into()
             }
