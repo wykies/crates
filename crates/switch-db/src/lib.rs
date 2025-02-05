@@ -83,13 +83,21 @@ fn switch_rust_analyzer(cli: &Cli) -> anyhow::Result<()> {
 }
 
 fn switch_sqlx(cli: &Cli) -> anyhow::Result<()> {
-    do_switch(
-        cli.root.join("crates/chat-app-server/.env"),
-        &cli.mode,
-        "Switch to ",
-        FileType::DotEnv.to_comment_slice(),
-        cli.no_edit_only_copy,
-    )
+    for path in [
+        "crates/chat-app-server/.env",
+        "crates/wykies-server-test-helper/.env",
+        "crates/plugin-chat/.env",
+        "crates/wykies-server/.env",
+    ] {
+        do_switch(
+            cli.root.join(path),
+            &cli.mode,
+            "Switch to ",
+            FileType::DotEnv.to_comment_slice(),
+            cli.no_edit_only_copy,
+        )?;
+    }
+    Ok(())
 }
 
 /// Deletes and replaces the base sqlx folder with the appropriate source folder
