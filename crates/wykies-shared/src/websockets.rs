@@ -4,11 +4,10 @@ use ewebsock::{WsEvent, WsMessage};
 use std::{
     fmt::{Debug, Display},
     ops::{Deref, DerefMut},
-    time::{Duration, Instant},
 };
 use tracing::{instrument, warn};
 use uuid::Uuid;
-use wykies_time::Seconds;
+use wykies_time::{Seconds, Timestamp};
 
 #[derive(
     Debug, Clone, Copy, serde::Serialize, serde::Deserialize, PartialEq, Eq, PartialOrd, Ord, Hash,
@@ -85,9 +84,12 @@ impl WsConnTxRx {
     /// including ping. See [`Self::recv_with_timeout_ignoring_ping`] if ping
     /// should not be included
     pub async fn recv(&mut self, timeout: Seconds) -> anyhow::Result<WsEvent> {
-        let start = Instant::now();
-        let limit: Duration = timeout.into();
-        while start.elapsed() < limit {
+        let start = Timestamp::now();
+        while start
+            .elapsed()
+            .expect("start must always be now or earlier")
+            <= timeout
+        {
             if let Some(m) = self.try_recv() {
                 return Ok(m);
             } else {
@@ -101,9 +103,12 @@ impl WsConnTxRx {
         &mut self,
         timeout: Seconds,
     ) -> anyhow::Result<WsEvent> {
-        let start = Instant::now();
-        let timeout_duration: Duration = timeout.into();
-        while start.elapsed() < timeout_duration {
+        let start = Timestamp::now();
+        while start
+            .elapsed()
+            .expect("start must always be now or earlier")
+            <= timeout
+        {
             if let Some(msg) = self.try_recv() {
                 if matches!(&msg, WsEvent::Message(ewebsock::WsMessage::Ping(_))) {
                     continue; // Skip ping messages
