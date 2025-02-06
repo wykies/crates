@@ -131,7 +131,8 @@ pub fn init_permissions_to_defaults() {
 ///
 /// **Note:** All paths that require login must have permissions set to be
 /// accessed even if it is 0 permissions
-#[tracing::instrument(ret)]
+// TODO 1: Tune log level (check for logs in UI loop)
+#[tracing::instrument(level = "trace", ret)]
 pub fn get_required_permissions(path: &str) -> Option<&'static [Permission]> {
     PERMISSION_MAP
         .get()
