@@ -70,7 +70,10 @@ impl ServerTask for ChatServer {
                     info!("shutting down ChatServer because of cancellation request");
                     return Ok(())
                 }
-                cmd = self.cmd_rx.recv() => self.process_cmd(cmd, &cancellation_token).await.context("fatal error in ChatServer, shutting down")?,
+                cmd = self.cmd_rx.recv() => {
+                    let r = self.process_cmd(cmd, &cancellation_token).await.context("ChatServer failed to process command");
+                    log_err_as_error!(r);
+                },
             }
         }
     }
@@ -336,7 +339,7 @@ impl ChatServer {
             Command::Disconnect { conn } => {
                 self.unregister_connection(conn)
                     .await
-                    .context("fatal error to unregister a connection")?;
+                    .context("fatal error, failed to unregister a connection")?;
             }
 
             Command::ForClients { msg, res_tx } => {
