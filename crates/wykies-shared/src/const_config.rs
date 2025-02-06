@@ -85,7 +85,7 @@ pub mod web_socket {
 
     pub const WS_MAX_CONTINUATION_SIZE: usize = 2 * 1024 * 1024;
     pub const WS_MAX_FRAME_SIZE: usize = 128 * 1024;
-    pub const WS_INITIAL_MSG_TIMEOUT: Seconds = Seconds::new(10);
+    pub const WS_INITIAL_MSG_TIMEOUT: Seconds = Seconds::new(60);
 }
 
 #[cfg(test)]
