@@ -1,7 +1,7 @@
 use actix_session::{Session, SessionExt, SessionGetError, SessionInsertError};
 use actix_web::{dev::Payload, FromRequest, HttpRequest};
 use std::future::{ready, Ready};
-use wykies_shared::session::UserSessionInfo;
+use wykies_shared::uac::UserInfo;
 
 pub struct TypedSession(Session);
 
@@ -12,11 +12,11 @@ impl TypedSession {
         self.0.renew();
     }
 
-    pub fn insert_user_info(&self, user_info: UserSessionInfo) -> Result<(), SessionInsertError> {
+    pub fn insert_user_info(&self, user_info: UserInfo) -> Result<(), SessionInsertError> {
         self.0.insert(Self::USER_INFO_KEY, user_info)
     }
 
-    pub fn get_user_info(&self) -> Result<Option<UserSessionInfo>, SessionGetError> {
+    pub fn get_user_info(&self) -> Result<Option<UserInfo>, SessionGetError> {
         self.0.get(Self::USER_INFO_KEY)
     }
 

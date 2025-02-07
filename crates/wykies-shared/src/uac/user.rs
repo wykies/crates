@@ -12,7 +12,6 @@ string_wrapper!(DisplayName, 30, AlwaysCase::Any);
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
 pub struct UserInfo {
     pub username: Username,
-    pub display_name: DisplayName,
     pub permissions: Permissions,
     pub branch_id: BranchId,
 }

@@ -15,7 +15,7 @@ use ws_helpers::{heartbeat::HeartbeatConfig, WebSocketSettings};
 use wykies_server::ServerTask;
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE, db_types::DbPool, debug_panic, log_err_as_error,
-    log_err_as_warn, session::UserSessionInfo, websockets::WsConnId,
+    log_err_as_warn, uac::UserInfo, websockets::WsConnId,
 };
 
 /// A command received by the [`ChatServer`].
@@ -23,7 +23,7 @@ use wykies_shared::{
 pub enum Command {
     Connect {
         conn_tx: mpsc::Sender<Arc<ChatMsg>>,
-        user_info: UserSessionInfo,
+        user_info: UserInfo,
         res_tx: oneshot::Sender<(WsConnId, TrackedCancellationToken)>,
     },
 
@@ -46,7 +46,7 @@ pub enum Command {
 #[derive(Debug)]
 pub struct ChatServer {
     /// Map of connection IDs to their message receivers.
-    connections: HashMap<WsConnId, (UserSessionInfo, mpsc::Sender<Arc<ChatMsg>>)>,
+    connections: HashMap<WsConnId, (UserInfo, mpsc::Sender<Arc<ChatMsg>>)>,
 
     /// Command receiver.
     cmd_rx: mpsc::Receiver<Command>,
@@ -238,7 +238,7 @@ impl ChatServer {
     async fn register_connection(
         &mut self,
         tx: mpsc::Sender<Arc<ChatMsg>>,
-        user_info: UserSessionInfo,
+        user_info: UserInfo,
     ) -> anyhow::Result<WsConnId> {
         // notify all users
         self.send_msg_to_clients(ChatMsg::UserJoined(ChatUser::new(

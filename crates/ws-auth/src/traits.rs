@@ -1,5 +1,5 @@
 use std::{future::Future, sync::Arc};
-use wykies_shared::{host_branch::HostId, session::UserSessionInfo};
+use wykies_shared::{host_branch::HostId, uac::UserInfo};
 use wykies_time::Seconds;
 
 pub trait ClientLoopController<WsServerHandle, Output>:
@@ -7,7 +7,7 @@ pub trait ClientLoopController<WsServerHandle, Output>:
     Arc<WsServerHandle>,
     actix_ws::Session,
     actix_ws::AggregatedMessageStream,
-    UserSessionInfo,
+    UserInfo,
     HostId,
     Seconds,
 ) -> Output
@@ -21,7 +21,7 @@ where
         Arc<WsServerHandle>,
         actix_ws::Session,
         actix_ws::AggregatedMessageStream,
-        UserSessionInfo,
+        UserInfo,
         HostId,
         Seconds,
     ) -> Output,

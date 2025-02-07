@@ -6,7 +6,7 @@ use tokio::sync::{mpsc, oneshot};
 use tracing::instrument;
 use tracked_cancellations::TrackedCancellationToken;
 use ws_helpers::heartbeat::HeartbeatConfig;
-use wykies_shared::{log_err_as_error, session::UserSessionInfo, websockets::WsConnId};
+use wykies_shared::{log_err_as_error, uac::UserInfo, websockets::WsConnId};
 
 /// Handle and command sender for chat server.
 ///
@@ -29,7 +29,7 @@ impl ChatServerHandle {
     pub async fn register(
         &self,
         conn_tx: mpsc::Sender<Arc<ChatMsg>>,
-        user_info: UserSessionInfo,
+        user_info: UserInfo,
     ) -> (WsConnId, TrackedCancellationToken) {
         let (res_tx, res_rx) = oneshot::channel();
 

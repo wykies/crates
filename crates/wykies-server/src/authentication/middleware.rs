@@ -7,7 +7,9 @@ use actix_web::{
 };
 use tracing::info;
 use wykies_shared::{
-    e500, errors::NotLoggedInError, session::UserSessionInfo, uac::PermissionsError,
+    e500,
+    errors::NotLoggedInError,
+    uac::{PermissionsError, UserInfo},
 };
 
 /// Ensures the user is logged in and has the required permissions to get to the
@@ -47,7 +49,7 @@ pub async fn validate_user_access(
 #[tracing::instrument]
 async fn check_permissions(
     req: &ServiceRequest,
-    user_info: &UserSessionInfo,
+    user_info: &UserInfo,
 ) -> Result<(), PermissionsError> {
     user_info
         .permissions

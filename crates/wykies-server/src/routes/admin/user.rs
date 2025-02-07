@@ -1,20 +1,19 @@
 #[cfg(feature = "mysql")]
-use crate::db_utils::db_int_to_bool;
-use crate::{authentication, db_utils::validate_one_row_affected};
+use crate::{authentication, db_utils::db_int_to_bool, db_utils::validate_one_row_affected};
 use actix_web::{web, HttpResponse};
 use anyhow::Context;
-use argon2::password_hash::SaltString;
-use argon2::PasswordHasher;
+use argon2::{password_hash::SaltString, PasswordHasher};
 use secrecy::ExposeSecret;
-use wykies_shared::db_types::DbPool;
 use wykies_shared::{
+    db_types::DbPool,
     e400, e500,
     req_args::{
         api::admin::user::{self, NewUserReqArgs, PasswordResetReqArgs},
         RonWrapper,
     },
-    session::UserSessionInfo,
-    uac::{ListUsersRoles, ResetPasswordError, RoleIdAndName, UserMetadata, UserMetadataDiff},
+    uac::{
+        ListUsersRoles, ResetPasswordError, RoleIdAndName, UserInfo, UserMetadata, UserMetadataDiff,
+    },
 };
 
 #[tracing::instrument(ret, err(Debug), skip(pool))]
@@ -280,7 +279,7 @@ async fn get_users_list(pool: &DbPool) -> actix_web::Result<Vec<UserMetadata>> {
 pub async fn password_reset(
     pool: web::Data<DbPool>,
     web::Json(args): web::Json<PasswordResetReqArgs>,
-    user_info: web::ReqData<UserSessionInfo>,
+    user_info: web::ReqData<UserInfo>,
 ) -> Result<HttpResponse, ResetPasswordError> {
     let logged_in_username = user_info.into_inner().username;
     if logged_in_username == args.username {

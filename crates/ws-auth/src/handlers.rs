@@ -12,14 +12,14 @@ use actix_web::{
 use anyhow::Context as _;
 use std::{future::Future, sync::Arc};
 use tokio::task::spawn_local;
-use wykies_shared::{e500, host_branch::HostId, session::UserSessionInfo, token::AuthToken};
+use wykies_shared::{e500, host_branch::HostId, token::AuthToken, uac::UserInfo};
 use wykies_time::Seconds;
 
 #[tracing::instrument(ret, err(Debug))]
 pub async fn get_ws_token(
     auth_manager: web::Data<AuthTokenManager>,
     conn: ConnectionInfo,
-    user_info: web::ReqData<UserSessionInfo>,
+    user_info: web::ReqData<UserInfo>,
     ws_id: WsServiceId,
 ) -> actix_web::Result<web::Json<AuthToken>> {
     let result = AuthToken::new_rand();
@@ -98,12 +98,11 @@ where
     let ws_open_add = move |cfg: &mut ServiceConfig| {
         cfg.route(name, web::get().to(open_handler.clone()));
     };
-    let protected_handler =
-        move |auth_manager: web::Data<AuthTokenManager>,
-              conn: ConnectionInfo,
-              user_info: web::ReqData<UserSessionInfo>| {
-            get_ws_token(auth_manager, conn, user_info, ws_id)
-        };
+    let protected_handler = move |auth_manager: web::Data<AuthTokenManager>,
+                                  conn: ConnectionInfo,
+                                  user_info: web::ReqData<UserInfo>| {
+        get_ws_token(auth_manager, conn, user_info, ws_id)
+    };
     let ws_protected_add = move |cfg: &mut ServiceConfig| {
         cfg.route(name, web::post().to(protected_handler));
     };

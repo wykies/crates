@@ -12,7 +12,6 @@ use wykies_shared::{
     db_types::DbPool,
     host_branch::{HostBranchPair, HostId},
     req_args::{api::admin::host_branch, LoginReqArgs},
-    session::UserSessionInfo,
     uac::{AuthError, LoginResponse},
 };
 
@@ -61,12 +60,7 @@ pub async fn login(
     match &login_response {
         LoginResponse::Success(user_info) | LoginResponse::SuccessForcePassChange(user_info) => {
             session
-                .insert_user_info(UserSessionInfo {
-                    username: user_info.username.clone(),
-                    display_name: user_info.display_name.clone(),
-                    branch_id: user_info.branch_id,
-                    permissions: user_info.permissions.clone(),
-                })
+                .insert_user_info(user_info.clone())
                 .context("session update failed")?;
         }
     }

@@ -1,9 +1,10 @@
 use crate::authentication::{validate_credentials, Credentials, LoginAttemptLimit};
 use actix_web::{web, HttpResponse};
 use secrecy::ExposeSecret as _;
-use wykies_shared::db_types::DbPool;
 use wykies_shared::{
-    req_args::api::ChangePasswordReqArgs, session::UserSessionInfo, uac::ChangePasswordError,
+    db_types::DbPool,
+    req_args::api::ChangePasswordReqArgs,
+    uac::{ChangePasswordError, UserInfo},
 };
 
 #[tracing::instrument(skip(req_args, pool))]
@@ -11,7 +12,7 @@ pub async fn change_password(
     req_args: web::Json<ChangePasswordReqArgs>,
     pool: web::Data<DbPool>,
     login_attempt_limit: web::Data<LoginAttemptLimit>,
-    user_info: web::ReqData<UserSessionInfo>,
+    user_info: web::ReqData<UserInfo>,
 ) -> Result<HttpResponse, ChangePasswordError> {
     let username = user_info.into_inner().username;
     if req_args.new_password.expose_secret() != req_args.new_password_check.expose_secret() {

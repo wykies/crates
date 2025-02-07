@@ -13,8 +13,12 @@ use ws_helpers::client_control_loop::{
     process_stream_from_client, send_message_to_client, StreamOutcome,
 };
 use wykies_shared::{
-    const_config::CHANNEL_BUFFER_SIZE, debug_panic, host_branch::HostId, log_err_as_error,
-    session::UserSessionInfo, uac::Username, websockets::WsConnId,
+    const_config::CHANNEL_BUFFER_SIZE,
+    debug_panic,
+    host_branch::HostId,
+    log_err_as_error,
+    uac::{UserInfo, Username},
+    websockets::WsConnId,
 };
 use wykies_time::{Seconds, Timestamp};
 
@@ -23,7 +27,7 @@ pub async fn chat_ws_start_client_handler_loop(
     chat_server_handle: Arc<ChatServerHandle>,
     mut ws_session: actix_ws::Session,
     msg_stream: actix_ws::AggregatedMessageStream,
-    user_info: UserSessionInfo,
+    user_info: UserInfo,
     _host_id: HostId,
     initial_msg_timeout: Seconds,
 ) {

@@ -25,7 +25,6 @@ pub struct DbUser {
     pub username: String,
     pub password_hash: SecretString,
     pub force_pass_change: bool,
-    pub display_name: String,
     pub permissions: Permissions,
     pub enabled: bool,
     pub locked_out: bool,
@@ -48,7 +47,6 @@ impl Default for DbUser {
             CWOrkoo7oJBQ/iyh7uJ0LO2aLEfrHwTWllSAxT0zRno",
             ),
             force_pass_change: Default::default(),
-            display_name: Default::default(),
             permissions: Default::default(),
             enabled: true, // Needs to be enabled to prevent non-existent users showing as disabled
             locked_out: Default::default(),
@@ -91,7 +89,6 @@ async fn get_user_from_db(username: &str, pool: &DbPool) -> Result<Option<DbUser
         username: row.UserName,
         password_hash: SecretString::from(row.password_hash),
         force_pass_change: db_int_to_bool(row.ForcePassChange),
-        display_name: row.DisplayName,
         permissions: row.Permissions.unwrap_or_default().try_into()?,
         enabled: db_int_to_bool(row.Enabled),
         locked_out: db_int_to_bool(row.LockedOut),
@@ -115,17 +112,14 @@ async fn get_user_from_db(username: &str, pool: &DbPool) -> Result<Option<DbUser
 pub struct AuthUserInfo {
     pub username: String,
     pub force_pass_change: bool,
-    pub display_name: String,
     pub permissions: Permissions,
 }
 
 impl AuthUserInfo {
     pub fn into_login_response(self, branch_id: BranchId) -> anyhow::Result<LoginResponse> {
         let username = self.username.try_into()?;
-        let display_name = self.display_name.try_into()?;
         let user_info = UserInfo {
             username,
-            display_name,
             branch_id,
             permissions: self.permissions,
         };
@@ -196,7 +190,6 @@ pub async fn validate_credentials(
     let DbUser {
         username,
         force_pass_change,
-        display_name,
         permissions,
         ..
     } = db_user;
@@ -204,7 +197,6 @@ pub async fn validate_credentials(
     Ok(AuthUserInfo {
         username,
         force_pass_change,
-        display_name,
         permissions,
     })
 }

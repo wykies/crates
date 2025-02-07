@@ -2,7 +2,7 @@ use egui::ScrollArea;
 use egui_helpers::UiHelpers;
 use tracing::{debug, error, instrument};
 use tracing::{info, warn};
-use wykies_shared::uac::{init_permissions_to_defaults, DisplayName};
+use wykies_shared::uac::init_permissions_to_defaults;
 use wykies_time::Timestamp;
 
 use crate::lockout::ScreenLockInfo;
@@ -36,8 +36,6 @@ pub struct DataShared {
     /// client-core
     is_login_completed: bool,
     #[serde(skip)]
-    pub display_name: Option<DisplayName>,
-    #[serde(skip)]
     // TODO 4: Add option for user to change the server they are connecting to (Saving a list of
     //          recent servers)
     pub client: wykies_client_core::Client,
@@ -52,7 +50,6 @@ impl DataShared {
         if let Some(user_info) = self.client.user_info() {
             debug!("Updating username to {}", user_info.username);
             self.username = user_info.username.clone().into();
-            self.display_name = Some(user_info.display_name.clone());
             self.is_login_completed = true;
         } else {
             warn!("No user found in client");
@@ -222,8 +219,8 @@ impl ChatApp {
                     if !self.is_locked() && ui.button("Lock").clicked() {
                         self.lock();
                     }
-                    if let Some(display_name) = self.data_shared.display_name.as_ref() {
-                        ui.label(format!("Logged in as {}", display_name));
+                    if let Some(user_info) = self.data_shared.client.user_info() {
+                        ui.label(format!("Logged in as {}", user_info.username));
                     }
                 }
                 egui::warn_if_debug_build(ui);

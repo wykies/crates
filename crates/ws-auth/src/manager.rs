@@ -8,8 +8,8 @@ use tracing::{field, warn, Span};
 use wykies_shared::{
     const_config::web_socket::{WS_MAX_CONTINUATION_SIZE, WS_MAX_FRAME_SIZE},
     host_branch::HostId,
-    session::UserSessionInfo,
     token::AuthToken,
+    uac::UserInfo,
 };
 use wykies_time::{Seconds, Timestamp};
 
@@ -30,7 +30,7 @@ pub struct AuthTokenManager {
 struct AuthRecord {
     timestamp: Timestamp,
     host_id: HostId,
-    user_info: UserSessionInfo,
+    user_info: UserInfo,
     ws_id: WsServiceId,
     token: AuthToken,
 }
@@ -49,7 +49,7 @@ impl AuthTokenManager {
         &self,
         host_id: HostId,
         ws_id: WsServiceId,
-        user_info: UserSessionInfo,
+        user_info: UserInfo,
         token: AuthToken,
     ) {
         self.purge_stale();
@@ -86,7 +86,7 @@ impl AuthTokenManager {
         host_id: &HostId,
         ws_id: WsServiceId,
         token: &AuthToken,
-    ) -> Option<UserSessionInfo> {
+    ) -> Option<UserInfo> {
         self.purge_stale();
         let mut guard = self.auth_records.lock().expect("mutex poisoned");
         let position = guard
@@ -127,7 +127,7 @@ pub async fn validate_ws_connection(
     auth_manager: actix_web::web::Data<AuthTokenManager>,
     client_identifier: &HostId,
     ws_id: WsServiceId,
-) -> anyhow::Result<(UserSessionInfo, actix_ws::AggregatedMessageStream)> {
+) -> anyhow::Result<(UserInfo, actix_ws::AggregatedMessageStream)> {
     let mut msg_stream = msg_stream
         .max_frame_size(WS_MAX_FRAME_SIZE)
         .aggregate_continuations()
@@ -162,12 +162,7 @@ pub async fn validate_ws_connection(
 #[cfg(test)]
 mod tests {
     use std::time::Duration;
-
-    use wykies_shared::{
-        branch::BranchId,
-        random_string, random_string_def_len,
-        uac::{DisplayName, Username},
-    };
+    use wykies_shared::{branch::BranchId, random_string, random_string_def_len, uac::Username};
 
     use super::*;
 
@@ -183,12 +178,10 @@ mod tests {
         )
     }
 
-    fn new_user() -> UserSessionInfo {
+    fn new_user() -> UserInfo {
         let username = random_string(Username::MAX_LENGTH).try_into().unwrap();
-        let display_name = random_string(DisplayName::MAX_LENGTH).try_into().unwrap();
-        UserSessionInfo {
+        UserInfo {
             username,
-            display_name,
             branch_id: BranchId::from(1),
             permissions: Default::default(),
         }
