@@ -312,6 +312,8 @@ fn ui_show_edit_user(
         return OpResult::NoAction;
     };
 
+    // TODO 4: Make grid names unique (or at least test and add a comment saying
+    // tested)
     egui::Grid::new("Edit User Grid")
         .num_columns(2)
         .show(ui, |ui| {
