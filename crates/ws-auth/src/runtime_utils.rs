@@ -9,7 +9,7 @@ use crate::{
 use actix_web::{dev::ConnectionInfo, web, HttpRequest, HttpResponse};
 use actix_ws::CloseCode;
 use anyhow::Context as _;
-use tracing::{error, instrument};
+use tracing::instrument;
 use wykies_shared::{debug_panic, host_branch::HostId};
 use wykies_time::Seconds;
 
@@ -66,9 +66,8 @@ pub async fn validate_connection_then_start_client_handler_loop<WsServerHandle, 
             Ok(value) => value,
             Err(e) => {
                 // Connection not validated exit
-                error!("Failed to validate web socket connection with error: {e:?}");
                 let _ = session.close(Some(CloseCode::Error.into())).await;
-                debug_panic!(e);
+                debug_panic!("failed to validate web socket connection with error: {e:?}");
                 return;
             }
         };

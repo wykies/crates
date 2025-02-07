@@ -222,8 +222,7 @@ impl ChatServer {
     #[instrument]
     async fn send_to_client(&self, conn_id: WsConnId, msg: Arc<ChatMsg>) {
         let Some((_, tx)) = self.connections.get(&conn_id) else {
-            error!("failed to send message to client because unable to locate connection for ID: {conn_id:?}");
-            debug_panic!("connection id not found");
+            debug_panic!("failed to send message to client because unable to locate connection for ID: {conn_id:?}");
             return;
         };
 

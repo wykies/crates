@@ -3,7 +3,7 @@ use actix_ws::{AggregatedMessage, CloseCode, CloseReason, ProtocolError, Session
 use anyhow::Context;
 use bytestring::ByteString;
 use std::fmt::Debug;
-use tracing::{debug, error, info, instrument, warn};
+use tracing::{debug, info, instrument, warn};
 use wykies_shared::{debug_panic, log_err_as_error};
 
 #[derive(Debug)]
@@ -54,8 +54,7 @@ pub async fn process_stream_from_client(
 
         // client WebSocket stream error
         Some(Err(err_msg)) => {
-            error!(?err_msg, "Protocol error with websocket connection");
-            debug_panic!(err_msg);
+            debug_panic!("protocol error with websocket connection: {err_msg:?}");
             StreamOutcome::CloseSession(CloseReason {
                 code: CloseCode::Error,
                 description: Some(err_msg.to_string()),

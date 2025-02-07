@@ -36,11 +36,7 @@ pub fn execute_chained_handler<T>(
 #[tracing::instrument]
 pub async fn not_found(req: HttpRequest) -> actix_web::Result<HttpResponse> {
     tracing::error!("Failed to match route");
-    debug_panic!(format!(
-        "404 - {} to '{}' Not found\n",
-        req.method(),
-        req.path()
-    ));
+    debug_panic!("404 - {} to '{}' Not found\n", req.method(), req.path());
     Ok(HttpResponse::NotFound().body(format!(
         "404 - {} to '{}' Not found\n",
         req.method(),

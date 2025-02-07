@@ -4,7 +4,7 @@ use anyhow::{bail, Context};
 use ringbuffer::{AllocRingBuffer, RingBuffer};
 use sqlx::QueryBuilder;
 use tokio::{select, sync::mpsc, time::Sleep};
-use tracing::{debug, error, info, instrument};
+use tracing::{debug, info, instrument};
 use tracked_cancellations::TrackedCancellationToken;
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE,
@@ -196,8 +196,7 @@ impl ChatDbWriter {
                 info!("IMs save succeeded")
             }
             Err(err) => {
-                error!(?err, "failed to save IMs");
-                debug_panic!(err);
+                debug_panic!("failed to save IMs: {err:?}");
             }
         };
         self.last_save_time = Timestamp::now();

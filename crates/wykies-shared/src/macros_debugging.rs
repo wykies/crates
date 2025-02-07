@@ -1,14 +1,18 @@
+/// Logs the message passed then panics if running debug and panic on rare
+/// errors is enabled
 #[macro_export]
 macro_rules! debug_panic {
-    ($arg: expr) => {
+    ($($arg:tt)*) => {{
         #[cfg(debug_assertions)]
         if wykies_shared::const_config::PANIC_ON_RARE_ERR {
+            let err_msg = format!($($arg)*);
+            tracing::error!(?err_msg, "DEBUG PANIC!!!");
             panic!(
-                "Rare error detected! Panicking to make it more obvious: {:?}",
-                $arg
+                "Rare error detected! Panicking to make it more obvious: {}",
+                err_msg
             )
         }
-    };
+    }};
 }
 
 /// Logs the error and includes the line in the code in the error message but
@@ -36,8 +40,7 @@ macro_rules! internal_error {
 macro_rules! log_err_as_error {
     ($arg: expr) => {
         if let Err(err) = $arg {
-            tracing::error!(?err);
-            wykies_shared::debug_panic!(err);
+            wykies_shared::debug_panic!("{err:?}");
         }
     };
 }

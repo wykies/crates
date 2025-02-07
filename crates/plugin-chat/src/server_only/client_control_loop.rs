@@ -8,7 +8,7 @@ use anyhow::{bail, Context};
 use futures_util::StreamExt as _;
 use std::{pin::pin, sync::Arc};
 use tokio::{select, sync::mpsc};
-use tracing::{error, info, instrument, Span};
+use tracing::{info, instrument, Span};
 use ws_helpers::client_control_loop::{
     process_stream_from_client, send_message_to_client, StreamOutcome,
 };
@@ -125,11 +125,8 @@ fn validate_im_from_client(im: &mut ChatIM, username: &Username) -> anyhow::Resu
     im.timestamp = Timestamp::now(); // Replace timestamp with server time to ensure monotonicity
 
     if &im.author != username {
-        error!(
-            "unexpected message author found. Author has been reset to expected value. Expected '{}' Found: '{}'",
-            username, im.author,
-        );
-        debug_panic!("user name doesn't match");
+        debug_panic!("unexpected message author found. Author has been reset to expected value. Expected '{}' Found: '{}'",
+            username, im.author,);
         im.author = username.clone();
     }
 
