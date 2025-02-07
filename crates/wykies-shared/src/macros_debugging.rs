@@ -23,7 +23,8 @@ macro_rules! internal_error {
             line!(),
             column!()
         );
-        tracing::error!(?internal_error_msg);
+        // tracing::error!(?internal_error_msg);
+        // TODO 1: Make this client only and make it panic instead
         internal_error_msg
     }};
 }
