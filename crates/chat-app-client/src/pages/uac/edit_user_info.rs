@@ -2,11 +2,11 @@ use super::{get_save_outcome, SaveState};
 use anyhow::anyhow;
 use reqwest_cross::{Awaiting, DataState};
 use wykies_client_core::Client;
-use wykies_shared::internal_error;
 use wykies_shared::{
     const_config::client::user_edit,
     uac::{UserMetadata, UserMetadataDiff},
 };
+use wykies_shared::{debug_panic, internal_error_msg};
 use wykies_time::{Seconds, Timestamp};
 
 #[derive(Debug)]
@@ -88,7 +88,7 @@ impl EditUserInfo {
     pub fn time_before_auto_unload_user(&mut self) -> Option<Seconds> {
         let timestamp = self.load_time?;
         let elapsed = timestamp.elapsed().unwrap_or_else(|| {
-            internal_error!("timestamp in future: {timestamp:?}");
+            debug_panic!("timestamp in future: {timestamp:?}");
             0u64.into()
         });
         Some(user_edit::EDIT_WINDOW.saturating_sub(elapsed))
@@ -116,12 +116,12 @@ impl EditUserInfo {
                 Some(diff) => diff,
                 None => {
                     self.save_status =
-                        DataState::Failed(anyhow!(internal_error!("No changes found")).into());
+                        DataState::Failed(anyhow!(internal_error_msg!("No changes found")).into());
                     return;
                 }
             },
             Err(e) => {
-                self.save_status = DataState::Failed(internal_error!("{e}").into());
+                self.save_status = DataState::Failed(internal_error_msg!("{e}").into());
                 return;
             }
         };

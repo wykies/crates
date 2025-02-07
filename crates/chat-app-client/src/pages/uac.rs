@@ -12,7 +12,7 @@ use std::ops::ControlFlow;
 use wykies_client_core::Client;
 use wykies_shared::{
     const_config::{error::err_role_name, path::PATH_API_ADMIN_USERS_LIST_AND_ROLES},
-    internal_error,
+    debug_panic,
     uac::{
         get_required_permissions, DisplayName, ListUsersRoles, RoleId, RoleName, UserMetadata,
         Username,
@@ -461,7 +461,7 @@ fn ui_user_role(
         .selected_text(
             edit.map(|id| {
                 data.role_id_to_name(id).unwrap_or_else(|e| {
-                    internal_error!("unable to find Role ID {:?}. {e:?}", edit);
+                    debug_panic!("unable to find Role ID {:?}. {e:?}", edit);
                     err_role_name()
                 })
             })
@@ -595,7 +595,7 @@ fn ui_show_user_list(ui: &mut egui::Ui, data: &mut ListUsersRoles, user_op: &mut
                     user.assigned_role
                         .map(|id| {
                             data.role_id_to_name(id).unwrap_or_else(|e| {
-                                internal_error!(
+                                debug_panic!(
                                     "unable to find Role ID {:?}. {e:?}",
                                     user.assigned_role
                                 );

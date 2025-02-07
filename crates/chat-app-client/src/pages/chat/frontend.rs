@@ -12,7 +12,7 @@ use plugin_chat::{
     ChatIM, ChatImText, ChatMsg, ChatMsgsHistory, ReqHistoryBody,
 };
 use tracing::{error, info};
-use wykies_shared::{internal_error, uac::Username, websockets::WsConnTxRx};
+use wykies_shared::{internal_error_msg, uac::Username, websockets::WsConnTxRx};
 use wykies_time::Timestamp;
 
 mod connected_users;
@@ -85,12 +85,14 @@ impl FrontEnd {
             match event {
                 WsEvent::Opened => {
                     // Expected to have been received by the client core
-                    self.set_error_transient(internal_error!("unexpected opened event received"));
+                    self.set_error_transient(internal_error_msg!(
+                        "unexpected opened event received"
+                    ));
                     return;
                 }
                 WsEvent::Message(ws_msg) => match ws_msg {
                     WsMessage::Binary(_) => {
-                        self.set_error_transient(internal_error!(
+                        self.set_error_transient(internal_error_msg!(
                             "unexpected binary message received"
                         ));
                         return;
@@ -103,7 +105,7 @@ impl FrontEnd {
                         }
                         Err(err) => {
                             error!(?err);
-                            self.set_error_unrecoverable(internal_error!(
+                            self.set_error_unrecoverable(internal_error_msg!(
                                 "Received a malformed message from the server"
                             ));
                             return;
@@ -114,7 +116,7 @@ impl FrontEnd {
                             ?unknown_msg_content,
                             "unknown message received over websocket"
                         );
-                        self.set_error_transient(internal_error!(
+                        self.set_error_transient(internal_error_msg!(
                             "unexpected `unknown` message received"
                         ));
                         return;
@@ -125,7 +127,7 @@ impl FrontEnd {
                 },
                 WsEvent::Error(err) => {
                     error!(?err, "error received in websocket stream");
-                    self.set_error_unrecoverable(internal_error!(
+                    self.set_error_unrecoverable(internal_error_msg!(
                         "error received in websocket stream"
                     ));
                     return;
@@ -172,7 +174,7 @@ impl FrontEnd {
             }
             ChatMsg::ReqHistory(req_history_body) => {
                 error!("Received a request for history: {req_history_body:?}");
-                self.set_error_transient(internal_error!(
+                self.set_error_transient(internal_error_msg!(
                     "unexpected request for history received from the server"
                 ));
                 return Err(());
@@ -337,7 +339,7 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
     /// Prerequisite: Error must be set
     fn ui_error_msg(&mut self, ui: &mut egui::Ui) {
         let Some(ChatUiError { msg, is_transient }) = self.error_status.as_ref() else {
-            self.set_error_transient(internal_error!("failed to find original error to show"));
+            self.set_error_transient(internal_error_msg!("failed to find original error to show"));
             return;
         };
         ui.error_label(msg);

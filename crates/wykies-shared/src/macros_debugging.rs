@@ -15,10 +15,12 @@ macro_rules! debug_panic {
     }};
 }
 
-/// Logs the error and includes the line in the code in the error message but
-/// does NOT panic
+/// Returns an error message with the position in the code included
+///
+/// Note: Unable to log message as it's too easy for this to end up in the UI
+/// loop of the client and fill up the HDD with the log
 #[macro_export]
-macro_rules! internal_error {
+macro_rules! internal_error_msg {
     ($($arg:tt)*) => {{
         let res = format!($($arg)*);
         let internal_error_msg = format!(
@@ -28,8 +30,6 @@ macro_rules! internal_error {
             line!(),
             column!()
         );
-        // tracing::error!(?internal_error_msg);
-        // TODO 1: Make this client only and make it panic instead
         internal_error_msg
     }};
 }
