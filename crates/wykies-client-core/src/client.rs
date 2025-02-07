@@ -235,7 +235,7 @@ async fn process_empty(response: reqwest::Result<reqwest::Response>) -> anyhow::
     }
 }
 
-#[tracing::instrument(ret, err(Debug))]
+#[tracing::instrument(level = "debug", ret, err(Debug))]
 async fn process_json_body<T>(response: reqwest::Result<reqwest::Response>) -> anyhow::Result<T>
 where
     T: Debug + serde::de::DeserializeOwned,
