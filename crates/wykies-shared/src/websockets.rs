@@ -29,6 +29,10 @@ impl WsConnId {
     pub fn new_rand() -> Self {
         Self(Uuid::new_v4())
     }
+
+    pub fn inner_as_string(&self) -> String {
+        self.0.to_string()
+    }
 }
 
 pub trait WakeFn: Fn() + Send + Sync + 'static + Clone {}
