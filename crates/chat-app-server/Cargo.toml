@@ -36,17 +36,18 @@ wykies-server-test-helper.workspace = true
 wykies-time = { workspace = true }
 
 [features]
-default = ["standalone", "mysql"]
+default = ["standalone", "mysql", "cookie-store"]
+cookie-store = ["wykies-server/cookie-session"]
 disable-cors = ["wykies-server/disable-cors"]
+redis = ["wykies-server/redis-session-rustls"]
 standalone = [
   # Runs the app in the standalone mode (also needs mysql or postgres)
-  "wykies-server/redis-session-rustls",
 ]
 shuttle = [
   # Runs the app in the shuttle mode (Uses postgres and cookie's only for sessions)
   "dep:shuttle-shared-db",
   "postgres",
-  "wykies-server/cookie-session",
+  "cookie-store",
   "wykies-server/running-from-workspace-root",
 ]
 mysql = [
