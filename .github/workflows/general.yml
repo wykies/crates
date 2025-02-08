@@ -36,11 +36,10 @@ jobs:
           MYSQL_ROOT_HOST: "%"
         ports:
           - 3306:3306
-      # Only needed if using redis
-      # redis:
-      #   image: redis:7
-      #   ports:c
-      #     - 6379:6379
+      redis: # Needed because all features are enabled (and redis is default)
+        image: redis:7
+        ports:
+          - 6379:6379
     steps:
       - uses: wykies/checkout@main
         with:
