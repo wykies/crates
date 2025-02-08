@@ -30,7 +30,7 @@ impl AuthError {
 
 #[derive(thiserror::Error, Debug)]
 pub enum ChangePasswordError {
-    // TODO 3: Add password complexity requirements
+    // TODO 2: Add password complexity requirements
     #[error("You entered two different new passwords - the field values must match.")]
     PasswordsDoNotMatch,
     #[error("Current password validation failed: {0}")]
