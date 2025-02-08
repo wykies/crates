@@ -57,6 +57,7 @@ impl Default for DbUser {
 
 #[tracing::instrument(skip(pool))]
 async fn get_user_from_db(username: &str, pool: &DbPool) -> Result<Option<DbUser>, anyhow::Error> {
+    // TODO 5: Remove display name from the queries (already removed from struct)
     #[cfg(feature = "mysql")]
     let query = sqlx::query!(
         "SELECT UserName, password_hash, ForcePassChange, DisplayName, Enabled, LockedOut, FailedAttempts, Permissions
@@ -100,7 +101,6 @@ async fn get_user_from_db(username: &str, pool: &DbPool) -> Result<Option<DbUser
         username: row.user_name,
         password_hash: SecretString::from(row.password_hash),
         force_pass_change: row.force_pass_change,
-        display_name: row.display_name,
         permissions: row.permissions.try_into()?,
         enabled: row.is_enabled,
         locked_out: row.locked_out,
