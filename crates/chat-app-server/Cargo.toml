@@ -36,8 +36,8 @@ wykies-server-test-helper.workspace = true
 wykies-time = { workspace = true }
 
 [features]
-default = ["standalone", "mysql", "cookie-store"]
-cookie-store = ["wykies-server/cookie-session"]
+default = ["standalone", "mysql", "cookie-session"]
+cookie-session = ["wykies-server/cookie-session"]
 disable-cors = ["wykies-server/disable-cors"]
 redis = ["wykies-server/redis-session-rustls"]
 standalone = [
