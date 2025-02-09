@@ -47,7 +47,7 @@ shuttle = [
   # Runs the app in the shuttle mode (Uses postgres and cookie's only for sessions)
   "dep:shuttle-shared-db",
   "postgres",
-  "cookie-store",
+  "cookie-session",
   "wykies-server/running-from-workspace-root",
 ]
 mysql = [
