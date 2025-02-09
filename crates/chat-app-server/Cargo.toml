@@ -41,7 +41,10 @@ cookie-session = ["wykies-server/cookie-session"]
 disable-cors = ["wykies-server/disable-cors"]
 redis = ["wykies-server/redis-session-rustls"]
 standalone = [
-  # Runs the app in the standalone mode (also needs mysql or postgres)
+  # Runs the app in the standalone mode
+  # Doesn't do anything anymore but left for these comments
+  # You need to chose a DB "mysql" or "postgres"
+  # You need to choose a session store "cookie-session" or "redis"
 ]
 shuttle = [
   # Runs the app in the shuttle mode (Uses postgres and cookie's only for sessions)
