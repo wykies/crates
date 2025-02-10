@@ -40,7 +40,7 @@ impl PasswordComplexity {
     pub fn new(username: &Username, password: &SecretString) -> Self {
         let needs_upper = password.expose_secret().chars().all(|c| !c.is_uppercase());
         let needs_lower = password.expose_secret().chars().all(|c| !c.is_lowercase());
-        let needs_non_alpha = password.expose_secret().chars().all(|c| !c.is_alphabetic());
+        let needs_non_alpha = !password.expose_secret().chars().any(|c| !c.is_alphabetic());
         let has_non_alpha_first_or_last = {
             // Test first
             password
@@ -58,7 +58,10 @@ impl PasswordComplexity {
         };
         let has_username = {
             let lower_username = username.to_string().to_lowercase();
-            password.expose_secret().contains(&lower_username)
+            password
+                .expose_secret()
+                .to_lowercase()
+                .contains(&lower_username)
         };
         let has_consecutive_duplicate_chars = password
             .expose_secret()
