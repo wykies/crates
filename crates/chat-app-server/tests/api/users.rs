@@ -1,4 +1,4 @@
-use secrecy::SecretString;
+use secrecy::{ExposeSecret, SecretString};
 use uuid::Uuid;
 use wykies_client_core::LoginOutcome;
 use wykies_server_test_helper::expect_ok;
@@ -7,7 +7,7 @@ use wykies_shared::{
         api::admin::user::{NewUserReqArgs, PasswordResetReqArgs},
         LoginReqArgs,
     },
-    uac::{ResetPasswordError, UserMetadata, UserMetadataDiff, Username},
+    uac::{PasswordComplexity, ResetPasswordError, UserMetadata, UserMetadataDiff, Username},
 };
 
 use crate::helpers::spawn_app;
@@ -188,10 +188,10 @@ async fn password_reset_normal() {
     // Arrange
     let mut app_normal = spawn_app().await;
     let app_admin = app_normal.create_admin_user().await;
-    let new_password = Uuid::new_v4().to_string();
+    let new_password = PasswordComplexity::generate_random_password();
     let password_reset_req_args = PasswordResetReqArgs {
         username: app_normal.test_user.username.clone().try_into().unwrap(),
-        new_password: new_password.clone().into(),
+        new_password: new_password.clone(),
     };
     app_admin.login_assert().await;
 
@@ -201,7 +201,7 @@ async fn password_reset_normal() {
         .reset_password(password_reset_req_args));
 
     // Act - Login using the new password
-    app_normal.test_user.password = new_password;
+    app_normal.test_user.password = new_password.expose_secret().to_string();
     let login_outcome = app_normal.login().await.unwrap();
 
     // Assert - Login succeeded

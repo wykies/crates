@@ -1,7 +1,9 @@
 use crate::helpers::spawn_app;
 use uuid::Uuid;
 use wykies_shared::{
-    errors::NotLoggedInError, req_args::api::ChangePasswordReqArgs, uac::ChangePasswordError,
+    errors::NotLoggedInError,
+    req_args::api::ChangePasswordReqArgs,
+    uac::{ChangePasswordError, PasswordComplexity},
 };
 
 #[tokio::test]
@@ -29,7 +31,7 @@ async fn you_must_be_logged_in_to_change_your_password() {
 async fn new_password_fields_must_match() {
     // Arrange
     let app = spawn_app().await;
-    let new_password = Uuid::new_v4().to_string();
+    let new_password = PasswordComplexity::generate_random_password();
     let another_new_password = Uuid::new_v4().to_string();
 
     // Act - Login
@@ -40,7 +42,7 @@ async fn new_password_fields_must_match() {
         .core_client
         .change_password(&ChangePasswordReqArgs {
             current_password: app.test_user.password.clone().into(),
-            new_password: new_password.clone().into(),
+            new_password,
             new_password_check: another_new_password.into(),
         })
         .await
@@ -57,7 +59,7 @@ async fn new_password_fields_must_match() {
 async fn current_password_must_be_valid() {
     // Arrange
     let app = spawn_app().await;
-    let new_password = Uuid::new_v4().to_string();
+    let new_password = PasswordComplexity::generate_random_password();
     let wrong_password = Uuid::new_v4().to_string();
 
     // Act - Login
@@ -68,8 +70,8 @@ async fn current_password_must_be_valid() {
         .core_client
         .change_password(&ChangePasswordReqArgs {
             current_password: wrong_password.into(),
-            new_password: new_password.clone().into(),
-            new_password_check: new_password.into(),
+            new_password: new_password.clone(),
+            new_password_check: new_password,
         })
         .await
         .unwrap();
@@ -88,7 +90,7 @@ async fn current_password_must_be_valid() {
 async fn changing_password_works() {
     // Arrange
     let app = spawn_app().await;
-    let new_password = Uuid::new_v4().to_string();
+    let new_password = PasswordComplexity::generate_random_password();
 
     // Act - Login
     app.login_assert().await;
@@ -98,8 +100,8 @@ async fn changing_password_works() {
         .core_client
         .change_password(&ChangePasswordReqArgs {
             current_password: app.test_user.password.clone().into(),
-            new_password: new_password.clone().into(),
-            new_password_check: new_password.clone().into(),
+            new_password: new_password.clone(),
+            new_password_check: new_password.clone(),
         })
         .await
         .unwrap();
@@ -113,10 +115,34 @@ async fn changing_password_works() {
     // Act - Login using the new password
     let login_outcome = app
         .core_client
-        .login(app.test_user.login_args().password(new_password.into()))
+        .login(app.test_user.login_args().password(new_password))
         .await
         .unwrap();
 
     // Assert - Login succeeded
     assert!(login_outcome.unwrap().is_any_success());
+}
+
+#[tokio::test]
+async fn password_complexity_checks_are_done() {
+    // Arrange
+    let app = spawn_app().await;
+    let new_password = "a";
+
+    // Act - Login
+    app.login_assert().await;
+
+    // Act - Try to change password
+    let actual = app
+        .core_client
+        .change_password(&ChangePasswordReqArgs {
+            current_password: app.test_user.password.clone().into(),
+            new_password: new_password.to_string().into(),
+            new_password_check: new_password.to_string().into(),
+        })
+        .await
+        .unwrap();
+
+    // Assert - Password fails for validation
+    assert!(actual.unwrap_err().to_string().contains("complexity"),);
 }
