@@ -1,6 +1,6 @@
 use crate::host_branch::HostId;
 
-use super::Permission;
+use super::{PasswordComplexity, Permission};
 
 #[derive(thiserror::Error, Debug)]
 pub enum AuthError {
@@ -30,7 +30,8 @@ impl AuthError {
 
 #[derive(thiserror::Error, Debug)]
 pub enum ChangePasswordError {
-    // TODO 2: Add password complexity requirements
+    #[error("Password complexity requirements not met: {0}")]
+    Complexity(PasswordComplexity),
     #[error("You entered two different new passwords - the field values must match.")]
     PasswordsDoNotMatch,
     #[error("Current password validation failed: {0}")]
@@ -86,6 +87,7 @@ pub mod conversions {
                 ChangePasswordError::PasswordsDoNotMatch
                 | ChangePasswordError::CurrentPasswordWrong(_) => StatusCode::BAD_REQUEST,
                 ChangePasswordError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+                ChangePasswordError::Complexity(_) => StatusCode::BAD_REQUEST,
             }
         }
     }

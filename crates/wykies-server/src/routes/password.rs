@@ -4,7 +4,7 @@ use secrecy::ExposeSecret as _;
 use wykies_shared::{
     db_types::DbPool,
     req_args::api::ChangePasswordReqArgs,
-    uac::{ChangePasswordError, UserInfo},
+    uac::{ChangePasswordError, PasswordComplexity, UserInfo},
 };
 
 #[tracing::instrument(skip(req_args, pool))]
@@ -15,6 +15,10 @@ pub async fn change_password(
     user_info: web::ReqData<UserInfo>,
 ) -> Result<HttpResponse, ChangePasswordError> {
     let username = user_info.into_inner().username;
+    let password_complexity = PasswordComplexity::new(&username, &req_args.new_password);
+    if !password_complexity.does_meet_requirements() {
+        return Err(ChangePasswordError::Complexity(password_complexity));
+    }
     if req_args.new_password.expose_secret() != req_args.new_password_check.expose_secret() {
         return Err(ChangePasswordError::PasswordsDoNotMatch);
     }
