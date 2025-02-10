@@ -10,7 +10,7 @@ command = [
   "chat-app-server",
   "--no-default-features",
   "--features",
-  "standalone,mysql,running-from-workspace-root",
+  "standalone,cookie-session,mysql,running-from-workspace-root",
 ]
 allow_warnings = true
 
@@ -22,7 +22,7 @@ command = [
   "chat-app-server",
   "--no-default-features",
   "--features",
-  "standalone,postgres,running-from-workspace-root",
+  "standalone,cookie-session,postgres,running-from-workspace-root",
 ]
 allow_warnings = true
 
@@ -65,7 +65,7 @@ command = [
   "chat-app-server",
   "--no-default-features",
   "--features",
-  "standalone,mysql",
+  "standalone,cookie-session,mysql",
 ]
 
 [jobs.test-chat-server-standalone-mysql-trace]
@@ -76,11 +76,10 @@ command = [
   "chat-app-server",
   "--no-default-features",
   "--features",
-  "standalone,mysql",
+  "standalone,cookie-session,mysql",
 ]
 env.TEST_LOG = "true"
 
-# To test Shuttle mode
 [jobs.test-chat-server-standalone-pg]
 command = [
   "cargo",
@@ -89,7 +88,7 @@ command = [
   "chat-app-server",
   "--no-default-features",
   "--features",
-  "standalone,postgres",
+  "standalone,cookie-session,postgres",
 ]
 
 [jobs.test-chat-server-standalone-pg-trace]
@@ -100,7 +99,7 @@ command = [
   "chat-app-server",
   "--no-default-features",
   "--features",
-  "standalone,postgres",
+  "standalone,cookie-session,postgres",
 ]
 env.TEST_LOG = "true"
 
