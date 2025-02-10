@@ -5,7 +5,7 @@ use std::fmt::Display;
 use thiserror::Error;
 use uuid::Uuid;
 
-#[derive(Debug, Error)]
+#[derive(Debug, Error, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 pub enum PasswordComplexityError {
     #[error("needs at least one uppercase character")]
     NeedsUpper,
@@ -23,7 +23,7 @@ pub enum PasswordComplexityError {
     IsTooShort,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct PasswordComplexity {
     pub needs_upper: bool,
     pub needs_lower: bool,
@@ -155,5 +155,45 @@ impl Display for PasswordComplexity {
                 .join(", ");
             write!(f, "password complexity requirements not met: {err_list}")
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rstest::rstest;
+
+    #[test]
+    fn random_passwords_pass() {
+        let password = PasswordComplexity::generate_random_password();
+        let username = Username::try_from("bob".to_string()).unwrap();
+        let actual = PasswordComplexity::new(&username, &password);
+        assert!(actual.does_meet_requirements());
+    }
+
+    #[rstest]
+    #[case::need_upper("all_lowercase", PasswordComplexityError::NeedsUpper)]
+    #[case::needs_lower("ALL_UPPERCASE", PasswordComplexityError::NeedsLower)]
+    #[case::needs_non_alpha("OnlyAlpha", PasswordComplexityError::NeedsNonAlpha)]
+    #[case::has_non_alpha_first_or_last(
+        "1IfOnlyNotFirst",
+        PasswordComplexityError::HasNonAlphaFirstOrLast
+    )]
+    #[case::has_non_alpha_first_or_last(
+        "LastKillsItAll*",
+        PasswordComplexityError::HasNonAlphaFirstOrLast
+    )]
+    #[case::has_username("Includes_boB'sName", PasswordComplexityError::HasUsername)]
+    #[case::has_consecutive_duplicate_chars(
+        "aa7BBBBBBB",
+        PasswordComplexityError::HasConsecutiveDuplicateChars
+    )]
+    #[case::is_too_short("jUst2sh", PasswordComplexityError::IsTooShort)]
+    fn constraints_work(#[case] password: String, #[case] expected: PasswordComplexityError) {
+        let username = Username::try_from("bob".to_string()).unwrap();
+        let password_complexity = PasswordComplexity::new(&username, &password.into());
+        let actual = password_complexity.error_list();
+        assert_eq!(actual, vec![expected]);
+        assert!(!password_complexity.does_meet_requirements());
     }
 }
