@@ -80,7 +80,7 @@ where
             let r = session
                 .text(serde_json::to_string(&chat_msg).expect("failed to serialize msg"))
                 .await
-                .context("failed to send text msg");
+                .context("failed to send text msg because connection is closed");
             log_err_as_error!(r);
             None
         }
