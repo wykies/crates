@@ -37,7 +37,12 @@ pub static TRACING: LazyLock<String> = LazyLock::new(|| {
         let (file, path) = telemetry::create_trace_file(&log_file_name).unwrap();
         let subscriber = get_subscriber(subscriber_name, default_filter_level, file);
         init_subscriber(subscriber).unwrap();
-        format!("Traces for tests being written to: {path:?}")
+        format!(
+            "Traces for tests being written to: {:?}",
+            path.canonicalize()
+                .context("trace file canonicalization failed")
+                .unwrap()
+        )
     } else {
         let subscriber = get_subscriber(subscriber_name, default_filter_level, std::io::sink);
         init_subscriber(subscriber).unwrap();

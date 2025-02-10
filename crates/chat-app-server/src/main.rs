@@ -41,7 +41,11 @@ async fn main() -> anyhow::Result<()> {
     let (file, path) = wykies_shared::telemetry::create_trace_file("chat-app-server")
         .context("failed to create file for traces")?;
     initialize_tracing("chat_app_server", "info", file);
-    println!("Traces being written to: {path:?}");
+    println!(
+        "Traces being written to: {:?}",
+        path.canonicalize()
+            .context("trace file canonicalization failed")?
+    );
     let api_server_init_bundle = ApiServerInitBundle::<CustomConfiguration>::new();
     let db_pool =
         wykies_server::get_db_connection_pool(&api_server_init_bundle.configuration.database);
