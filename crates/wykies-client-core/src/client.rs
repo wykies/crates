@@ -100,6 +100,7 @@ impl Client {
         });
         let req = self.create_request_builder(PATH_LOGIN, &args);
         let client = self.clone();
+        // TODO 1: Add timeout
         let response_handler = move |resp: reqwest::Result<reqwest::Response>| async {
             process_login(resp, client).await
         };
@@ -140,6 +141,7 @@ impl Client {
     {
         let req = self.create_request_builder(path_spec, args);
         let response_handler =
+        // TODO 1: Add timeout
             move |resp: reqwest::Result<reqwest::Response>| async { process_json_body(resp).await };
         fetch_plus(req, response_handler, || {})
     }
@@ -179,6 +181,7 @@ impl Client {
     {
         let req = self.create_request_builder(path_spec, args);
         let response_handler =
+        // TODO 1: Add timeout
             move |resp: reqwest::Result<reqwest::Response>| async { process_empty(resp).await };
         fetch_plus(req, response_handler, || {})
     }
@@ -283,6 +286,7 @@ async fn handle_error(response: reqwest::Response) -> anyhow::Error {
         !status.is_success(),
         "this is supposed to be an error, right? Status code is: {status}"
     );
+    // TODO 1: Add timeout
     let Ok(body) = response.text().await else {
         return anyhow!("failed to get response body");
     };
