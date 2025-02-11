@@ -10,7 +10,7 @@ use actix_web::{dev::ConnectionInfo, web, HttpRequest, HttpResponse};
 use actix_ws::CloseCode;
 use anyhow::Context as _;
 use tracing::instrument;
-use wykies_shared::{debug_panic, host_branch::HostId};
+use wykies_shared::{host_branch::HostId, log_as_error};
 use wykies_time::Seconds;
 
 /// Does a prescreening to see if the request is expected and then starts a WS
@@ -67,7 +67,7 @@ pub async fn validate_connection_then_start_client_handler_loop<WsServerHandle, 
             Err(e) => {
                 // Connection not validated exit
                 let _ = session.close(Some(CloseCode::Error.into())).await;
-                debug_panic!("failed to validate web socket connection with error: {e:?}");
+                log_as_error!("failed to validate web socket connection with error: {e:?}");
                 return;
             }
         };

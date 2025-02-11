@@ -9,7 +9,7 @@ use tracked_cancellations::TrackedCancellationToken;
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE,
     db_types::{Db, DbPool},
-    debug_panic,
+    log_as_error,
 };
 use wykies_time::{Seconds, Timestamp};
 
@@ -196,7 +196,7 @@ impl ChatDbWriter {
                 info!("IMs save succeeded")
             }
             Err(err) => {
-                debug_panic!("failed to save IMs: {err:?}");
+                log_as_error!("failed to save IMs: {err:?}");
             }
         };
         self.last_save_time = Timestamp::now();

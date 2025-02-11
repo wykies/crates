@@ -1,5 +1,6 @@
 /// Logs the message passed then panics if running debug and panic on rare
-/// errors is enabled
+/// errors is enabled or does nothing not even logging to make it safe to use in
+/// loops if it will not panic
 #[macro_export]
 macro_rules! debug_panic {
     ($($arg:tt)*) => {{
@@ -34,13 +35,24 @@ macro_rules! internal_error_msg {
     }};
 }
 
+/// Logs the contents passed as an error and forwards it on to debug panic
+#[macro_export]
+macro_rules! log_as_error {
+    ($($arg:tt)*) => {{
+        let err_msg = format!($($arg)*);
+        tracing::error!(?err_msg, "LOGGED AS ERROR");
+        wykies_shared::debug_panic!("{err_msg:?}");
+    }};
+}
+
 /// Use this version if we don't want to crash during prod but we do want to
 /// crash during development and log if it was an error either way
 #[macro_export]
 macro_rules! log_err_as_error {
     ($arg: expr) => {
-        if let Err(err) = $arg {
-            wykies_shared::debug_panic!("{err:?}");
+        if let Err(err_msg) = $arg {
+            tracing::error!(?err_msg, "ERROR VARIANT FOUND AND IS BEING LOGGED");
+            wykies_shared::debug_panic!("{err_msg:?}");
         }
     };
 }
