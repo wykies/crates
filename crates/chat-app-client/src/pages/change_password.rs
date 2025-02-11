@@ -49,16 +49,13 @@ impl UiChangePassword {
         let mut should_send = false;
         ui.add_enabled(false, egui::TextEdit::singleline(&mut data_shared.username));
 
-        ui.spacing();
         let mut was_enter_pressed = ui
             .password_edit(&mut self.current_password, "Current Password")
             .enter_pressed(ui);
-        ui.spacing();
         was_enter_pressed = ui
             .password_edit(&mut self.new_password, "New Password")
             .enter_pressed(ui)
             || was_enter_pressed;
-        ui.spacing();
         was_enter_pressed = ui
             .password_edit(&mut self.confirmation_password, "Confirm New Password")
             .enter_pressed(ui)
@@ -69,8 +66,6 @@ impl UiChangePassword {
             should_send = true;
         }
 
-        ui.spacing();
-        ui.spacing();
         if ui
             .add_enabled(is_ready_to_send, Button::new("Send"))
             .clicked()
@@ -117,7 +112,6 @@ impl DisplayablePage for UiChangePassword {
                     }
                 }
                 DataState::Present(()) => {
-                    ui.spacing();
                     ui.label("Password Successfully Changed");
                 }
                 DataState::Failed(e) => {

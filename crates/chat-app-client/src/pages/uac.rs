@@ -133,7 +133,6 @@ impl DisplayablePage for UiUAC {
                         self.should_refresh = true;
                         return;
                     }
-                    ui.spacing();
                     if ui.button("Add New User").clicked() {
                         self.user_op = UserOp::New(NewUserInfo::new());
                     }
@@ -388,7 +387,6 @@ fn poll_save_outcome(outcome: Option<SaveState>, ui: &mut egui::Ui) -> ControlFl
             SaveState::Ongoing => {
                 ui.horizontal(|ui| {
                     ui.spinner();
-                    ui.spacing();
                     ui.label("Saving...");
                 });
             }
