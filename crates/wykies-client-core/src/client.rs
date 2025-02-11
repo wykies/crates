@@ -276,7 +276,7 @@ async fn process_login(
     }
 }
 
-#[tracing::instrument(ret)]
+#[tracing::instrument(level = "warn", ret)]
 async fn handle_error(response: reqwest::Response) -> anyhow::Error {
     let status = response.status();
     debug_assert!(
