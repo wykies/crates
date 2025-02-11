@@ -219,7 +219,7 @@ fn ui_show_reset_password(
         pass_reset_user_info.save(client_core);
     }
 
-    if ui.escape_button("Cancel") {
+    if ui.cancel_button() {
         return OpResult::ResetPage;
     }
 
@@ -278,7 +278,7 @@ fn ui_show_new_user(
         new_user_info.save(client_core);
     }
 
-    if ui.escape_button("Cancel") {
+    if ui.cancel_button() {
         return OpResult::ResetPage;
     }
 
@@ -368,7 +368,7 @@ fn ui_show_edit_user(
         edit_user_info.save(ui, client_core);
     }
 
-    if ui.escape_button("Cancel") {
+    if ui.cancel_button() {
         edit_user_info.unload_user_info();
     }
 

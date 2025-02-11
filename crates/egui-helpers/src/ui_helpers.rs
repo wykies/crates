@@ -9,6 +9,8 @@ pub trait UiHelpers {
     fn password_edit(&mut self, password: &mut SecretString, hint_text: &str) -> Response;
     fn readonly_checkbox_no_text(&mut self, value: bool) -> Response;
     fn escape_button(&mut self, text: impl Into<WidgetText>) -> bool;
+    fn back_button(&mut self, is_escape: bool) -> bool;
+    fn cancel_button(&mut self) -> bool;
     fn was_enter_pressed(&self) -> bool;
     fn shortcut_hint_text(&mut self, hint_msg: &str, shortcut: &KeyboardShortcut) -> String;
     fn shortcut_button(
@@ -72,6 +74,19 @@ impl UiHelpers for egui::Ui {
             "",
             &KeyboardShortcut::new(egui::Modifiers::NONE, egui::Key::Escape),
         )
+    }
+
+    fn back_button(&mut self, is_escape: bool) -> bool {
+        const TEXT: &str = "⮈ Back";
+        if is_escape {
+            self.escape_button(TEXT)
+        } else {
+            self.button(TEXT).clicked()
+        }
+    }
+
+    fn cancel_button(&mut self) -> bool {
+        self.escape_button("🗙 Cancel")
     }
 
     /// Returns true if the enter key was pressed this frame
