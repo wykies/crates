@@ -77,7 +77,7 @@ impl UiHelpers for egui::Ui {
     }
 
     fn back_button(&mut self, is_escape: bool) -> bool {
-        const TEXT: &str = "🔙 Back";
+        const TEXT: &str = "⮈ Back";
         if is_escape {
             self.escape_button(TEXT)
         } else {
