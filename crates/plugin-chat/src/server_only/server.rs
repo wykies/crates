@@ -14,8 +14,8 @@ use tracked_cancellations::TrackedCancellationToken;
 use ws_helpers::{heartbeat::HeartbeatConfig, WebSocketSettings};
 use wykies_server::ServerTask;
 use wykies_shared::{
-    const_config::CHANNEL_BUFFER_SIZE, db_types::DbPool, debug_panic, log_err_as_error,
-    log_err_as_warn, uac::UserInfo, websockets::WsConnId,
+    const_config::CHANNEL_BUFFER_SIZE, db_types::DbPool, debug_panic, log_as_error,
+    log_err_as_error, log_err_as_warn, uac::UserInfo, websockets::WsConnId,
 };
 
 /// A command received by the [`ChatServer`].
@@ -154,7 +154,7 @@ impl ChatServer {
                 Ok(x) => x,
                 Err(e) => {
                     // Abort Error occurred
-                    log_err_as_error!(Err::<(), anyhow::Error>(e));
+                    log_as_error!("{e:?}");
                     return;
                 }
             };
@@ -176,7 +176,7 @@ impl ChatServer {
             Ok(x) => x,
             Err(e) => {
                 // Abort Error occurred
-                log_err_as_error!(Err::<(), anyhow::Error>(e));
+                log_as_error!("{e:?}");
                 return;
             }
         };
@@ -206,7 +206,7 @@ impl ChatServer {
             Ok(x) => x,
             Err(e) => {
                 // Abort Error occurred
-                log_err_as_error!(Err::<(), anyhow::Error>(e));
+                log_as_error!("{e:?}");
                 return;
             }
         };
