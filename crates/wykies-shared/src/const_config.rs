@@ -24,8 +24,9 @@ pub mod client {
     /// there is user activity we will use this as a measure to determine when
     /// there is user activity
     pub const CLIENT_TICKS_PER_SECOND_FOR_ACTIVE: usize = 5;
-    // TODO 4: Add a timeout for while awaiting a response. This happened a few
-    //          times during remote testing
+    // TODO 5: Add a timeout for while awaiting a response. This happened a few
+    // times during remote testing. Didn't quite find a way to do timeout in WASM
+
     // pub const AWAITING_RESPONSE_TIMEOUT: Seconds = Seconds::new(30);
 
     pub mod user_edit {
