@@ -4,12 +4,13 @@
 // When compiling natively:
 #[cfg(not(target_arch = "wasm32"))]
 fn main() -> eframe::Result<()> {
-    use clap::Parser;
-    let args = chat_app_client::cli::Cli::parse();
-
-    if let Err(e) = chat_app_client::tracing::init(&args) {
-        eprintln!("Failed to start tracing: {e}");
-    }
+    let _guard = match chat_app_client::tracing::init() {
+        Ok(guard) => guard,
+        Err(err_msg) => {
+            eprintln!("Failed to start tracing: {err_msg:?}");
+            std::process::exit(84);
+        }
+    };
 
     let rt = chat_app_client::background_worker::create_runtime();
     let _enter = rt.enter(); // This Guard must be held to call `tokio::spawn` anywhere in the program

@@ -9,7 +9,6 @@ mod suppress_wasm_warnings {
 
 mod app;
 pub mod background_worker;
-pub mod cli;
 mod lockout;
 mod pages;
 mod shortcuts;

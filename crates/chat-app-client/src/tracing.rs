@@ -1,46 +1,22 @@
 #[cfg(not(target_arch = "wasm32"))]
-pub fn init(cli: &super::cli::Cli) -> anyhow::Result<()> {
+pub fn init() -> anyhow::Result<tracing_appender::non_blocking::WorkerGuard> {
     use anyhow::{bail, Context};
     use wykies_shared::telemetry;
 
-    fn init_to_file() -> anyhow::Result<()> {
-        let (file, filename) = telemetry::create_trace_file("chat_app_client")?;
-        let subscriber =
-            telemetry::get_subscriber("chat_app_client".into(), "zbus=warn,info", file);
+    let (writer, path, guard) = telemetry::setup_tracing_writer("chat_app_client")?;
+    let subscriber = telemetry::get_subscriber("chat_app_client".into(), "zbus=warn,info", writer);
 
-        // Start logging to file
-        match telemetry::init_subscriber(subscriber) {
-            Ok(_) => {
-                println!(
-                    "Traces being written to: {:?}",
-                    filename
-                        .canonicalize()
-                        .context("trace file canonicalization failed")?
-                );
-                Ok(())
-            }
-            Err(e) => {
-                bail!("Failed to start tracing to file. Error: {e}");
-            }
+    match telemetry::init_subscriber(subscriber) {
+        Ok(()) => {
+            println!(
+                "Traces being written to: {:?}",
+                path.canonicalize()
+                    .context("trace file canonicalization failed")?
+            );
+            Ok(guard)
         }
-    }
-
-    if !cli.is_to_std_out {
-        // Log to file
-        match init_to_file() {
-            Ok(_) => return Ok(()),
-            Err(e) => {
-                // Print error and fall though to logging to stdout
-                eprintln!("Failed to start logging to file: {e}");
-            }
-        }
-    }
-
-    // Log to stdout
-    match tracing_subscriber::fmt().try_init() {
-        Ok(_) => Ok(()),
         Err(e) => {
-            bail!("Failed to start tracing. Error: {e}");
+            bail!("Failed to start tracing to file. Error: {e}");
         }
     }
 }

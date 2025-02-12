@@ -1201,7 +1201,6 @@ name = "chat-app-client"
 version = "0.1.5-dev"
 dependencies = [
  "anyhow",
- "clap",
  "eframe",
  "egui",
  "egui-helpers",
@@ -1216,7 +1215,7 @@ dependencies = [
  "strum 0.26.3",
  "tokio",
  "tracing",
- "tracing-subscriber",
+ "tracing-appender",
  "wasm-bindgen-futures",
  "web-sys",
  "wykies-client-core",
@@ -6462,6 +6461,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "tracing-appender"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3566e8ce28cc0a3fe42519fc80e6b4c943cc4c8cef275620eb8dac2d3d4e06cf"
+dependencies = [
+ "crossbeam-channel",
+ "thiserror 1.0.69",
+ "time",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "tracing-attributes"
 version = "0.1.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7745,6 +7756,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "argon2",
+ "chrono",
  "rand",
  "serde",
  "sqlx",
@@ -7776,6 +7788,7 @@ dependencies = [
  "strum 0.26.3",
  "thiserror 2.0.11",
  "tracing",
+ "tracing-appender",
  "tracing-bunyan-formatter",
  "tracing-log 0.2.0",
  "tracing-subscriber",

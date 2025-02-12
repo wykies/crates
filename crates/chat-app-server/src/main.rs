@@ -38,9 +38,9 @@ async fn main(
 async fn main() -> anyhow::Result<()> {
     use shuttle_runtime::Service as _;
 
-    let (file, path) = wykies_shared::telemetry::create_trace_file("chat-app-server")
-        .context("failed to create file for traces")?;
-    initialize_tracing("chat_app_server", "info", file);
+    let (writer, path, _guard) = wykies_shared::telemetry::setup_tracing_writer("chat-app-server")
+        .context("failed to setup traces")?;
+    initialize_tracing("chat_app_server", "info", writer);
     println!(
         "Traces being written to: {:?}",
         path.canonicalize()

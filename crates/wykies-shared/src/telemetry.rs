@@ -1,11 +1,9 @@
 use actix_web::rt::task::JoinHandle;
 use anyhow::Context;
-use std::{
-    fs::{create_dir_all, File},
-    path::PathBuf,
-};
+use std::{fs::create_dir_all, path::PathBuf};
 use tracing::subscriber::set_global_default;
 use tracing::Subscriber;
+use tracing_appender::non_blocking::{NonBlocking, WorkerGuard};
 use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
 use tracing_log::LogTracer;
 use tracing_subscriber::fmt::MakeWriter;
@@ -55,23 +53,16 @@ where
     actix_web::rt::task::spawn_blocking(move || current_span.in_scope(f))
 }
 
-fn gen_log_filename(app_name: &str) -> String {
-    format!(
-        "{}_{app_name}.log",
-        chrono::Local::now().format("%Y-%m-%dT%H-%M-%S")
-    )
-}
-
 /// Returns a handle to the file created and the file path
-pub fn create_trace_file(app_name: &str) -> anyhow::Result<(File, PathBuf)> {
+pub fn setup_tracing_writer(app_name: &str) -> anyhow::Result<(NonBlocking, PathBuf, WorkerGuard)> {
     // Create logging folder
-    let log_folder = PathBuf::from("traces");
+    let mut log_folder = PathBuf::from("traces");
+    log_folder.push(app_name);
     create_dir_all(&log_folder).context("Failed to create logging folder")?;
 
-    // Create file to log to
-    let filename = gen_log_filename(app_name);
-    let file_path = log_folder.join(&filename);
-    let file = File::create(&file_path)
-        .with_context(|| format!("Failed to create log file: {filename:?}"))?;
-    Ok((file, file_path))
+    // Start non blocking logger wrapping a rolling logger
+    let file_appender = tracing_appender::rolling::daily(&log_folder, app_name);
+    let (non_blocking, guard) = tracing_appender::non_blocking(file_appender);
+
+    Ok((non_blocking, log_folder, guard))
 }
