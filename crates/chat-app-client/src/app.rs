@@ -139,7 +139,7 @@ impl ChatApp {
                     value
                 }
                 None => {
-                    warn!("App state loading failed, error message logged by egui at debug level (so probably lost)");
+                    warn!("App state loading failed, no value saved or loading failed (see message a debug level from egui if failed)");
                     Default::default()
                 }
             }
