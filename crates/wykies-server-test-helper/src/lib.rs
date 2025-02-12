@@ -6,7 +6,9 @@ use argon2::PasswordHasher;
 use serde::de::DeserializeOwned;
 use sqlx::{Connection, Executor};
 use std::fmt::Debug;
+use std::fs::{create_dir_all, File};
 use std::ops::Deref;
+use std::path::PathBuf;
 use std::sync::LazyLock;
 use uuid::Uuid;
 use wykies_server::Configuration;
@@ -19,7 +21,7 @@ use wykies_shared::{
     db_types::{DbConnection, DbPool},
     host_branch::HostBranchPair,
     req_args::LoginReqArgs,
-    telemetry::{self, get_subscriber, init_subscriber},
+    telemetry::{get_subscriber, init_subscriber},
     uac::Username,
 };
 use wykies_time::Seconds;
@@ -33,13 +35,26 @@ pub static TRACING: LazyLock<String> = LazyLock::new(|| {
     let default_filter_level = "info".to_string();
     let subscriber_name = "test".to_string();
     if std::env::var("TEST_LOG").is_ok() {
-        let log_file_name = format!("server_tests{}", Uuid::new_v4());
-        let (file, path) = telemetry::create_trace_file(&log_file_name).unwrap();
+        let log_file_name = format!(
+            "{}_server_tests{}.log",
+            chrono::Local::now().format("%Y-%m-%dT%H-%M-%S"),
+            Uuid::new_v4()
+        );
+        let log_folder = PathBuf::from("traces");
+        create_dir_all(&log_folder)
+            .context("Failed to create logging folder")
+            .unwrap();
+        let file_path = log_folder.join(&log_file_name);
+        let file = File::create(&file_path)
+            .with_context(|| format!("Failed to create log file: {file_path:?}"))
+            .unwrap();
+
         let subscriber = get_subscriber(subscriber_name, default_filter_level, file);
         init_subscriber(subscriber).unwrap();
         format!(
             "Traces for tests being written to: {:?}",
-            path.canonicalize()
+            file_path
+                .canonicalize()
                 .context("trace file canonicalization failed")
                 .unwrap()
         )
