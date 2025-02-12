@@ -32,8 +32,11 @@ struct ClientInner {
 
 impl Default for Client {
     fn default() -> Self {
-        // TODO 4: Load url from server config into binary at compile time
-        Self::new("https://172.0.0.1".to_string())
+        if cfg!(debug_assertions) {
+            Self::new("http://localhost:8789".to_string())
+        } else {
+            Self::new("https://chat-demo-umon.shuttle.app".to_string())
+        }
     }
 }
 
