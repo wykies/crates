@@ -146,6 +146,8 @@ jobs:
   wasm:
     name: Clippy WASM
     runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: --cfg getrandom_backend="wasm_js"
     steps:
       - uses: wykies/checkout@main
         with:

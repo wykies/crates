@@ -20,56 +20,57 @@ members = [
 [workspace.dependencies]
 # TODO 4: Write a program to check a workspace to see if all dependencies are needed by comparing to Cargo files in member crates
 actix-cors = "0.7.0"
-actix-files = "0.6.2"
+actix-files = "0.6.6"
 actix-session = "0.10.1"
-actix-web = "4.6.0"
+actix-web = "4.9.0"
 actix-ws = "0.3.0"
-anyhow = "1.0.94"
+anyhow = "1.0.95"
 argon2 = "0.5.3"
 bytestring = "1.4.0"
-chrono = { version = "0.4.34", default-features = false, features = ["clock", "serde"] }
-clap = "4.5.24"
-config = { version = "0.15.4", default-features = false, features = ["toml"] }
+chrono = { version = "0.4.39", default-features = false, features = ["clock", "serde"] }
+clap = "4.5.29"
+config = { version = "0.15.8", default-features = false, features = ["toml"] }
 db-types = { version = "*", path = "crates/db-types", default-features = false }
-eframe = "0.30.0"
-egui = { version = "0.30.0", default-features = false }
+eframe = "0.31.0"
+egui = { version = "0.31.0", default-features = false }
 egui-helpers = { version = "*", path = "crates/egui-helpers" }
-egui_extras = "0.30.0"
+egui_extras = "0.31.0"
 ewebsock = "0.8.0"
-futures-util = "0.3.30"
-getrandom = "0.2.15"
-insta = "1.40.0"
-log = "0.4.22"
+futures-util = "0.3.31"
+getrandom = "0.3.1"
+getrandom_old = { version = "0.2.15", package = "getrandom" }
+insta = "1.42.1"
+log = "0.4.25"
 plugin-chat = { version = "*", path = "crates/plugin-chat" }
 pretty_assertions = "1.4.1"
 rand = "0.8"
-reqwest-cross = { version = "0.6.0", default-features = false, features = ["native-tokio", "json", "rustls-tls", "cookies", "http2"] }
+reqwest-cross = { version = "0.7.0", default-features = false, features = ["native-tokio", "json", "rustls-tls", "cookies", "http2"] }
 ringbuffer = "0.15.0"
 ron = "0.8.1"
 rstest = "0.24.0"
 secrecy = { version = "0.10.3", features = ["serde"] }
 serde = { version = "1.0.217", features = ["derive"] }
-serde-aux = "4.5.0"
-serde_json = "1.0.135"
-shuttle-runtime = { version = "0.51.0", default-features = false }
-shuttle-shared-db = "0.51.0"
-sqlx = { version = "0.8.2", default-features = false }
+serde-aux = "4.6.0"
+serde_json = "1.0.138"
+shuttle-runtime = { version = "0.52.0", default-features = false }
+shuttle-shared-db = { version = "0.52.0", default-features = false }
+sqlx = { version = "0.8.3", default-features = false }
 static_assertions = "1.1.0"
-strum = { version = "0.26.3", features = ["derive"] }
+strum = { version = "0.27.0", features = ["derive"] }
 thiserror = "2.0.11"
-tokio = { version = "1.42.0", default-features = false }
+tokio = { version = "1.43.0", default-features = false }
 tokio-util = "0.7.13"
 tracing = "0.1.41"
-tracing-actix-web = "0.7.11"
+tracing-actix-web = "0.7.15"
 tracing-appender = "0.2.3"
 tracing-bunyan-formatter = "0.3.10"
 tracing-log = "0.2.0"
-tracing-subscriber = { version = "0.3", features = ["fmt", "json"] }
+tracing-subscriber = { version = "0.3.19", features = ["fmt", "json"] }
 tracked-cancellations = { version = "*", path = "crates/tracked-cancellations" }
-uuid = { version = "1", features = ["v4", "serde"] }
+uuid = { version = "1.13.1", features = ["v4", "serde", "rng-getrandom"] }
 version-control-clean-check = "0.1.4"
-wasm-bindgen-test = "0.3.42"
-web-sys = "0.3.72"
+wasm-bindgen-test = "0.3.50"
+web-sys = "0.3.77"
 web-time = "1.1.0"
 ws-auth = { version = "*", path = "crates/ws-auth" }
 ws-helpers = { version = "*", path = "crates/ws-helpers" }

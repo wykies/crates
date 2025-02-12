@@ -8,6 +8,7 @@
 mod suppress_wasm_warnings {
     // Needed because we need to enable js feature on this crate
     use getrandom as _;
+    use getrandom_old as _;
 }
 
 #[cfg(test)] // Included to prevent unused crate warning
