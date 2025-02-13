@@ -336,7 +336,7 @@ impl ChatApp {
         ScrollArea::vertical().show(ui, |ui| {
             ui.with_layout(egui::Layout::top_down_justified(egui::Align::LEFT), |ui| {
                 ui.removable_items_list(
-                    &mut self.active_pages,
+                    Some(&mut self.active_pages),
                     "NO PAGES ARE ACTIVE.\nUse top menu to activate a page",
                 );
 
