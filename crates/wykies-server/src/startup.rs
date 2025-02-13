@@ -77,6 +77,7 @@ pub fn initialize_tracing<Sink, D, N>(
     let subscriber =
         telemetry::get_subscriber(subscriber_name.into(), default_env_filter_directive, sink);
     telemetry::init_subscriber(subscriber).expect("failed to initialize the subscriber");
+    tracing::warn!("TRACES STARTED"); // To make it easier to find the start of the traces
 }
 
 pub struct RunnableApiServer(actix_web::dev::Server);
