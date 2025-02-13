@@ -19,7 +19,11 @@ pub trait UiHelpers {
         hint_msg: &str,
         shortcut: &KeyboardShortcut,
     ) -> bool;
-    fn removable_items_list<T: RemovableItem>(&mut self, backing: &mut Vec<T>, empty_msg: &str);
+    fn removable_items_list<T: RemovableItem>(
+        &mut self,
+        backing: Option<&mut Vec<T>>,
+        empty_msg: &str,
+    );
 }
 
 /// Provides the behaviour required for the removable item list
@@ -122,10 +126,19 @@ impl UiHelpers for egui::Ui {
 
     /// Adds labels with x's the left that if clicked remove the item from the
     /// backing vector
-    fn removable_items_list<T: RemovableItem>(&mut self, backing: &mut Vec<T>, empty_msg: &str) {
-        if backing.is_empty() {
-            self.label(empty_msg);
-        }
+    fn removable_items_list<T: RemovableItem>(
+        &mut self,
+        backing: Option<&mut Vec<T>>,
+        empty_msg: &str,
+    ) {
+        let backing = match backing {
+            Some(x) if !x.is_empty() => x,
+            _ => {
+                self.label(empty_msg);
+                return;
+            }
+        };
+
         let mut to_deactivate = Vec::new();
         for (i, item) in backing.iter_mut().enumerate() {
             let mut is_enabled = item.is_enabled();
