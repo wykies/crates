@@ -24,6 +24,7 @@ pub mod plugin;
 pub mod routes;
 mod session_state;
 mod startup;
+mod tls;
 
 pub use configuration::{get_configuration, Configuration, DatabaseSettings};
 pub use startup::{

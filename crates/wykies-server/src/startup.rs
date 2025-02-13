@@ -77,7 +77,9 @@ pub fn initialize_tracing<Sink, D, N>(
     let subscriber =
         telemetry::get_subscriber(subscriber_name.into(), default_env_filter_directive, sink);
     telemetry::init_subscriber(subscriber).expect("failed to initialize the subscriber");
-    tracing::warn!("TRACES STARTED"); // To make it easier to find the start of the traces
+
+    // To make it easier to find the start of the traces
+    tracing::warn!("TRACES STARTED");
 }
 
 pub struct RunnableApiServer(actix_web::dev::Server);
@@ -268,10 +270,27 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
                 .app_data(login_attempt_limit.clone())
                 .app_data(websocket_auth_manager.clone())
                 .default_service(web::route().to(not_found))
-        })
-        .listen(listener)
-        .context("Failed to bind HTTP Server to listener")?
-        .run();
+        });
+
+        if cfg!(feature = "disable-tls") {
+            info!("Setting up HTTP server (No TLS)");
+        } else {
+            info!("Setting up HTTPS server (with TLS)");
+        }
+
+        #[cfg(feature = "disable-tls")]
+        let server = server
+            .listen(listener)
+            .context("failed to bind HTTP Server to listener")?;
+        #[cfg(not(feature = "disable-tls"))]
+        let server = server
+            .listen_rustls_0_23(
+                listener,
+                crate::tls::load_rustls_config().context("failed to load rustls config")?,
+            )
+            .context("failed to bind HTTPS Server to listener")?;
+
+        let server = server.run();
         info!(
             version = env!("CARGO_PKG_VERSION"),
             "API Server prepared to be run at version {}", pkg_version
