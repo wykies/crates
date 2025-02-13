@@ -1,6 +1,7 @@
-/// Logs the message passed then panics if running debug and panic on rare
-/// errors is enabled or does nothing not even logging to make it safe to use in
-/// loops if it will not panic
+/// Does nothing in production but during dev it logs the message passed then
+/// panics
+///
+/// Note: Safe to use in loops because it either panics or does nothing
 #[macro_export]
 macro_rules! debug_panic {
     ($($arg:tt)*) => {{
@@ -9,7 +10,7 @@ macro_rules! debug_panic {
             let err_msg = format!($($arg)*);
             tracing::error!(?err_msg, "DEBUG PANIC!!!");
             panic!(
-                "Rare error detected! Panicking to make it more obvious: {}",
+                "DEBUG PANIC! Rare error detected! Panicking to make it more obvious: {}",
                 err_msg
             )
         }
