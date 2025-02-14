@@ -145,7 +145,7 @@ impl Permissions {
         if perms.iter().all(|x| self.0.contains(x)) {
             PermissionCheckOutcome::HasRequiredPermissions
         } else {
-            let required_perms = perms
+            let missing_perms = perms
                 .iter()
                 .filter_map(|x| {
                     if self.0.contains(x) {
@@ -155,7 +155,7 @@ impl Permissions {
                     }
                 })
                 .collect();
-            PermissionCheckOutcome::MissingPermissions(required_perms)
+            PermissionCheckOutcome::MissingPermissions(missing_perms)
         }
     }
 
