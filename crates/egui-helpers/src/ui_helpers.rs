@@ -24,6 +24,7 @@ pub trait UiHelpers {
         backing: Option<&mut Vec<T>>,
         empty_msg: &str,
     );
+    fn add_space_text_height(&mut self, scalar: f32);
 }
 
 /// Provides the behaviour required for the removable item list
@@ -164,5 +165,10 @@ impl UiHelpers for egui::Ui {
         while let Some(marked_index) = to_deactivate.pop() {
             backing.remove(marked_index);
         }
+    }
+
+    fn add_space_text_height(&mut self, scalar: f32) {
+        let text_height = self.text_height();
+        self.add_space(text_height * scalar);
     }
 }
