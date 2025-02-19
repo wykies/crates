@@ -3,6 +3,7 @@ use serde::de::DeserializeOwned;
 use serde_aux::field_attributes::deserialize_number_from_string;
 use sqlx::ConnectOptions;
 use std::convert::{TryFrom, TryInto};
+use tracing::info;
 use ws_helpers::WebSocketSettings;
 
 use wykies_shared::db_types::{DbConnectOptions, DbSslMode};
@@ -91,6 +92,7 @@ pub fn get_configuration<T: Clone + DeserializeOwned>(
         .unwrap_or_else(|_| "local".into())
         .try_into()
         .expect("failed to parse APP_ENVIRONMENT.");
+    info!(?environment);
     let environment_filename = format!("{}.toml", environment.as_str());
     let settings = config::Config::builder()
         .add_source(config::File::from(
@@ -112,6 +114,7 @@ pub fn get_configuration<T: Clone + DeserializeOwned>(
 }
 
 /// The possible runtime environment for our application.
+#[derive(Debug)]
 pub enum Environment {
     Local,
     Production,
