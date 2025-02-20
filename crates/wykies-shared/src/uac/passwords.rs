@@ -13,8 +13,6 @@ pub enum PasswordComplexityError {
     NeedsLower,
     #[error("needs at least one non-alphabetic character")]
     NeedsNonAlpha,
-    #[error("first and last characters must be alphabetic")]
-    HasNonAlphaFirstOrLast,
     #[error("your password may not contain your username")]
     HasUsername,
     #[error("consecutive duplicate characters are not allowed")]
@@ -28,7 +26,6 @@ pub struct PasswordComplexity {
     pub needs_upper: bool,
     pub needs_lower: bool,
     pub needs_non_alpha: bool,
-    pub has_non_alpha_first_or_last: bool,
     pub has_username: bool,
     pub has_consecutive_duplicate_chars: bool,
     pub is_too_short: bool,
@@ -41,21 +38,6 @@ impl PasswordComplexity {
         let needs_upper = password.expose_secret().chars().all(|c| !c.is_uppercase());
         let needs_lower = password.expose_secret().chars().all(|c| !c.is_lowercase());
         let needs_non_alpha = !password.expose_secret().chars().any(|c| !c.is_alphabetic());
-        let has_non_alpha_first_or_last = {
-            // Test first
-            password
-                .expose_secret()
-                .chars()
-                .next()
-                .map(|c| !c.is_alphabetic())
-                .unwrap_or_default()
-                || password
-                    .expose_secret()
-                    .chars()
-                    .next_back()
-                    .map(|c| !c.is_alphabetic())
-                    .unwrap_or_default()
-        };
         let has_username = {
             let lower_username = username.to_string().to_lowercase();
             password
@@ -73,7 +55,6 @@ impl PasswordComplexity {
             needs_upper,
             needs_lower,
             needs_non_alpha,
-            has_non_alpha_first_or_last,
             has_username,
             has_consecutive_duplicate_chars,
             is_too_short,
@@ -85,7 +66,6 @@ impl PasswordComplexity {
             needs_upper,
             needs_lower,
             needs_non_alpha,
-            has_non_alpha_first_or_last,
             has_username,
             has_consecutive_duplicate_chars,
             is_too_short,
@@ -93,7 +73,6 @@ impl PasswordComplexity {
         !(*needs_upper
             || *needs_lower
             || *needs_non_alpha
-            || *has_non_alpha_first_or_last
             || *has_username
             || *has_consecutive_duplicate_chars
             || *is_too_short)
@@ -105,7 +84,6 @@ impl PasswordComplexity {
             needs_upper,
             needs_lower,
             needs_non_alpha,
-            has_non_alpha_first_or_last: has_other_first_or_last,
             has_username,
             has_consecutive_duplicate_chars: has_consecutive_duplicates,
             is_too_short,
@@ -118,9 +96,6 @@ impl PasswordComplexity {
         }
         if needs_non_alpha {
             result.push(PasswordComplexityError::NeedsNonAlpha);
-        }
-        if has_other_first_or_last {
-            result.push(PasswordComplexityError::HasNonAlphaFirstOrLast);
         }
         if has_username {
             result.push(PasswordComplexityError::HasUsername);
@@ -178,14 +153,6 @@ mod tests {
     #[case::need_upper("all_lowercase", PasswordComplexityError::NeedsUpper)]
     #[case::needs_lower("ALL_UPPERCASE", PasswordComplexityError::NeedsLower)]
     #[case::needs_non_alpha("OnlyAlpha", PasswordComplexityError::NeedsNonAlpha)]
-    #[case::has_non_alpha_first_or_last(
-        "1IfOnlyNotFirst",
-        PasswordComplexityError::HasNonAlphaFirstOrLast
-    )]
-    #[case::has_non_alpha_first_or_last(
-        "LastKillsItAll*",
-        PasswordComplexityError::HasNonAlphaFirstOrLast
-    )]
     #[case::has_username("Includes_boB'sName", PasswordComplexityError::HasUsername)]
     #[case::has_consecutive_duplicate_chars(
         "aa7BBBBBBB",
