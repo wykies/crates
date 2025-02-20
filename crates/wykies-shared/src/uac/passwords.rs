@@ -104,7 +104,7 @@ impl PasswordComplexity {
         let Self {
             needs_upper,
             needs_lower,
-            needs_non_alpha: needs_other,
+            needs_non_alpha,
             has_non_alpha_first_or_last: has_other_first_or_last,
             has_username,
             has_consecutive_duplicate_chars: has_consecutive_duplicates,
@@ -116,7 +116,7 @@ impl PasswordComplexity {
         if needs_lower {
             result.push(PasswordComplexityError::NeedsLower);
         }
-        if needs_other {
+        if needs_non_alpha {
             result.push(PasswordComplexityError::NeedsNonAlpha);
         }
         if has_other_first_or_last {
