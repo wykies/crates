@@ -75,7 +75,15 @@ impl Client {
     pub fn new(server_address: String) -> Self {
         let api_client_builder = reqwest::Client::builder();
         #[cfg(not(target_arch = "wasm32"))]
-        let api_client_builder = api_client_builder.cookie_store(true);
+        let api_client_builder = {
+            let cert = include_bytes!("ca.pem");
+            let cert =
+                reqwest::Certificate::from_pem(cert).expect("failed to parse our root certificate");
+            api_client_builder
+                .cookie_store(true)
+                .use_rustls_tls()
+                .add_root_certificate(cert)
+        };
         let api_client = api_client_builder
             .build()
             .expect("Unable to create reqwest client");
