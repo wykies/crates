@@ -35,7 +35,7 @@ eframe = "0.31.0"
 egui = { version = "0.31.0", default-features = false }
 egui-helpers = { version = "*", path = "crates/egui-helpers" }
 egui_extras = "0.31.0"
-ewebsock = "0.8.0"
+ewebsock = { version = "0.8.0", features = ["tls"] }
 futures-util = "0.3.31"
 getrandom = "0.3.1"
 getrandom_old = { version = "0.2.15", package = "getrandom" }
