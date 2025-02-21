@@ -19,7 +19,6 @@ serde.workspace = true
 sqlx = { workspace = true, optional = true }
 strum.workspace = true
 thiserror.workspace = true
-tokio-tungstenite = { version = "*", default-features = false, features = ["rustls-tls-native-roots"] }
 tracing.workspace = true
 uuid.workspace = true
 wykies-time.workspace = true
@@ -28,6 +27,7 @@ wykies-time.workspace = true
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 actix-web.workspace = true
 ewebsock = { workspace = true, features = ["tokio"] }
+tokio-tungstenite.workspace = true
 tracing-appender.workspace = true
 tracing-bunyan-formatter.workspace = true
 tracing-log.workspace = true

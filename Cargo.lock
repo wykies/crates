@@ -6042,7 +6042,11 @@ checksum = "edc5f74e248dc973e0dbb7b74c7e0d6fcc301c694ff50049504004ef4d0cdcd9"
 dependencies = [
  "futures-util",
  "log",
+ "rustls",
+ "rustls-native-certs 0.8.1",
+ "rustls-pki-types",
  "tokio",
+ "tokio-rustls",
  "tungstenite 0.24.0",
 ]
 
@@ -7489,6 +7493,7 @@ dependencies = [
  "static_assertions",
  "strum 0.27.0",
  "thiserror 2.0.11",
+ "tokio-tungstenite 0.24.0",
  "tracing",
  "tracing-appender",
  "tracing-bunyan-formatter",

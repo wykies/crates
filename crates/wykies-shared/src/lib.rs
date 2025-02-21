@@ -2,6 +2,7 @@
 
 #![warn(unused_crate_dependencies)]
 
+#[cfg(not(target_arch = "wasm32"))]
 use tokio_tungstenite as _; // Needed for our CA to work for WSS
 
 pub mod branch;
