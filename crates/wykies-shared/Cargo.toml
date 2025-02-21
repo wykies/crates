@@ -10,6 +10,7 @@ argon2.workspace = true
 chrono.workspace = true
 db-types = { workspace = true, optional = true }
 egui.workspace = true
+ewebsock.workspace = true
 rand = { workspace = true, features = ["std_rng"] }
 reqwest-cross = { workspace = true, features = ["yield_now"] }
 ron.workspace = true
@@ -30,10 +31,6 @@ tracing-appender.workspace = true
 tracing-bunyan-formatter.workspace = true
 tracing-log.workspace = true
 tracing-subscriber = { workspace = true, features = ["registry", "env-filter"] }
-
-# For web compilation only
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-ewebsock.workspace = true
 
 [dev-dependencies]
 rstest.workspace = true
