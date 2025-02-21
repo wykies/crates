@@ -19,6 +19,7 @@ serde.workspace = true
 sqlx = { workspace = true, optional = true }
 strum.workspace = true
 thiserror.workspace = true
+tokio-tungstenite = { version = "*", default-features = false, features = ["rustls-tls-native-roots"] }
 tracing.workspace = true
 uuid.workspace = true
 wykies-time.workspace = true
