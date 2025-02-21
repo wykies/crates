@@ -2,6 +2,7 @@
 
 #![warn(unused_crate_dependencies)]
 
+use chrono::TimeZone;
 use std::{fmt::Display, time::Duration};
 
 /// Intended to be similar to Duration but always clear that it is in Seconds
@@ -29,6 +30,9 @@ pub enum SecondsConversionError {
 }
 
 impl Timestamp {
+    const LONG_DISPLAY_FORMAT: &str = "%c";
+    const SHORT_DISPLAY_FORMAT: &str = "%F %H:%M";
+
     pub fn now() -> Self {
         Self(
             web_time::SystemTime::UNIX_EPOCH
@@ -45,11 +49,15 @@ impl Timestamp {
     }
 
     pub fn display_as_locale_datetime_long(&self) -> String {
-        self.as_local_datetime().format("%c").to_string()
+        self.as_local_datetime()
+            .format(Self::LONG_DISPLAY_FORMAT)
+            .to_string()
     }
 
     pub fn display_as_local_datetime_short(&self) -> String {
-        self.as_local_datetime().format("%F %H:%M").to_string()
+        self.as_local_datetime()
+            .format(Self::SHORT_DISPLAY_FORMAT)
+            .to_string()
     }
 
     pub fn as_utc_datetime(&self) -> chrono::DateTime<chrono::Utc> {
@@ -57,8 +65,32 @@ impl Timestamp {
             .expect("wow this program wasn't meant to last that long")
     }
 
-    pub fn display_as_utc_datetime(&self) -> String {
-        self.as_utc_datetime().format("%c").to_string()
+    pub fn display_as_utc_datetime_long(&self) -> String {
+        self.as_utc_datetime()
+            .format(Self::LONG_DISPLAY_FORMAT)
+            .to_string()
+    }
+
+    pub fn display_as_utc_datetime_short(&self) -> String {
+        self.as_utc_datetime()
+            .format(Self::SHORT_DISPLAY_FORMAT)
+            .to_string()
+    }
+
+    pub fn display_as_fixed_datetime_long<Tz: TimeZone>(&self, tz: &Tz) -> String {
+        self.as_utc_datetime()
+            .with_timezone(tz)
+            .naive_local()
+            .format(Self::LONG_DISPLAY_FORMAT)
+            .to_string()
+    }
+
+    pub fn display_as_fixed_datetime_short<Tz: TimeZone>(&self, tz: &Tz) -> String {
+        self.as_utc_datetime()
+            .with_timezone(tz)
+            .naive_local()
+            .format(Self::SHORT_DISPLAY_FORMAT)
+            .to_string()
     }
 
     pub fn abs_diff(&self, other: Self) -> Seconds {
