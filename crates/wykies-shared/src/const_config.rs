@@ -68,7 +68,7 @@ pub mod path {
     pub const PATH_API_ROLE: PathSpec = PathSpec::get("/api/role/");
     pub const PATH_API_USER_NEW: PathSpec = PathSpec::post("/api/user/new");
     pub const PATH_API_USER_PASSWORD_RESET: PathSpec = PathSpec::post("/api/user/password_reset");
-    pub const PATH_API_USER_UPDATE: PathSpec = PathSpec::post("/api/user/update"); // TODO 3: Change verb to patch
+    pub const PATH_API_USER_UPDATE: PathSpec = PathSpec::patch("/api/user/update");
     pub const PATH_API_USER: PathSpec = PathSpec::get("/api/user/");
     pub const PATH_API_USERS_LIST_AND_ROLES: PathSpec = PathSpec::get("/api/user/list");
     pub const PATH_BRANCHES: PathSpec = PathSpec::get("/branches");

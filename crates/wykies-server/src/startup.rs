@@ -246,7 +246,7 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
                                 .route("/list", web::get().to(list_users_and_roles))
                                 .route("/new", web::post().to(user_new))
                                 .route("/password_reset", web::post().to(password_reset))
-                                .route("/update", web::post().to(user_update)),
+                                .route("/update", web::patch().to(user_update)),
                         ),
                 )
                 .configure(open_resource.clone())

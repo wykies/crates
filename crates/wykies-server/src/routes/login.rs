@@ -8,7 +8,7 @@ use actix_web::{dev::ConnectionInfo, web, HttpResponse};
 use anyhow::{anyhow, Context};
 use wykies_shared::{
     branch::BranchId,
-    const_config::path::{PATH_API_HOSTBRANCH_SET, PATH_API_HOSTBRANCH_LOOKUP},
+    const_config::path::{PATH_API_HOSTBRANCH_LOOKUP, PATH_API_HOSTBRANCH_SET},
     db_types::DbPool,
     host_branch::{HostBranchPair, HostId},
     req_args::{api::host_branch, LoginReqArgs},

@@ -20,4 +20,11 @@ impl PathSpec {
             method: Method::POST,
         }
     }
+
+    pub const fn patch(path: &'static str) -> Self {
+        Self {
+            path,
+            method: Method::PATCH,
+        }
+    }
 }
