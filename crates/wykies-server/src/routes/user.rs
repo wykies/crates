@@ -201,16 +201,16 @@ pub async fn user_update(
 }
 
 #[tracing::instrument(ret, err(Debug), skip(pool))]
-pub async fn list_users_and_roles(
+pub async fn users_and_roles_list(
     pool: web::Data<DbPool>,
 ) -> actix_web::Result<web::Json<ListUsersRoles>> {
     let pool: &DbPool = &pool;
-    let users = get_users_list(pool).await?;
-    let roles = get_role_list(pool).await?;
+    let users = user_list(pool).await?;
+    let roles = role_list(pool).await?;
     Ok(web::Json(ListUsersRoles { users, roles }))
 }
 
-async fn get_role_list(pool: &DbPool) -> actix_web::Result<Vec<RoleIdAndName>> {
+async fn role_list(pool: &DbPool) -> actix_web::Result<Vec<RoleIdAndName>> {
     #[cfg(feature = "mysql")]
     let query = sqlx::query!("SELECT `RoleID`, `Name` FROM `roles`");
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
@@ -237,7 +237,7 @@ async fn get_role_list(pool: &DbPool) -> actix_web::Result<Vec<RoleIdAndName>> {
         .map_err(e500)
 }
 
-async fn get_users_list(pool: &DbPool) -> actix_web::Result<Vec<UserMetadata>> {
+async fn user_list(pool: &DbPool) -> actix_web::Result<Vec<UserMetadata>> {
     #[cfg(feature = "mysql")]
     let query = sqlx::query!("SELECT `UserName`, `DisplayName`, `ForcePassChange`, `AssignedRole`, `Enabled`, `LockedOut`, `FailedAttempts`, `PassChangeDate` FROM `user`",);
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]

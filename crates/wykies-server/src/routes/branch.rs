@@ -46,7 +46,7 @@ pub async fn branch_list(pool: web::Data<DbPool>) -> actix_web::Result<web::Json
 }
 
 #[tracing::instrument(ret, skip(pool))]
-pub async fn branch_create(
+pub async fn branch_new(
     pool: web::Data<DbPool>,
     web::Json(draft): web::Json<BranchDraft>,
 ) -> actix_web::Result<web::Json<BranchId>> {

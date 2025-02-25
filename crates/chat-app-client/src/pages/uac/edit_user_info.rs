@@ -74,7 +74,7 @@ impl EditUserInfo {
             self.load_time = Some(Timestamp::now());
             if self.edit_user.is_none() {
                 self.edit_user.egui_start_request(ui, || {
-                    client_core.get_user(self.original_user.username.clone())
+                    client_core.user_get(self.original_user.username.clone())
                 });
             }
             self.edit_user.egui_poll(ui, Some("Clear Error"));

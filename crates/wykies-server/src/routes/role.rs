@@ -50,7 +50,7 @@ pub async fn role(
 }
 
 #[tracing::instrument(ret, err(Debug), skip(pool))]
-pub async fn role_create(
+pub async fn role_new(
     pool: web::Data<DbPool>,
     web::Json(draft_role): web::Json<RoleDraft>,
 ) -> actix_web::Result<web::Json<RoleId>> {

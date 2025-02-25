@@ -99,12 +99,12 @@ pub fn default_permissions() -> PermissionMap {
         PATH_API_HOSTBRANCH_SET.path,
         vec![perm::ManHostBranchAssignment],
     );
-    result.insert(PATH_API_BRANCH_CREATE.path, vec![perm::ManBranches]);
+    result.insert(PATH_API_BRANCH_NEW.path, vec![perm::ManBranches]);
     result.insert(PATH_API_CHANGE_PASSWORD.path, vec![]);
-    result.insert(PATH_API_HOSTBRANCH_LOOKUP.path, vec![]);
+    result.insert(PATH_API_HOSTBRANCH.path, vec![]);
     result.insert(PATH_API_LOGOUT.path, vec![]);
     result.insert(PATH_API_ROLE_ASSIGN.path, vec![perm::ManUAC]);
-    result.insert(PATH_API_ROLE_CREATE.path, vec![perm::ManRoles]);
+    result.insert(PATH_API_ROLE_NEW.path, vec![perm::ManRoles]);
     result.insert(PATH_API_ROLE.path, vec![perm::ManRoles]);
     result.insert(PATH_API_USER_NEW.path, vec![perm::ManUAC]);
     result.insert(PATH_API_USER_PASSWORD_RESET.path, vec![perm::ManUAC]);

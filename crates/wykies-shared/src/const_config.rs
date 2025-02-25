@@ -57,21 +57,21 @@ pub mod error {
 pub mod path {
     mod path_spec;
     pub use path_spec::PathSpec;
-    pub const PATH_API_BRANCH_CREATE: PathSpec = PathSpec::post("/api/branch/create"); // TODO 3: Change create to new
+    pub const PATH_API_BRANCH_NEW: PathSpec = PathSpec::post("/api/branch/new");
     pub const PATH_API_CHANGE_PASSWORD: PathSpec = PathSpec::post("/api/change_password");
     pub const PATH_API_HOSTBRANCH_LIST: PathSpec = PathSpec::get("/api/host_branch/list");
-    pub const PATH_API_HOSTBRANCH_LOOKUP: PathSpec = PathSpec::get("/api/host_branch/lookup");
     pub const PATH_API_HOSTBRANCH_SET: PathSpec = PathSpec::post("/api/host_branch/set");
+    pub const PATH_API_HOSTBRANCH: PathSpec = PathSpec::get("/api/host_branch/");
     pub const PATH_API_LOGOUT: PathSpec = PathSpec::post("/api/logout");
     pub const PATH_API_ROLE_ASSIGN: PathSpec = PathSpec::post("/api/role/assign"); // TODO 3: Change to an endpoint for user
-    pub const PATH_API_ROLE_CREATE: PathSpec = PathSpec::post("/api/role/create"); // TODO 3: Change create to new
+    pub const PATH_API_ROLE_NEW: PathSpec = PathSpec::post("/api/role/new");
     pub const PATH_API_ROLE: PathSpec = PathSpec::get("/api/role/");
     pub const PATH_API_USER_NEW: PathSpec = PathSpec::post("/api/user/new");
     pub const PATH_API_USER_PASSWORD_RESET: PathSpec = PathSpec::post("/api/user/password_reset");
     pub const PATH_API_USER_UPDATE: PathSpec = PathSpec::patch("/api/user/update");
     pub const PATH_API_USER: PathSpec = PathSpec::get("/api/user/");
     pub const PATH_API_USERS_LIST_AND_ROLES: PathSpec = PathSpec::get("/api/user/list");
-    pub const PATH_BRANCHES: PathSpec = PathSpec::get("/branches");
+    pub const PATH_BRANCH_LIST: PathSpec = PathSpec::get("/branch/list");
     pub const PATH_HEALTH_CHECK: PathSpec = PathSpec::get("/health_check");
     pub const PATH_LOGIN: PathSpec = PathSpec::post("/login");
     pub const PATH_WS_PREFIX: &str = "/api/ws_token"; // All websocket requests must start with this prefix

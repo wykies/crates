@@ -17,7 +17,7 @@ async fn create_branch() {
     // Act - Create Branch
     let branch_id = app_admin
         .core_client
-        .create_branch(&branch_draft)
+        .branch_new(&branch_draft)
         .await
         .expect("failed to get msg from rx")
         .expect("failed to extract branch id from result");

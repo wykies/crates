@@ -10,15 +10,15 @@ mod user;
 
 use actix_web::{HttpRequest, HttpResponse};
 use anyhow::Context;
-pub use branch::{branch_create, branch_list};
+pub use branch::{branch_list, branch_new};
 pub use health_check::health_check;
-pub use host_branch::{host_branch_pair_lookup, list_host_branch_pairs, set_host_branch_pair};
+pub use host_branch::{host_branch_pair_list, host_branch_pair_lookup, host_branch_pair_set};
 pub use login::login;
 pub use logout::log_out;
 pub use password::change_password;
-pub use role::{role, role_assign, role_create};
+pub use role::{role, role_assign, role_new};
 pub use status::status;
-pub use user::{list_users_and_roles, password_reset, user, user_new, user_update};
+pub use user::{password_reset, user, user_new, user_update, users_and_roles_list};
 use wykies_shared::{debug_panic, uac::Permissions};
 
 pub fn execute_chained_handler<T>(

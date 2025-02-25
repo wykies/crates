@@ -3,9 +3,9 @@ use crate::{
     configuration::ApplicationSettings,
     get_configuration,
     routes::{
-        branch_create, branch_list, change_password, health_check, host_branch_pair_lookup,
-        list_host_branch_pairs, list_users_and_roles, log_out, login, not_found, password_reset,
-        role, role_assign, role_create, set_host_branch_pair, status, user, user_new, user_update,
+        branch_list, branch_new, change_password, health_check, host_branch_pair_list,
+        host_branch_pair_lookup, host_branch_pair_set, log_out, login, not_found, password_reset,
+        role, role_assign, role_new, status, user, user_new, user_update, users_and_roles_list,
     },
     Configuration, DatabaseSettings,
 };
@@ -225,32 +225,30 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
                         .configure(protected_resource.clone())
                         .route("/change_password", web::post().to(change_password))
                         .route("/logout", web::post().to(log_out))
-                        .service(
-                            web::scope("/branch").route("/create", web::post().to(branch_create)),
-                        )
+                        .service(web::scope("/branch").route("/new", web::post().to(branch_new)))
                         .service(
                             web::scope("/host_branch")
-                                .route("/list", web::get().to(list_host_branch_pairs))
-                                .route("/lookup", web::get().to(host_branch_pair_lookup))
-                                .route("/set", web::post().to(set_host_branch_pair)),
+                                .route("/", web::get().to(host_branch_pair_lookup))
+                                .route("/list", web::get().to(host_branch_pair_list))
+                                .route("/set", web::post().to(host_branch_pair_set)),
                         )
                         .service(
                             web::scope("/role")
                                 .route("/", web::get().to(role))
                                 .route("/assign", web::post().to(role_assign))
-                                .route("/create", web::post().to(role_create)),
+                                .route("/new", web::post().to(role_new)),
                         )
                         .service(
                             web::scope("/user")
                                 .route("/", web::get().to(user))
-                                .route("/list", web::get().to(list_users_and_roles))
+                                .route("/list", web::get().to(users_and_roles_list))
                                 .route("/new", web::post().to(user_new))
                                 .route("/password_reset", web::post().to(password_reset))
                                 .route("/update", web::patch().to(user_update)),
                         ),
                 )
                 .configure(open_resource.clone())
-                .route("/branches", web::get().to(branch_list))
+                .route("/branch/list", web::get().to(branch_list))
                 .route("/health_check", web::get().to(health_check))
                 .route("/login", web::post().to(login))
                 .route("/status", web::get().to(status))

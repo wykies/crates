@@ -24,10 +24,10 @@ async fn create_and_assign_role_to_user() {
     app_admin.login_assert().await;
 
     // Act - Create Role
-    let role_id = expect_ok!(app_admin.core_client.create_role(&role_draft));
+    let role_id = expect_ok!(app_admin.core_client.role_new(&role_draft));
 
     // Assert - Verify Role was created
-    let role = expect_ok!(app_admin.core_client.get_role(role_id));
+    let role = expect_ok!(app_admin.core_client.role_get(role_id));
     let expected = Role {
         id: role_id,
         name: role_draft.name,

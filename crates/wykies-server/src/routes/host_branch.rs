@@ -6,7 +6,7 @@ use wykies_shared::{
 };
 
 #[tracing::instrument(ret, err(Debug), skip(pool))]
-pub async fn set_host_branch_pair(
+pub async fn host_branch_pair_set(
     pool: web::Data<DbPool>,
     web::Json(pair): web::Json<HostBranchPair>,
 ) -> actix_web::Result<HttpResponse> {
@@ -46,7 +46,7 @@ pub async fn set_host_branch_pair(
 }
 
 #[tracing::instrument(ret, err(Debug), skip(pool))]
-pub async fn list_host_branch_pairs(
+pub async fn host_branch_pair_list(
     pool: web::Data<DbPool>,
 ) -> actix_web::Result<web::Json<Vec<HostBranchPair>>> {
     let pool: &DbPool = &pool;

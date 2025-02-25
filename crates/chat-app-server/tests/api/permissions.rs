@@ -11,7 +11,7 @@ async fn unprivileged_user_is_denied() {
     app.login_assert().await;
 
     // Act - Attempt to access restricted endpoint
-    let actual = app.core_client.get_list_host_branch_pairs().await.unwrap();
+    let actual = app.core_client.host_branch_pair_list().await.unwrap();
 
     // Assert - Ensure request was denied
     let expected_error =
@@ -28,11 +28,7 @@ async fn test_admin_user_works() {
     app_admin.login_assert().await;
 
     // Act - Attempt to access restricted endpoint
-    let actual = app_admin
-        .core_client
-        .get_list_host_branch_pairs()
-        .await
-        .unwrap();
+    let actual = app_admin.core_client.host_branch_pair_list().await.unwrap();
 
     // Assert - Ensure request succeeded
     actual.unwrap();

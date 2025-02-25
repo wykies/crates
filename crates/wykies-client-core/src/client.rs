@@ -8,7 +8,7 @@ use tracing::{info, warn};
 use wykies_shared::uac::LoginResponse;
 use wykies_shared::{
     branch::Branch,
-    const_config::path::{PathSpec, PATH_BRANCHES, PATH_HEALTH_CHECK, PATH_LOGIN},
+    const_config::path::{PathSpec, PATH_BRANCH_LIST, PATH_HEALTH_CHECK, PATH_LOGIN},
     req_args::LoginReqArgs,
     uac::UserInfo,
 };
@@ -87,7 +87,7 @@ impl Client {
 
     #[tracing::instrument]
     pub fn get_branches(&self) -> oneshot::Receiver<anyhow::Result<Vec<Branch>>> {
-        self.send_request_expect_json(PATH_BRANCHES, &DUMMY_ARGUMENT)
+        self.send_request_expect_json(PATH_BRANCH_LIST, &DUMMY_ARGUMENT)
     }
 
     #[tracing::instrument]

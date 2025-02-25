@@ -20,7 +20,7 @@ async fn set_host_branch_pair() {
     app_admin.login_assert().await;
 
     // Arrange - Create Branch
-    let branch_id = expect_ok!(app_admin.core_client.create_branch(&branch_draft));
+    let branch_id = expect_ok!(app_admin.core_client.branch_new(&branch_draft));
     let mut host_branch_pair = HostBranchPair {
         host_id: "Host name or IP".to_string().try_into().unwrap(),
         branch_id,
@@ -37,7 +37,7 @@ async fn set_host_branch_pair() {
         name: "test name2".try_into().unwrap(),
         short_name: "t2".try_into().unwrap(),
     };
-    let branch_id = expect_ok!(app_admin.core_client.create_branch(&branch_draft));
+    let branch_id = expect_ok!(app_admin.core_client.branch_new(&branch_draft));
     host_branch_pair.branch_id = branch_id;
 
     // Update Host to New Branch
@@ -46,10 +46,10 @@ async fn set_host_branch_pair() {
 
 async fn send_request_and_verify_response(app: &TestApp, pair: &HostBranchPair) {
     // Act - Set Pair (Create / Update)
-    expect_ok!(app.core_client.create_host_branch_pair(pair));
+    expect_ok!(app.core_client.host_branch_pair_set(pair));
 
     // Act - Retrieve current list of pairs
-    let pairs = expect_ok!(app.core_client.get_list_host_branch_pairs());
+    let pairs = expect_ok!(app.core_client.host_branch_pair_list());
 
     // Assert - Verify Pair was created
     assert!(
@@ -71,7 +71,7 @@ async fn host_branch_pair_lookup() {
     app_admin.login_assert().await;
 
     // Arrange - Create Branch
-    let branch_id = expect_ok!(app_admin.core_client.create_branch(&branch_draft));
+    let branch_id = expect_ok!(app_admin.core_client.branch_new(&branch_draft));
     let host_branch_pair = HostBranchPair {
         host_id: "Host name or IP".to_string().try_into().unwrap(),
         branch_id,
@@ -81,7 +81,7 @@ async fn host_branch_pair_lookup() {
     let args = LookupReqArgs {
         host_id: host_branch_pair.host_id.clone(),
     };
-    let actual = expect_ok!(app_admin.core_client.get_host_branch_pair(&args));
+    let actual = expect_ok!(app_admin.core_client.host_branch_pair_get(&args));
 
     // Assert - Ensure not found
     assert_eq!(actual, None);
@@ -93,7 +93,7 @@ async fn host_branch_pair_lookup() {
     let arg = LookupReqArgs {
         host_id: host_branch_pair.host_id.clone(),
     };
-    let actual = expect_ok!(app_admin.core_client.get_host_branch_pair(&arg));
+    let actual = expect_ok!(app_admin.core_client.host_branch_pair_get(&arg));
 
     // Assert - Found
     assert_eq!(actual, Some(host_branch_pair.branch_id));
@@ -110,7 +110,7 @@ async fn ensure_branch_only_changes_if_not_set() {
         name: "second branch".try_into().unwrap(),
         short_name: "se".try_into().unwrap(),
     };
-    let new_branch_id = expect_ok!(app_admin.core_client.create_branch(&body));
+    let new_branch_id = expect_ok!(app_admin.core_client.branch_new(&body));
     app_admin.logout_assert().await;
 
     // Act - Login and request branch is changed
@@ -123,7 +123,7 @@ async fn ensure_branch_only_changes_if_not_set() {
     assert!(expect_ok!(rx).is_any_success());
 
     // Act - Get current branch set
-    let curr_branch_id = expect_ok!(app_admin.core_client.get_host_branch_pair(&LookupReqArgs {
+    let curr_branch_id = expect_ok!(app_admin.core_client.host_branch_pair_get(&LookupReqArgs {
         host_id: app_admin.host_branch_pair.host_id.clone(),
     }))
     .expect("expected pair to exist");
@@ -198,7 +198,7 @@ async fn ensure_branch_can_be_set_with_permissions() {
     assert!(expect_ok!(rx).is_any_success());
 
     // Act - Get current branch set
-    let actual = expect_ok!(app_admin.core_client.get_host_branch_pair(&LookupReqArgs {
+    let actual = expect_ok!(app_admin.core_client.host_branch_pair_get(&LookupReqArgs {
         host_id: app_admin.host_branch_pair.host_id.clone(),
     }));
 
@@ -212,7 +212,7 @@ async fn ensure_branch_can_be_set_with_permissions() {
     app_admin.login_assert().await;
 
     // Act - Get current branch set
-    let actual = expect_ok!(app_admin.core_client.get_host_branch_pair(&LookupReqArgs {
+    let actual = expect_ok!(app_admin.core_client.host_branch_pair_get(&LookupReqArgs {
         host_id: app_admin.host_branch_pair.host_id.clone(),
     }));
 

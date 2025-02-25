@@ -41,7 +41,7 @@ async fn user() {
     // Act
     let actual = expect_ok!(app
         .core_client
-        .get_user(app.test_user.username.clone().try_into().unwrap()));
+        .user_get(app.test_user.username.clone().try_into().unwrap()));
 
     // Assert
     insta::assert_json_snapshot!(actual, {
@@ -118,7 +118,7 @@ async fn common_update_user_test(f: impl FnOnce(UserMetadata) -> UserMetadata) {
     // Arrange -- Get User from DB
     let original_user = expect_ok!(app
         .core_client
-        .get_user(app.test_user.username.clone().try_into().unwrap()));
+        .user_get(app.test_user.username.clone().try_into().unwrap()));
 
     // Arrange -- Create modified user
     let edited_user = f(original_user.clone());
@@ -134,7 +134,7 @@ async fn common_update_user_test(f: impl FnOnce(UserMetadata) -> UserMetadata) {
     // Act -- Get updated user
     let actual = expect_ok!(app
         .core_client
-        .get_user(app.test_user.username.clone().try_into().unwrap()));
+        .user_get(app.test_user.username.clone().try_into().unwrap()));
 
     // Assert
     assert_eq!(actual, edited_user);
@@ -157,7 +157,7 @@ async fn new_user() {
     // Act
     expect_ok!(app.core_client.new_user(req_args.clone()));
 
-    let actual = expect_ok!(app.core_client.get_user(username.clone()));
+    let actual = expect_ok!(app.core_client.user_get(username.clone()));
 
     // Assert
     let expected = UserMetadata {

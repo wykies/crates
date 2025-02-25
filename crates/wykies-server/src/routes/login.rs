@@ -1,4 +1,4 @@
-use super::{execute_chained_handler, set_host_branch_pair};
+use super::{execute_chained_handler, host_branch_pair_set};
 use crate::{
     authentication::{validate_credentials, AuthUserInfo, Credentials, LoginAttemptLimit},
     routes::host_branch_pair_lookup,
@@ -8,7 +8,7 @@ use actix_web::{dev::ConnectionInfo, web, HttpResponse};
 use anyhow::{anyhow, Context};
 use wykies_shared::{
     branch::BranchId,
-    const_config::path::{PATH_API_HOSTBRANCH_LOOKUP, PATH_API_HOSTBRANCH_SET},
+    const_config::path::{PATH_API_HOSTBRANCH, PATH_API_HOSTBRANCH_SET},
     db_types::DbPool,
     host_branch::{HostBranchPair, HostId},
     req_args::{api::host_branch, LoginReqArgs},
@@ -79,7 +79,7 @@ async fn set_user_branch(
 
     // Lookup DB for Client Host Identifier
     let lookup_result = execute_chained_handler(
-        PATH_API_HOSTBRANCH_LOOKUP.path,
+        PATH_API_HOSTBRANCH.path,
         &auth_user_info.permissions,
         || {
             host_branch_pair_lookup(
@@ -111,7 +111,7 @@ async fn set_user_branch(
                     }
                     (true, Some(branch_to_set)) => {
                         // Set Branch as per user request
-                        if let Err(e) = set_host_branch_pair(
+                        if let Err(e) = host_branch_pair_set(
                             web::Data::new(pool.clone()),
                             web::Json(HostBranchPair {
                                 host_id: client_identifier,

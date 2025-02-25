@@ -15,7 +15,7 @@ use wykies_shared::{
 
 impl Client {
     #[tracing::instrument]
-    pub fn get_user(&self, username: Username) -> oneshot::Receiver<anyhow::Result<UserMetadata>> {
+    pub fn user_get(&self, username: Username) -> oneshot::Receiver<anyhow::Result<UserMetadata>> {
         let args = user::LookupReqArgs { username };
         self.send_request_expect_json(PATH_API_USER, &args)
     }

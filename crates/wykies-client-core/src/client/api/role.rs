@@ -1,7 +1,7 @@
 use crate::Client;
 use reqwest_cross::oneshot;
 use wykies_shared::{
-    const_config::path::{PATH_API_ROLE, PATH_API_ROLE_ASSIGN, PATH_API_ROLE_CREATE},
+    const_config::path::{PATH_API_ROLE, PATH_API_ROLE_ASSIGN, PATH_API_ROLE_NEW},
     req_args::api::role::{self, AssignReqArgs},
     uac::RoleId,
     uac::{Role, RoleDraft},
@@ -9,12 +9,12 @@ use wykies_shared::{
 
 impl Client {
     #[tracing::instrument]
-    pub fn create_role(&self, args: &RoleDraft) -> oneshot::Receiver<anyhow::Result<RoleId>> {
-        self.send_request_expect_json(PATH_API_ROLE_CREATE, args)
+    pub fn role_new(&self, args: &RoleDraft) -> oneshot::Receiver<anyhow::Result<RoleId>> {
+        self.send_request_expect_json(PATH_API_ROLE_NEW, args)
     }
 
     #[tracing::instrument]
-    pub fn get_role(&self, role_id: RoleId) -> oneshot::Receiver<anyhow::Result<Role>> {
+    pub fn role_get(&self, role_id: RoleId) -> oneshot::Receiver<anyhow::Result<Role>> {
         let args = role::LookupReqArgs { role_id };
         self.send_request_expect_json(PATH_API_ROLE, &args)
     }
