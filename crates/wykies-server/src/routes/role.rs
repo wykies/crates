@@ -1,3 +1,4 @@
+#[cfg(feature = "mysql")]
 use crate::db_utils::validate_one_row_affected;
 use actix_web::web;
 use anyhow::Context;
