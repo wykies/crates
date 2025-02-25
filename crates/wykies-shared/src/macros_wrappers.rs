@@ -112,7 +112,7 @@ macro_rules! string_wrapper {
 macro_rules! char_array_wrapper {
     ($name: ident, $length: expr, $always_case: expr) => {
         #[derive(
-            Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord,
+            Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq, PartialOrd, Ord, Copy
         )]
         pub struct $name([char; Self::LENGTH]);
 
