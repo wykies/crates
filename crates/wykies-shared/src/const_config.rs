@@ -57,19 +57,25 @@ pub mod error {
 pub mod path {
     mod path_spec;
     pub use path_spec::PathSpec;
+    // TODO 3: Change create to new
     pub const PATH_API_ADMIN_BRANCH_CREATE: PathSpec = PathSpec::post("/api/admin/branch/create");
+    // TODO 3: Change to host_branches
     pub const PATH_API_ADMIN_HOSTBRANCH_LIST: PathSpec =
         PathSpec::get("/api/admin/host_branch/list");
     pub const PATH_API_ADMIN_HOSTBRANCH_SET: PathSpec =
         PathSpec::post("/api/admin/host_branch/set");
+    // TODO 3: Change to an endpoint for user
     pub const PATH_API_ADMIN_ROLE_ASSIGN: PathSpec = PathSpec::post("/api/admin/role/assign");
+    // TODO 3: Change create to new
     pub const PATH_API_ADMIN_ROLE_CREATE: PathSpec = PathSpec::post("/api/admin/role/create");
     pub const PATH_API_ADMIN_ROLE: PathSpec = PathSpec::get("/api/admin/role/");
     pub const PATH_API_ADMIN_USER_NEW: PathSpec = PathSpec::post("/api/admin/user/new");
     pub const PATH_API_ADMIN_USER_PASSWORD_RESET: PathSpec =
         PathSpec::post("/api/admin/user/password_reset");
+    // TODO 3: Change verb to patch
     pub const PATH_API_ADMIN_USER_UPDATE: PathSpec = PathSpec::post("/api/admin/user/update");
     pub const PATH_API_ADMIN_USER: PathSpec = PathSpec::get("/api/admin/user/");
+    // TODO 3: Change to users
     pub const PATH_API_ADMIN_USERS_LIST_AND_ROLES: PathSpec = PathSpec::get("/api/admin/user/list");
     pub const PATH_API_CHANGE_PASSWORD: PathSpec = PathSpec::post("/api/change_password");
     pub const PATH_API_HOSTBRANCH_LOOKUP: PathSpec = PathSpec::get("/api/host_branch/lookup");
