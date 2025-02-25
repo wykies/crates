@@ -262,6 +262,8 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
                 .route("/login", web::post().to(login))
                 .route("/status", web::get().to(status))
                 .route(
+                    // TODO 5: Use version endpoint in client to detect if compatible with server,
+                    // at least give warning if not
                     "/version",
                     web::get().to(|| async { HttpResponse::Ok().body(pkg_version.to_string()) }),
                 )
