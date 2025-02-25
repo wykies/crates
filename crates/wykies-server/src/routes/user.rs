@@ -9,7 +9,7 @@ use wykies_shared::{
     db_types::DbPool,
     e400, e500,
     req_args::{
-        api::user::{self, NewUserReqArgs, PasswordResetReqArgs},
+        api::user::{self, AssignReqArgs, NewUserReqArgs, PasswordResetReqArgs},
         RonWrapper,
     },
     uac::{
@@ -297,5 +297,40 @@ pub async fn password_reset(
     .await
     .map_err(ResetPasswordError::UnexpectedError)?;
 
+    Ok(HttpResponse::Ok().finish())
+}
+
+#[tracing::instrument(err(Debug), skip(pool))]
+pub async fn role_assign(
+    pool: web::Data<DbPool>,
+    web::Json(req_args): web::Json<AssignReqArgs>,
+) -> actix_web::Result<HttpResponse> {
+    let pool: &DbPool = &pool;
+    #[cfg(feature = "mysql")]
+    let query = sqlx::query!(
+        "UPDATE `user`
+        SET `AssignedRole` = ? 
+        WHERE `user`.`UserName` = ?;",
+        req_args.role_id,
+        req_args.username
+    );
+    #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
+    // TODO 5: Check why encode trait impl doesn't make converting not necessary
+    let query = {
+        let role_id: i32 = req_args.role_id.try_into()?;
+        sqlx::query!(
+            "UPDATE users
+        SET assigned_role = $1 
+        WHERE users.user_name = $2;",
+            role_id,
+            req_args.username.as_ref()
+        )
+    };
+    let sql_result = query
+        .execute(pool)
+        .await
+        .context("failed to set role for user")
+        .map_err(e500)?;
+    validate_one_row_affected(&sql_result).map_err(e500)?;
     Ok(HttpResponse::Ok().finish())
 }

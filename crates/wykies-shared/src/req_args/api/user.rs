@@ -19,3 +19,9 @@ pub struct PasswordResetReqArgs {
     pub username: Username,
     pub new_password: SecretString,
 }
+
+#[derive(serde::Serialize, serde::Deserialize, Debug)]
+pub struct AssignReqArgs {
+    pub username: Username,
+    pub role_id: RoleId,
+}

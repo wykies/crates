@@ -235,7 +235,6 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
                         .service(
                             web::scope("/role")
                                 .route("/", web::get().to(role))
-                                .route("/assign", web::post().to(role_assign))
                                 .route("/new", web::post().to(role_new)),
                         )
                         .service(
@@ -244,6 +243,7 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
                                 .route("/list", web::get().to(users_and_roles_list))
                                 .route("/new", web::post().to(user_new))
                                 .route("/password_reset", web::post().to(password_reset))
+                                .route("/role", web::post().to(role_assign))
                                 .route("/update", web::patch().to(user_update)),
                         ),
                 )

@@ -103,7 +103,7 @@ pub fn default_permissions() -> PermissionMap {
     result.insert(PATH_API_CHANGE_PASSWORD.path, vec![]);
     result.insert(PATH_API_HOSTBRANCH.path, vec![]);
     result.insert(PATH_API_LOGOUT.path, vec![]);
-    result.insert(PATH_API_ROLE_ASSIGN.path, vec![perm::ManUAC]);
+    result.insert(PATH_API_USER_ROLE_SET.path, vec![perm::ManUAC]);
     result.insert(PATH_API_ROLE_NEW.path, vec![perm::ManRoles]);
     result.insert(PATH_API_ROLE.path, vec![perm::ManRoles]);
     result.insert(PATH_API_USER_NEW.path, vec![perm::ManUAC]);

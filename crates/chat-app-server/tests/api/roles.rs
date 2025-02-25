@@ -1,7 +1,7 @@
 use crate::helpers::spawn_app;
 use wykies_server_test_helper::expect_ok;
 use wykies_shared::{
-    req_args::api::role::AssignReqArgs,
+    req_args::api::user::AssignReqArgs,
     uac::{Permission, Role, RoleDraft},
 };
 
