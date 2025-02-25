@@ -21,7 +21,7 @@ impl Client {
     }
 
     #[tracing::instrument]
-    pub fn new_user(&self, user: NewUserReqArgs) -> oneshot::Receiver<anyhow::Result<()>> {
+    pub fn user_new(&self, user: NewUserReqArgs) -> oneshot::Receiver<anyhow::Result<()>> {
         let args = serde_json::json!({
             "username": user.username,
             "display_name": user.display_name,

@@ -155,7 +155,7 @@ async fn new_user() {
     };
 
     // Act
-    expect_ok!(app.core_client.new_user(req_args.clone()));
+    expect_ok!(app.core_client.user_new(req_args.clone()));
 
     let actual = expect_ok!(app.core_client.user_get(username.clone()));
 
