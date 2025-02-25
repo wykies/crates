@@ -1,8 +1,8 @@
 use wykies_client_core::LoginOutcome;
 use wykies_server_test_helper::expect_ok;
 use wykies_shared::{
-    branch::BranchDraft, host_branch::HostBranchPair,
-    req_args::api::admin::host_branch::LookupReqArgs, uac::AuthError,
+    branch::BranchDraft, host_branch::HostBranchPair, req_args::api::host_branch::LookupReqArgs,
+    uac::AuthError,
 };
 
 use crate::helpers::{spawn_app, spawn_app_without_host_branch_stored, TestApp};

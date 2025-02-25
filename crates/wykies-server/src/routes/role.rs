@@ -4,7 +4,7 @@ use anyhow::Context;
 use wykies_shared::{
     db_types::DbPool,
     e400, e500,
-    req_args::api::admin::role::{self, AssignReqArgs},
+    req_args::api::role::{self, AssignReqArgs},
     uac::{Role, RoleDraft, RoleId},
 };
 

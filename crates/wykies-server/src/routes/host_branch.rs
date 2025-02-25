@@ -2,7 +2,7 @@ use actix_web::{web, HttpResponse};
 use anyhow::Context as _;
 use wykies_shared::{
     branch::BranchId, db_types::DbPool, e500, host_branch::HostBranchPair,
-    req_args::api::admin::host_branch,
+    req_args::api::host_branch,
 };
 
 #[tracing::instrument(ret, err(Debug), skip(pool))]

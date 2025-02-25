@@ -1,23 +1,24 @@
-mod admin;
+mod branch;
 mod health_check;
+mod host_branch;
 mod login;
 mod logout;
 mod password;
+mod role;
 mod status;
+mod user;
 
 use actix_web::{HttpRequest, HttpResponse};
-pub use admin::{
-    branch::{branch_create, branch_list},
-    host_branch::{host_branch_pair_lookup, list_host_branch_pairs, set_host_branch_pair},
-    role::{role, role_assign, role_create},
-    user::{list_users_and_roles, password_reset, user, user_new, user_update},
-};
 use anyhow::Context;
+pub use branch::{branch_create, branch_list};
 pub use health_check::health_check;
+pub use host_branch::{host_branch_pair_lookup, list_host_branch_pairs, set_host_branch_pair};
 pub use login::login;
 pub use logout::log_out;
 pub use password::change_password;
+pub use role::{role, role_assign, role_create};
 pub use status::status;
+pub use user::{list_users_and_roles, password_reset, user, user_new, user_update};
 use wykies_shared::{debug_panic, uac::Permissions};
 
 pub fn execute_chained_handler<T>(

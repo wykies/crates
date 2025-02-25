@@ -1,7 +1,7 @@
 use reqwest_cross::{Awaiting, DataState};
 use secrecy::SecretString;
 use wykies_client_core::Client;
-use wykies_shared::{req_args::api::admin::user::NewUserReqArgs, uac::RoleId};
+use wykies_shared::{req_args::api::user::NewUserReqArgs, uac::RoleId};
 
 use super::SaveState;
 

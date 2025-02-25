@@ -1,6 +1,9 @@
 use secrecy::SecretString;
 
-pub mod admin;
+pub mod host_branch;
+pub mod role;
+pub mod user;
+
 #[derive(serde::Deserialize)]
 pub struct ChangePasswordReqArgs {
     pub current_password: SecretString,

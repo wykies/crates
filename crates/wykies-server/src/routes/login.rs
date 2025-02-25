@@ -8,10 +8,10 @@ use actix_web::{dev::ConnectionInfo, web, HttpResponse};
 use anyhow::{anyhow, Context};
 use wykies_shared::{
     branch::BranchId,
-    const_config::path::{PATH_API_ADMIN_HOSTBRANCH_SET, PATH_API_HOSTBRANCH_LOOKUP},
+    const_config::path::{PATH_API_HOSTBRANCH_SET, PATH_API_HOSTBRANCH_LOOKUP},
     db_types::DbPool,
     host_branch::{HostBranchPair, HostId},
-    req_args::{api::admin::host_branch, LoginReqArgs},
+    req_args::{api::host_branch, LoginReqArgs},
     uac::{AuthError, LoginResponse},
 };
 
@@ -99,7 +99,7 @@ async fn set_user_branch(
                 // Check if user has permissions to set branch and branch provided to be set
                 let does_user_have_permission = auth_user_info
                     .permissions
-                    .is_allowed_access(PATH_API_ADMIN_HOSTBRANCH_SET.path)
+                    .is_allowed_access(PATH_API_HOSTBRANCH_SET.path)
                     .map_err(anyhow::Error::new)?
                     .has_required_permissions();
                 match (does_user_have_permission, branch_to_set) {

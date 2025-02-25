@@ -4,7 +4,7 @@ use wykies_client_core::LoginOutcome;
 use wykies_server_test_helper::expect_ok;
 use wykies_shared::{
     req_args::{
-        api::admin::user::{NewUserReqArgs, PasswordResetReqArgs},
+        api::user::{NewUserReqArgs, PasswordResetReqArgs},
         LoginReqArgs,
     },
     uac::{PasswordComplexity, ResetPasswordError, UserMetadata, UserMetadataDiff, Username},

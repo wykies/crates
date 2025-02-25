@@ -91,26 +91,26 @@ static PERMISSION_MAP: OnceLock<PermissionMap> = OnceLock::new();
 pub fn default_permissions() -> PermissionMap {
     use Permission as perm;
     let mut result: HashMap<&str, Vec<Permission>> = HashMap::new();
-    result.insert(PATH_API_ADMIN_BRANCH_CREATE.path, vec![perm::ManBranches]);
     result.insert(
-        PATH_API_ADMIN_HOSTBRANCH_LIST.path,
+        PATH_API_HOSTBRANCH_LIST.path,
         vec![perm::ManHostBranchAssignment],
     );
     result.insert(
-        PATH_API_ADMIN_HOSTBRANCH_SET.path,
+        PATH_API_HOSTBRANCH_SET.path,
         vec![perm::ManHostBranchAssignment],
     );
-    result.insert(PATH_API_ADMIN_ROLE_ASSIGN.path, vec![perm::ManUAC]);
-    result.insert(PATH_API_ADMIN_ROLE_CREATE.path, vec![perm::ManRoles]);
-    result.insert(PATH_API_ADMIN_ROLE.path, vec![perm::ManRoles]);
-    result.insert(PATH_API_ADMIN_USER_NEW.path, vec![perm::ManUAC]);
-    result.insert(PATH_API_ADMIN_USER_PASSWORD_RESET.path, vec![perm::ManUAC]);
-    result.insert(PATH_API_ADMIN_USER_UPDATE.path, vec![perm::ManUAC]);
-    result.insert(PATH_API_ADMIN_USER.path, vec![perm::ManUAC]);
-    result.insert(PATH_API_ADMIN_USERS_LIST_AND_ROLES.path, vec![perm::ManUAC]);
+    result.insert(PATH_API_BRANCH_CREATE.path, vec![perm::ManBranches]);
     result.insert(PATH_API_CHANGE_PASSWORD.path, vec![]);
     result.insert(PATH_API_HOSTBRANCH_LOOKUP.path, vec![]);
     result.insert(PATH_API_LOGOUT.path, vec![]);
+    result.insert(PATH_API_ROLE_ASSIGN.path, vec![perm::ManUAC]);
+    result.insert(PATH_API_ROLE_CREATE.path, vec![perm::ManRoles]);
+    result.insert(PATH_API_ROLE.path, vec![perm::ManRoles]);
+    result.insert(PATH_API_USER_NEW.path, vec![perm::ManUAC]);
+    result.insert(PATH_API_USER_PASSWORD_RESET.path, vec![perm::ManUAC]);
+    result.insert(PATH_API_USER_UPDATE.path, vec![perm::ManUAC]);
+    result.insert(PATH_API_USER.path, vec![perm::ManUAC]);
+    result.insert(PATH_API_USERS_LIST_AND_ROLES.path, vec![perm::ManUAC]);
     result.insert(PATH_WS_TOKEN_CHAT.path, vec![]); // Always included but gives 404 if not in app
     result
 }
@@ -435,35 +435,6 @@ mod tests {
         match actual {
             Ok(val) => panic!("Expected an error but got {val:?}"),
             Err(e) => println!("Expected and error and got one: {e}"),
-        }
-    }
-
-    /// Just a sanity check that any admin paths in default require "management
-    /// permissions"
-    #[test]
-    fn admin_paths_require_management_permission() {
-        PERMISSION_MAP
-            .set(default_permissions())
-            .expect("failed to set to default permissions");
-        assert!(
-            PERMISSION_MAP
-                .get()
-                .unwrap()
-                .iter()
-                .any(|(path, _)| { path.contains("admin") }),
-            "At least one permission must be a admin permission"
-        );
-
-        // All permissions are either not admin or they have 'Manage' in at least one of
-        // their required permissions
-        for (path, permissions) in PERMISSION_MAP.get().unwrap().iter() {
-            if path.contains("admin")
-                && !permissions
-                    .iter()
-                    .any(|perm| dbg!(perm.to_string()).contains("Manage"))
-            {
-                panic!("Failed to find `Manage` in any of the permissions for path.\npath: {path:?}\npermissions: {permissions:?}")
-            }
         }
     }
 }

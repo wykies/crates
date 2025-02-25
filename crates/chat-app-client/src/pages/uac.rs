@@ -11,7 +11,7 @@ use secrecy::ExposeSecret;
 use std::ops::ControlFlow;
 use wykies_client_core::Client;
 use wykies_shared::{
-    const_config::{error::err_role_name, path::PATH_API_ADMIN_USERS_LIST_AND_ROLES},
+    const_config::{error::err_role_name, path::PATH_API_USERS_LIST_AND_ROLES},
     debug_panic,
     uac::{
         get_required_permissions, DisplayName, ListUsersRoles, RoleId, RoleName, UserMetadata,
@@ -92,7 +92,7 @@ impl UserOp {
 impl DisplayablePage for UiUAC {
     displayable_page_common!(
         "User Account Control",
-        get_required_permissions(PATH_API_ADMIN_USERS_LIST_AND_ROLES.path)
+        get_required_permissions(PATH_API_USERS_LIST_AND_ROLES.path)
             .expect("failed to get permissions")
     );
 

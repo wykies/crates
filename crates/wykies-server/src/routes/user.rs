@@ -9,7 +9,7 @@ use wykies_shared::{
     db_types::DbPool,
     e400, e500,
     req_args::{
-        api::admin::user::{self, NewUserReqArgs, PasswordResetReqArgs},
+        api::user::{self, NewUserReqArgs, PasswordResetReqArgs},
         RonWrapper,
     },
     uac::{

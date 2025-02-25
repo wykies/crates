@@ -6,7 +6,10 @@ use wykies_shared::{
     req_args::api::ChangePasswordReqArgs,
 };
 
-pub mod admin;
+pub mod branch;
+pub mod host_branch;
+pub mod role;
+pub mod user;
 
 impl Client {
     #[tracing::instrument(skip(args))]
