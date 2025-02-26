@@ -249,12 +249,10 @@ impl ChatApp {
     fn logout(&mut self) {
         self.data_shared.client.logout_no_wait();
 
-        // Convert pages to json and back to remove state that should only stay when
-        // logged in
-        let pages =
-            serde_json::to_string(&self.active_pages).expect("failed to parse pages to json");
+        // Convert pages to ron and back to remove state that should only stay when logged in
+        let pages = ron::to_string(&self.active_pages).expect("failed to parse pages to ron");
         self.active_pages =
-            serde_json::from_str(&pages).expect("failed to convert back into pages from json");
+            ron::from_str(&pages).expect("failed to convert back into pages from ron");
     }
 
     fn ui_menu_page_btn<T: DisplayablePage>(&mut self, ui: &mut egui::Ui) {

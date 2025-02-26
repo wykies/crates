@@ -54,7 +54,10 @@ impl RemovableItem for UiPage {
 /// implement these traits
 pub trait DisplayablePage: Default + serde::Serialize + serde::de::DeserializeOwned {
     /// Reset the state of the screen
-    fn reset_to_default(&mut self, _: private::Token);
+    fn reset_to_default(&mut self, _: private::Token) {
+        let data = ron::to_string(self).expect("failed serialize to ron for reset");
+        *self = ron::from_str(&data).expect("failed deserialize ron during reset");
+    }
 
     /// Displays the page
     fn show(&mut self, ui: &mut eframe::egui::Ui, data_shared: &mut DataShared);

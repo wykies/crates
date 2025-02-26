@@ -28,11 +28,6 @@ impl DisplayablePage for UiChat {
         get_required_permissions(PATH_WS_TOKEN_CHAT.path).expect("failed to get permissions")
     );
 
-    fn reset_to_default(&mut self, _: super::private::Token) {
-        self.frontend = Default::default();
-        self.data_state = DataState::default();
-    }
-
     fn show(&mut self, ui: &mut eframe::egui::Ui, data_shared: &mut crate::DataShared) {
         let title = self.title(); // Needed to allocate it to not capture self
         let frontend_init = || {

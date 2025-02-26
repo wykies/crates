@@ -92,10 +92,6 @@ impl DisplayablePage for UiChangePassword {
         get_required_permissions(PATH_API_CHANGE_PASSWORD.path).expect("failed to get permissions")
     );
 
-    fn reset_to_default(&mut self, _: super::private::Token) {
-        self.data_state = Default::default();
-    }
-
     fn show(&mut self, ui: &mut eframe::egui::Ui, data_shared: &mut crate::DataShared) {
         self.should_send = false; // Reset at top of the loop
         ui.vertical_centered(|ui| {

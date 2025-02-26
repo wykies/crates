@@ -1239,6 +1239,7 @@ dependencies = [
  "log",
  "plugin-chat",
  "reqwest-cross",
+ "ron",
  "secrecy",
  "serde",
  "serde_json",

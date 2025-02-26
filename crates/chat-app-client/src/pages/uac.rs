@@ -96,12 +96,6 @@ impl DisplayablePage for UiUAC {
             .expect("failed to get permissions")
     );
 
-    fn reset_to_default(&mut self, _: super::private::Token) {
-        self.should_refresh = Default::default();
-        self.data_state = Default::default();
-        self.user_op = Default::default();
-    }
-
     fn show(&mut self, ui: &mut eframe::egui::Ui, data_shared: &mut crate::DataShared) {
         if self.should_refresh {
             self.reset_to_default(super::private::Token {});

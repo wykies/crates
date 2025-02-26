@@ -18,6 +18,7 @@ egui-helpers.workspace = true
 egui_extras.workspace = true
 plugin-chat = { workspace = true, features = ["client_only"] }
 reqwest-cross = { workspace = true, features = ["egui"] }
+ron.workspace = true
 secrecy.workspace = true
 serde.workspace = true
 serde_json.workspace = true
