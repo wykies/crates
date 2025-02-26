@@ -49,6 +49,10 @@ macro_rules! string_wrapper {
                     None => Ok(None),
                 }
             }
+
+            pub fn as_str(&self) -> &str {
+                self.0.as_str()
+            }
         }
 
         impl From<$name> for String {
