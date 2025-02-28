@@ -13,7 +13,7 @@ anyhow.workspace = true
 plugin-chat = { workspace = true, features = ["server_only"] }
 secrecy.workspace = true
 serde.workspace = true
-shuttle-runtime = { workspace = true }
+shuttle-runtime.workspace = true
 shuttle-shared-db = { workspace = true, optional = true, features = ["postgres", "sqlx"] }
 sqlx = { workspace = true, features = ["tls-rustls"] }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
@@ -33,7 +33,7 @@ serde_json.workspace = true
 uuid.workspace = true
 wykies-client-core = { workspace = true, features = ["expose_internal"] }
 wykies-server-test-helper.workspace = true
-wykies-time = { workspace = true }
+wykies-time.workspace = true
 
 [features]
 default = ["standalone", "mysql", "cookie-session"]
