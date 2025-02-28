@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = [
+members = [ "crates/bunyan_log_monitor",
   "crates/chat-app-client",
   "crates/chat-app-server",
   "crates/db-types",
