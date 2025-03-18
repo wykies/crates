@@ -50,7 +50,7 @@ pub enum ResetPasswordError {
 
 #[derive(thiserror::Error, Debug, PartialEq, Eq)]
 pub enum PermissionsError {
-    #[error("the following permissions are missing to access this endpoint: {0:?}")]
+    #[error("the following permissions are missing: {0:?}")]
     /// Not always an error, first it will be an outcome but this type was still
     /// useful when we need to treat it as an error
     MissingPermissions(Vec<Permission>),
