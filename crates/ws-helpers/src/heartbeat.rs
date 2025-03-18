@@ -1,10 +1,8 @@
 use crate::WebSocketSettings;
 use actix_ws::{CloseCode, CloseReason, Session};
-use anyhow::Context;
 use std::{fmt::Display, time::Duration};
 use tokio::time::{Instant, Interval};
 use tracing::{instrument, warn};
-use wykies_shared::log_err_as_error;
 use wykies_time::Seconds;
 
 #[derive(Debug, Clone, Copy)]
@@ -71,9 +69,15 @@ impl HeartbeatMonitor {
             })
         } else {
             // send heartbeat ping
-            let r = ws_session.ping(b"").await.context("failed to send ping");
-            log_err_as_error!(r);
-            None
+            match ws_session.ping(b"").await {
+                Ok(()) => None, // Ping sent successfully
+                Err(_closed) => Some(CloseReason {
+                    code: CloseCode::Normal,
+                    description: Some(
+                        "Client disappeared suddenly, like when a tab is closed".to_string(),
+                    ),
+                }),
+            }
         }
     }
 
