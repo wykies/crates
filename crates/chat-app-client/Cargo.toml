@@ -13,7 +13,7 @@ eframe = { workspace = true, features = [ # put all features on their own line
   "default_fonts", # Embed the default egui fonts.
   "glow", # Use the glow rendering backend. Alternative: "wgpu".
   "persistence", # Enable restoring app state when restarting the app.
-] }
+  "wayland","x11",] }
 egui.workspace = true
 egui-helpers.workspace = true
 egui_extras.workspace = true
