@@ -18,6 +18,7 @@ pub use logout::log_out;
 pub use password::change_password;
 pub use role::{role, role_new};
 pub use status::status;
+use tracing::Level;
 pub use user::{password_reset, role_assign, user, user_new, user_update, users_and_roles_list};
 use wykies_shared::{debug_panic, uac::Permissions};
 
@@ -34,9 +35,8 @@ pub fn execute_chained_handler<T>(
     Ok(f())
 }
 
-#[tracing::instrument]
-pub async fn not_found(req: HttpRequest) -> actix_web::Result<HttpResponse> {
-    tracing::error!("Failed to match route");
+#[tracing::instrument(level = Level::WARN)]
+pub async fn route_not_found(req: HttpRequest) -> actix_web::Result<HttpResponse> {
     debug_panic!("404 - {} to '{}' Not found\n", req.method(), req.path());
     Ok(HttpResponse::NotFound().body(format!(
         "404 - {} to '{}' Not found\n",

@@ -4,8 +4,9 @@ use crate::{
     get_configuration,
     routes::{
         branch_list, branch_new, change_password, health_check, host_branch_pair_list,
-        host_branch_pair_lookup, host_branch_pair_set, log_out, login, not_found, password_reset,
-        role, role_assign, role_new, status, user, user_new, user_update, users_and_roles_list,
+        host_branch_pair_lookup, host_branch_pair_set, log_out, login, password_reset, role,
+        role_assign, role_new, route_not_found, status, user, user_new, user_update,
+        users_and_roles_list,
     },
     Configuration, DatabaseSettings,
 };
@@ -262,7 +263,7 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
                 .app_data(db_pool.clone())
                 .app_data(login_attempt_limit.clone())
                 .app_data(websocket_auth_manager.clone())
-                .default_service(web::route().to(not_found))
+                .default_service(web::route().to(route_not_found))
         });
 
         if cfg!(feature = "disable-tls") {
