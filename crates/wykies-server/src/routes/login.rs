@@ -25,7 +25,7 @@ use wykies_shared::{
 /// - Sessions should automatically timeout after a period of time
 #[tracing::instrument(
     ret,
-    err(Debug),
+    err(Debug, level = tracing::Level::INFO),
     skip(req_args, pool, session),
     fields(username=tracing::field::Empty)
 )]

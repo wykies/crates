@@ -5,7 +5,7 @@ use anyhow::Context;
 use argon2::password_hash::SaltString;
 use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version};
 use secrecy::{ExposeSecret, SecretString};
-use tracing::info;
+use tracing::{error, info};
 use wykies_shared::branch::BranchId;
 use wykies_shared::db_types::DbPool;
 use wykies_shared::{
@@ -56,7 +56,7 @@ impl Default for DbUser {
 }
 
 #[tracing::instrument(skip(pool))]
-async fn get_user_from_db(username: &str, pool: &DbPool) -> Result<Option<DbUser>, anyhow::Error> {
+async fn get_user_from_db(username: &str, pool: &DbPool) -> anyhow::Result<Option<DbUser>> {
     // TODO 5: Remove display name from the queries (already removed from struct)
     #[cfg(feature = "mysql")]
     let query = sqlx::query!(
@@ -142,7 +142,16 @@ pub async fn validate_credentials(
 ) -> Result<AuthUserInfo, AuthError> {
     let mut db_user = DbUser::default();
 
-    if let Some(x) = get_user_from_db(&credentials.username, pool).await? {
+    let retrieved_user = match get_user_from_db(&credentials.username, pool).await {
+        Ok(x) => x,
+        Err(err_msg) => {
+            // Log error at a higher level as caller is usually the login which reports errors at info
+            error!(?err_msg);
+            return Err(err_msg.into());
+        }
+    };
+
+    if let Some(x) = retrieved_user {
         db_user = x;
     }
 
