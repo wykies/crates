@@ -7,6 +7,6 @@ ignore = [
 
   # TODO 3: Check if fixes are available for advisories
 
-  # PR https://github.com/RustCrypto/RSA/pull/394
+  # https://github.com/RustCrypto/RSA/issues/19#issuecomment-1822995643
   "RUSTSEC-2023-0071",
 ]
