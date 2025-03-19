@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
-members = [ "crates/bunyan_log_monitor",
+members = [
+  "crates/bunyan_log_monitor",
   "crates/chat-app-client",
   "crates/chat-app-server",
   "crates/db-types",
@@ -31,7 +32,7 @@ chrono = { version = "0.4.39", default-features = false, features = ["clock", "s
 clap = "4.5.29"
 config = { version = "0.15.8", default-features = false, features = ["toml"] }
 db-types = { version = "*", path = "crates/db-types", default-features = false }
-eframe = "0.31.0"
+eframe = { version = "0.31.0", default-features = false }
 egui = { version = "0.31.0", default-features = false }
 egui-helpers = { version = "*", path = "crates/egui-helpers" }
 egui_extras = "0.31.0"
