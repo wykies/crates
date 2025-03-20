@@ -38,6 +38,7 @@ pub async fn chat_ws_start_client_handler_loop(
 
     let (conn_id, cancellation_token) = chat_server_handle.register(conn_tx, user_info).await;
     Span::current().record("ws_conn_id", format!("{conn_id:?}"));
+    // TODO 1: replace ws_conn_id with request_id and log as string instead of Debug
     info!("Chat connected for {conn_id:?}");
 
     let mut msg_stream = pin!(msg_stream);
