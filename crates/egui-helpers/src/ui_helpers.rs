@@ -5,6 +5,7 @@ use secrecy::{ExposeSecret as _, SecretString};
 pub trait UiHelpers {
     fn label_truncate(&mut self, text: impl Into<WidgetText>) -> Response;
     fn error_label(&mut self, text: impl Into<RichText>) -> Response;
+    fn warn_label(&mut self, text: impl Into<RichText>) -> Response;
     fn text_height(&mut self) -> f32;
     fn password_edit(&mut self, password: &mut SecretString, hint_text: &str) -> Response;
     fn readonly_checkbox_no_text(&mut self, value: bool) -> Response;
@@ -48,6 +49,10 @@ impl UiHelpers for egui::Ui {
 
     fn error_label(&mut self, text: impl Into<RichText>) -> Response {
         self.colored_label(self.visuals().error_fg_color, text)
+    }
+
+    fn warn_label(&mut self, text: impl Into<RichText>) -> Response {
+        self.colored_label(self.visuals().warn_fg_color, text)
     }
 
     fn text_height(&mut self) -> f32 {
