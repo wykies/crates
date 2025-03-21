@@ -32,7 +32,7 @@ pub enum Command {
     },
 
     ForClients {
-        msg: ChatMsg,
+        chat_msg: ChatMsg,
         res_tx: oneshot::Sender<()>,
     },
 
@@ -112,8 +112,8 @@ impl ChatServer {
 
     /// Send message to other users
     #[instrument]
-    async fn send_msg_to_clients(&mut self, msg: ChatMsg) -> anyhow::Result<()> {
-        let msg = Arc::new(msg);
+    async fn send_msg_to_clients(&mut self, chat_msg: ChatMsg) -> anyhow::Result<()> {
+        let msg = Arc::new(chat_msg);
 
         // Save a copy of the IMs in recent history
         if let ChatMsg::IM(im) = msg.as_ref() {
@@ -220,14 +220,14 @@ impl ChatServer {
     }
 
     #[instrument]
-    async fn send_to_client(&self, conn_id: WsConnId, msg: Arc<ChatMsg>) {
+    async fn send_to_client(&self, conn_id: WsConnId, chat_msg: Arc<ChatMsg>) {
         let Some((_, tx)) = self.connections.get(&conn_id) else {
             debug_panic!("failed to send message to client because unable to locate connection for ID: {conn_id:?}");
             return;
         };
 
         let r = tx
-            .send(msg)
+            .send(chat_msg)
             .await
             .with_context(|| format!("failed to send message to connection with id {conn_id:?}"));
         log_err_as_error!(r);
@@ -341,8 +341,8 @@ impl ChatServer {
                     .context("fatal error, failed to unregister a connection")?;
             }
 
-            Command::ForClients { msg, res_tx } => {
-                self.send_msg_to_clients(msg)
+            Command::ForClients { chat_msg, res_tx } => {
+                self.send_msg_to_clients(chat_msg)
                     .await
                     .context("failed to sent IM to clients")?;
                 self.send_response(res_tx, ()).await;

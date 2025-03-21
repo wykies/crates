@@ -47,10 +47,10 @@ impl ChatServerHandle {
 
     /// Broadcast message to other users
     #[instrument]
-    pub async fn send_msg_to_clients(&self, msg: ChatMsg) {
+    pub async fn send_msg_to_clients(&self, chat_msg: ChatMsg) {
         let (res_tx, res_rx) = oneshot::channel();
 
-        self.send_cmd_to_server(Command::ForClients { msg, res_tx }, res_rx)
+        self.send_cmd_to_server(Command::ForClients { chat_msg, res_tx }, res_rx)
             .await
             .expect("failed to send command");
     }

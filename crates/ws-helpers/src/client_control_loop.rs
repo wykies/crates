@@ -15,11 +15,11 @@ pub enum StreamOutcome {
 #[instrument(skip(ws_session))]
 /// Handle stream messages received - commands & messages received from client
 pub async fn process_stream_from_client(
-    msg: Option<Result<AggregatedMessage, ProtocolError>>,
+    stream_msg: Option<Result<AggregatedMessage, ProtocolError>>,
     heartbeat: &mut HeartbeatMonitor,
     ws_session: &mut Session,
 ) -> StreamOutcome {
-    match msg {
+    match stream_msg {
         // Message from remote client
         Some(Ok(msg)) => {
             // TODO 4: See if this just duplicates the msg as it's one of the arguments

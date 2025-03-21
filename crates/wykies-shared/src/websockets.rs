@@ -69,8 +69,8 @@ impl WsConnTxRx {
     }
 
     #[inline]
-    pub fn send(&mut self, msg: WsMessage) {
-        self.tx.send(msg);
+    pub fn send(&mut self, ws_msg: WsMessage) {
+        self.tx.send(ws_msg);
     }
 
     /// Try receiving a new event without blocking.

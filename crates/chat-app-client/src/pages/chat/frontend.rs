@@ -36,7 +36,7 @@ pub struct FrontEnd {
 
 #[derive(Debug)]
 struct ChatUiError {
-    msg: String,
+    err_msg: String,
     is_transient: bool,
 }
 
@@ -167,7 +167,7 @@ impl FrontEnd {
                     .merge_initial_users(initial_state.connected_users);
                 if let Err(e) = self.history.prepend_other(initial_state.history) {
                     self.error_status = Some(ChatUiError {
-                        msg: e.to_string(),
+                        err_msg: e.to_string(),
                         is_transient: true,
                     })
                 };
@@ -182,7 +182,7 @@ impl FrontEnd {
             ChatMsg::RespHistory(incoming_history) => {
                 if let Err(e) = self.history.prepend_other(incoming_history) {
                     self.error_status = Some(ChatUiError {
-                        msg: e.to_string(),
+                        err_msg: e.to_string(),
                         is_transient: true,
                     })
                 };
@@ -338,7 +338,11 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
 
     /// Prerequisite: Error must be set
     fn ui_error_msg(&mut self, ui: &mut egui::Ui) {
-        let Some(ChatUiError { msg, is_transient }) = self.error_status.as_ref() else {
+        let Some(ChatUiError {
+            err_msg: msg,
+            is_transient,
+        }) = self.error_status.as_ref()
+        else {
             self.set_error_transient(internal_error_msg!("failed to find original error to show"));
             return;
         };
@@ -366,16 +370,16 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
         self.scroll_to_bottom = Some(SCROLLS_TO_GET_TO_BOTTOM);
     }
 
-    fn set_error_unrecoverable(&mut self, msg: impl Into<String>) {
+    fn set_error_unrecoverable(&mut self, err_msg: impl Into<String>) {
         self.error_status = Some(ChatUiError {
-            msg: msg.into(),
+            err_msg: err_msg.into(),
             is_transient: false,
         });
     }
 
-    fn set_error_transient(&mut self, msg: impl Into<String>) {
+    fn set_error_transient(&mut self, err_msg: impl Into<String>) {
         self.error_status = Some(ChatUiError {
-            msg: msg.into(),
+            err_msg: err_msg.into(),
             is_transient: true,
         });
     }
