@@ -22,7 +22,7 @@ use wykies_shared::{
 };
 use wykies_time::{Seconds, Timestamp};
 
-#[instrument(skip(ws_session, msg_stream, chat_server_handle), fields(ws_conn_id))]
+#[instrument(skip(ws_session, msg_stream, chat_server_handle), fields(request_id))]
 pub async fn chat_ws_start_client_handler_loop(
     chat_server_handle: Arc<ChatServerHandle>,
     mut ws_session: actix_ws::Session,
@@ -37,8 +37,7 @@ pub async fn chat_ws_start_client_handler_loop(
     let (conn_tx, mut conn_rx) = mpsc::channel(CHANNEL_BUFFER_SIZE);
 
     let (conn_id, cancellation_token) = chat_server_handle.register(conn_tx, user_info).await;
-    Span::current().record("ws_conn_id", format!("{conn_id:?}"));
-    // TODO 1: replace ws_conn_id with request_id and log as string instead of Debug
+    Span::current().record("request_id", conn_id.inner_as_string());
     info!("Chat connected for {conn_id:?}");
 
     let mut msg_stream = pin!(msg_stream);
