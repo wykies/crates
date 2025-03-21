@@ -9,6 +9,7 @@ pub trait UiHelpers {
     fn text_height(&mut self) -> f32;
     fn password_edit(&mut self, password: &mut SecretString, hint_text: &str) -> Response;
     fn readonly_checkbox_no_text(&mut self, value: bool) -> Response;
+    fn readonly_checkbox(&mut self, value: bool, text: impl Into<WidgetText>) -> Response;
     fn escape_button(&mut self, text: impl Into<WidgetText>) -> bool;
     fn back_button(&mut self, is_escape: bool) -> bool;
     fn cancel_button(&mut self) -> bool;
@@ -75,6 +76,10 @@ impl UiHelpers for egui::Ui {
 
     fn readonly_checkbox_no_text(&mut self, mut value: bool) -> Response {
         self.add_enabled(false, Checkbox::without_text(&mut value))
+    }
+
+    fn readonly_checkbox(&mut self, mut value: bool, text: impl Into<WidgetText>) -> Response {
+        self.add_enabled(false, Checkbox::new(&mut value, text))
     }
 
     /// Shows a button that is bound to the escape shortcut hotkey
