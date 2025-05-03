@@ -4,13 +4,6 @@
 
 #![warn(unused_crate_dependencies)]
 
-#[cfg(target_arch = "wasm32")]
-mod suppress_wasm_warnings {
-    // Needed because we need to enable js feature on this crate
-    use getrandom as _;
-    use getrandom_old as _;
-}
-
 #[cfg(test)] // Included to prevent unused crate warning
 mod warning_suppress {
     use wasm_bindgen_test as _;
