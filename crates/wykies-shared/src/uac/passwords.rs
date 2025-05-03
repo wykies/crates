@@ -110,11 +110,11 @@ impl PasswordComplexity {
     }
 
     pub fn generate_random_password() -> SecretString {
-        let mut rng = rand::thread_rng();
-        let leading_char = rng.gen_range('a'..='z');
+        let mut rng = rand::rng();
+        let leading_char = rng.random_range('a'..='z');
         let mid = Uuid::new_v4();
-        let non_alpha = rng.gen_range(0..10);
-        let ending_char = rng.gen_range('A'..='Z');
+        let non_alpha = rng.random_range(0..10);
+        let ending_char = rng.random_range('A'..='Z');
         let pass = format!("{leading_char}{mid}{non_alpha}{ending_char}");
         pass.into()
     }

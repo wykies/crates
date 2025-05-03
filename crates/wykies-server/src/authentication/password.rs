@@ -376,7 +376,7 @@ pub async fn change_password(
 }
 
 fn compute_password_hash(password: SecretString) -> Result<SecretString, anyhow::Error> {
-    let salt = SaltString::generate(&mut rand::thread_rng());
+    let salt = SaltString::generate(&mut rand_old::thread_rng());
     let password_hash = argon2_settings()
         .hash_password(password.expose_secret().as_bytes(), &salt)?
         .to_string();

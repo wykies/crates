@@ -260,7 +260,7 @@ impl TestUser {
     }
 
     pub async fn store(&self, pool: &DbPool, is_admin: bool) {
-        let salt = SaltString::generate(&mut rand::thread_rng());
+        let salt = SaltString::generate(&mut rand_old::thread_rng());
         // Match production parameters
         let password_hash = wykies_server::authentication::argon2_settings()
             .hash_password(self.password.as_bytes(), &salt)

@@ -43,6 +43,7 @@ log = "0.4.27"
 plugin-chat = { version = "*", path = "crates/plugin-chat" }
 pretty_assertions = "1.4.1"
 rand = "0.9.1"
+rand_old = { version = "0.8", package = "rand" }
 reqwest-cross = { version = "0.7.3", default-features = false, features = ["native-tokio", "json", "cookies", "http2", "rustls-tls-native-roots"] }
 ringbuffer = "0.15.0"
 ron = "0.10.1"

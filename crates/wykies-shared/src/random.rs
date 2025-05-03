@@ -1,7 +1,7 @@
-use rand::distributions::DistString as _;
+use rand::distr::SampleString as _;
 
 pub fn random_string(len: usize) -> String {
-    rand::distributions::Alphanumeric.sample_string(&mut rand::thread_rng(), len)
+    rand::distr::Alphanumeric.sample_string(&mut rand::rng(), len)
 }
 
 pub fn random_string_def_len() -> String {
