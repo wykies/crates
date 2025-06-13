@@ -7,6 +7,12 @@
 // See Cargo.toml for reason
 use wykies_time as _;
 
+#[cfg(feature = "disable-tls")]
+mod warning_suppress_disabled_tls {
+    use rustls as _;
+    use rustls_pemfile as _;
+}
+
 #[cfg(all(feature = "disable-cors", not(debug_assertions)))]
 mod warning_suppress_release {
     // Needed to prevent warning on release build testing in CI as we force CORS not
