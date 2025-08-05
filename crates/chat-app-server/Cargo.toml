@@ -1,7 +1,7 @@
 [package]
 name = "chat-app-server"
 version = "0.1.5-dev"
-edition = "2021"
+edition = "2024"
 publish = false
 description = "Server for Demo Chat App"
 
