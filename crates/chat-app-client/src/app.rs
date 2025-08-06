@@ -254,7 +254,8 @@ impl ChatApp {
     fn logout(&mut self) {
         self.data_shared.client.logout_no_wait();
 
-        // Convert pages to ron and back to remove state that should only stay when logged in
+        // Convert pages to ron and back to remove state that should only stay when
+        // logged in
         let pages = ron::to_string(&self.active_pages).expect("failed to parse pages to ron");
         self.active_pages =
             ron::from_str(&pages).expect("failed to convert back into pages from ron");

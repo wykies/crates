@@ -1,5 +1,5 @@
 // TODO 5: Decide if this should be updated or dropped
-use actix_web::{web, HttpResponse};
+use actix_web::{HttpResponse, web};
 use std::error::Error;
 use tracing::error;
 use wykies_shared::db_types::DbPool;

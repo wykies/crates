@@ -205,7 +205,10 @@ impl TryFrom<String> for Permissions {
                 '0' => (), // Do nothing this one is not included
                 '1' => {
                     let did_not_exist = result.0.insert(p);
-                    debug_assert!(did_not_exist, "Since we should always get a new Permission we should never already have the value inserted");
+                    debug_assert!(
+                        did_not_exist,
+                        "Since we should always get a new Permission we should never already have the value inserted"
+                    );
                 }
                 _ => return Err(PermissionConversionError::InvalidCharacter { c, perm: p }),
             }
@@ -345,8 +348,8 @@ impl PermissionCheckOutcome {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rstest::rstest;
     use Permission as p;
+    use rstest::rstest;
 
     #[rstest]
     #[case::empty("00000000000000000000000000000000000", vec![])]

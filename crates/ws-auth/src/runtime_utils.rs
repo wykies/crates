@@ -4,9 +4,9 @@
 use std::{future::Future, sync::Arc};
 
 use crate::{
-    validate_ws_connection, AuthTokenManager, ClientLoopController, WebSocketAuthError, WsServiceId,
+    AuthTokenManager, ClientLoopController, WebSocketAuthError, WsServiceId, validate_ws_connection,
 };
-use actix_web::{dev::ConnectionInfo, web, HttpRequest, HttpResponse};
+use actix_web::{HttpRequest, HttpResponse, dev::ConnectionInfo, web};
 use actix_ws::CloseCode;
 use anyhow::Context as _;
 use tracing::instrument;

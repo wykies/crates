@@ -1,9 +1,9 @@
-use super::{process_json_body, DUMMY_ARGUMENT};
+use super::{DUMMY_ARGUMENT, process_json_body};
 use crate::Client;
 use reqwest_cross::{fetch_plus, oneshot, reqwest};
 use tracing::warn;
 use wykies_shared::{
-    const_config::path::{PathSpec, PATH_WS_PREFIX},
+    const_config::path::{PATH_WS_PREFIX, PathSpec},
     token::AuthToken,
     websockets::{WakeFn, WsConnTxRx},
 };

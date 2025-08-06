@@ -1,20 +1,20 @@
 #![warn(unused_crate_dependencies)]
 
 use anyhow::Context;
-use argon2::password_hash::SaltString;
 use argon2::PasswordHasher;
+use argon2::password_hash::SaltString;
 use serde::de::DeserializeOwned;
 use sqlx::{Connection, Executor};
 use std::fmt::Debug;
-use std::fs::{create_dir_all, File};
+use std::fs::{File, create_dir_all};
 use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::LazyLock;
 use uuid::Uuid;
 use wykies_server::Configuration;
 use wykies_server::{
-    db_utils::validate_one_row_affected, get_configuration, get_db_connection_pool,
-    DatabaseSettings,
+    DatabaseSettings, db_utils::validate_one_row_affected, get_configuration,
+    get_db_connection_pool,
 };
 use wykies_shared::{
     branch::BranchId,

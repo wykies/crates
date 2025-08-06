@@ -32,10 +32,10 @@ mod session_state;
 mod startup;
 mod tls;
 
-pub use configuration::{get_configuration, Configuration, DatabaseSettings};
+pub use configuration::{Configuration, DatabaseSettings, get_configuration};
 pub use startup::{
-    get_db_connection_pool, get_socket_address, initialize_tracing, ApiServerBuilder,
-    ApiServerInitBundle, ServerTask,
+    ApiServerBuilder, ApiServerInitBundle, ServerTask, get_db_connection_pool, get_socket_address,
+    initialize_tracing,
 };
 use tracked_cancellations::CancellationTracker;
 use wykies_shared::const_config::server::SERVER_SHUTDOWN_TIMEOUT;

@@ -2,7 +2,7 @@ use reqwest_cross::{Awaiting, DataState};
 use wykies_client_core::Client;
 use wykies_shared::{req_args::api::user::PasswordResetReqArgs, uac::UserMetadata};
 
-use super::{get_save_outcome, SaveState};
+use super::{SaveState, get_save_outcome};
 
 #[derive(Debug)]
 pub struct PassResetUserInfo {

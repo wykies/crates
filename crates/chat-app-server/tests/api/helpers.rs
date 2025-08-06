@@ -1,4 +1,4 @@
-use chat_app_server::startup::{start_servers, CustomConfiguration};
+use chat_app_server::startup::{CustomConfiguration, start_servers};
 use std::{
     mem::forget,
     ops::{Deref, DerefMut},
@@ -7,9 +7,8 @@ use tracked_cancellations::TrackedCancellationToken;
 use wykies_client_core::LoginOutcome;
 use wykies_server::{ApiServerBuilder, ApiServerInitBundle, Configuration};
 use wykies_server_test_helper::{
-    build_test_app, convert_port_to_test_address, expect_ok,
-    spawn_app_without_host_branch_stored_before_migration, store_host_branch, TestUser,
-    TEST_MSG_WAIT_TIMEOUT,
+    TEST_MSG_WAIT_TIMEOUT, TestUser, build_test_app, convert_port_to_test_address, expect_ok,
+    spawn_app_without_host_branch_stored_before_migration, store_host_branch,
 };
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, db_types::DbPool};
 

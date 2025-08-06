@@ -1,14 +1,14 @@
-use crate::{client::DUMMY_ARGUMENT, Client};
+use crate::{Client, client::DUMMY_ARGUMENT};
 use reqwest_cross::oneshot;
 use secrecy::ExposeSecret;
 use wykies_shared::{
     const_config::path::{
-        PATH_API_USER, PATH_API_USERS_LIST_AND_ROLES, PATH_API_USER_NEW,
-        PATH_API_USER_PASSWORD_RESET, PATH_API_USER_UPDATE,
+        PATH_API_USER, PATH_API_USER_NEW, PATH_API_USER_PASSWORD_RESET, PATH_API_USER_UPDATE,
+        PATH_API_USERS_LIST_AND_ROLES,
     },
     req_args::{
-        api::user::{self, NewUserReqArgs, PasswordResetReqArgs},
         RonWrapper,
+        api::user::{self, NewUserReqArgs, PasswordResetReqArgs},
     },
     uac::{ListUsersRoles, UserMetadata, UserMetadataDiff, Username},
 };

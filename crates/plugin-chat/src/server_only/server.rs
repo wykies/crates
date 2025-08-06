@@ -1,9 +1,9 @@
-use super::{history::ChatHistory, ChatServerHandle, ChatSettings};
+use super::{ChatServerHandle, ChatSettings, history::ChatHistory};
 use crate::{
-    consts::{CHAT_HISTORY_RECENT_CAPACITY, CHAT_MAX_IMS_BEFORE_SAVE, CHAT_MAX_TIME_BEFORE_SAVE},
     ChatIM, ChatMsg, ChatMsgsHistory, ChatUser, InitialStateBody, ReqHistoryBody,
+    consts::{CHAT_HISTORY_RECENT_CAPACITY, CHAT_MAX_IMS_BEFORE_SAVE, CHAT_MAX_TIME_BEFORE_SAVE},
 };
-use anyhow::{anyhow, bail, Context};
+use anyhow::{Context, anyhow, bail};
 use std::{collections::HashMap, fmt::Debug, sync::Arc};
 use tokio::{
     select,
@@ -11,7 +11,7 @@ use tokio::{
 };
 use tracing::{error, info, instrument, warn};
 use tracked_cancellations::TrackedCancellationToken;
-use ws_helpers::{heartbeat::HeartbeatConfig, WebSocketSettings};
+use ws_helpers::{WebSocketSettings, heartbeat::HeartbeatConfig};
 use wykies_server::ServerTask;
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE, db_types::DbPool, debug_panic, log_as_error,
@@ -222,7 +222,9 @@ impl ChatServer {
     #[instrument]
     async fn send_to_client(&self, conn_id: WsConnId, chat_msg: Arc<ChatMsg>) {
         let Some((_, tx)) = self.connections.get(&conn_id) else {
-            debug_panic!("failed to send message to client because unable to locate connection for ID: {conn_id:?}");
+            debug_panic!(
+                "failed to send message to client because unable to locate connection for ID: {conn_id:?}"
+            );
             return;
         };
 
@@ -301,7 +303,9 @@ impl ChatServer {
                 .await
                 .context("failed to unregister connection")
         } else {
-            error!("Unable to send disconnection message because user info and connection not found for {conn_id:?}");
+            error!(
+                "Unable to send disconnection message because user info and connection not found for {conn_id:?}"
+            );
             Ok(())
         }
     }

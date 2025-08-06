@@ -10,8 +10,8 @@ mod user;
 pub use errors::{AuthError, ChangePasswordError, PermissionsError, ResetPasswordError};
 pub use passwords::{PasswordComplexity, PasswordComplexityError};
 pub use permissions::{
-    default_permissions, get_required_permissions, init_permissions_to_defaults,
-    try_set_permissions, Permission, PermissionCheckOutcome, PermissionMap, Permissions,
+    Permission, PermissionCheckOutcome, PermissionMap, Permissions, default_permissions,
+    get_required_permissions, init_permissions_to_defaults, try_set_permissions,
 };
 pub use responses::LoginResponse;
 pub use role::{Role, RoleDescription, RoleDraft, RoleId, RoleIdAndName, RoleName};

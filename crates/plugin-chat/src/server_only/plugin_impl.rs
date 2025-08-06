@@ -1,4 +1,4 @@
-use super::{server::ChatServer, ChatServerHandle};
+use super::{ChatServerHandle, server::ChatServer};
 use std::sync::Arc;
 use tracked_cancellations::TrackedCancellationToken;
 use ws_helpers::WebSocketSettings;

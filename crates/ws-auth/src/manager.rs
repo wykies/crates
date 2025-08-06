@@ -1,10 +1,10 @@
 use std::sync::Mutex;
 
 use super::WsServiceId;
-use anyhow::{bail, Context as _};
+use anyhow::{Context as _, bail};
 use futures_util::StreamExt as _;
 use tokio::time::timeout;
-use tracing::{field, warn, Span};
+use tracing::{Span, field, warn};
 use wykies_shared::{
     const_config::web_socket::{WS_MAX_CONTINUATION_SIZE, WS_MAX_FRAME_SIZE},
     host_branch::HostId,
@@ -242,9 +242,11 @@ mod tests {
 
         // Old token rejected
         assert!(!manager.is_expected_host(&host_id, WsServiceId::TEST1));
-        assert!(manager
-            .validate_token(&host_id, WsServiceId::TEST1, &token)
-            .is_none());
+        assert!(
+            manager
+                .validate_token(&host_id, WsServiceId::TEST1, &token)
+                .is_none()
+        );
 
         // Insert another token for the same host
         manager.record_token(host_id.clone(), WsServiceId::TEST1, user_info, new_token());
@@ -311,9 +313,11 @@ mod tests {
         );
 
         assert!(manager.is_expected_host(&host_id, WsServiceId::TEST1));
-        assert!(manager
-            .validate_token(&host_id, WsServiceId::TEST1, &token2)
-            .is_none());
+        assert!(
+            manager
+                .validate_token(&host_id, WsServiceId::TEST1, &token2)
+                .is_none()
+        );
     }
 
     #[test]
@@ -334,9 +338,11 @@ mod tests {
         );
 
         assert!(!manager.is_expected_host(&host_id, WsServiceId::TEST1));
-        assert!(manager
-            .validate_token(&host_id, WsServiceId::TEST1, &token)
-            .is_none());
+        assert!(
+            manager
+                .validate_token(&host_id, WsServiceId::TEST1, &token)
+                .is_none()
+        );
     }
 
     #[test]

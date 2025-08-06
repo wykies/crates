@@ -10,7 +10,9 @@ pub enum AuthError {
     LockedOut,
     #[error("User Not Enabled")]
     NotEnabled,
-    #[error("Branch not set and user does not have permissions to set the branch. Client identifier '{client_identifier}'")]
+    #[error(
+        "Branch not set and user does not have permissions to set the branch. Client identifier '{client_identifier}'"
+    )]
     BranchNotSetAndUnableToSet { client_identifier: HostId },
     #[error("Branch not set please resend specifying desired branch to set")]
     BranchNotSetResend { client_identifier: HostId },

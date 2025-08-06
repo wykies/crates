@@ -1,5 +1,5 @@
-use crate::authentication::{validate_credentials, Credentials, LoginAttemptLimit};
-use actix_web::{web, HttpResponse};
+use crate::authentication::{Credentials, LoginAttemptLimit, validate_credentials};
+use actix_web::{HttpResponse, web};
 use secrecy::ExposeSecret as _;
 use wykies_shared::{
     db_types::DbPool,

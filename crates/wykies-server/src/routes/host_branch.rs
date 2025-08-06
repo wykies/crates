@@ -1,4 +1,4 @@
-use actix_web::{web, HttpResponse};
+use actix_web::{HttpResponse, web};
 use anyhow::Context as _;
 use wykies_shared::{
     branch::BranchId, db_types::DbPool, e500, host_branch::HostBranchPair,

@@ -1,17 +1,17 @@
 use super::{execute_chained_handler, host_branch_pair_set};
 use crate::{
-    authentication::{validate_credentials, AuthUserInfo, Credentials, LoginAttemptLimit},
+    authentication::{AuthUserInfo, Credentials, LoginAttemptLimit, validate_credentials},
     routes::host_branch_pair_lookup,
     session_state::TypedSession,
 };
-use actix_web::{dev::ConnectionInfo, web, HttpResponse};
-use anyhow::{anyhow, Context};
+use actix_web::{HttpResponse, dev::ConnectionInfo, web};
+use anyhow::{Context, anyhow};
 use wykies_shared::{
     branch::BranchId,
     const_config::path::{PATH_API_HOSTBRANCH, PATH_API_HOSTBRANCH_SET},
     db_types::DbPool,
     host_branch::{HostBranchPair, HostId},
-    req_args::{api::host_branch, LoginReqArgs},
+    req_args::{LoginReqArgs, api::host_branch},
     uac::{AuthError, LoginResponse},
 };
 
@@ -104,10 +104,10 @@ async fn set_user_branch(
                     .has_required_permissions();
                 match (does_user_have_permission, branch_to_set) {
                     (false, _) => {
-                        return Err(AuthError::BranchNotSetAndUnableToSet { client_identifier })
+                        return Err(AuthError::BranchNotSetAndUnableToSet { client_identifier });
                     }
                     (true, None) => {
-                        return Err(AuthError::BranchNotSetResend { client_identifier })
+                        return Err(AuthError::BranchNotSetResend { client_identifier });
                     }
                     (true, Some(branch_to_set)) => {
                         // Set Branch as per user request

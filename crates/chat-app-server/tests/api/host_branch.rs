@@ -5,7 +5,7 @@ use wykies_shared::{
     uac::AuthError,
 };
 
-use crate::helpers::{spawn_app, spawn_app_without_host_branch_stored, TestApp};
+use crate::helpers::{TestApp, spawn_app, spawn_app_without_host_branch_stored};
 
 #[tokio::test]
 async fn set_host_branch_pair() {

@@ -1,4 +1,4 @@
-use super::{get_save_outcome, SaveState};
+use super::{SaveState, get_save_outcome};
 use anyhow::anyhow;
 use reqwest_cross::{Awaiting, DataState};
 use wykies_client_core::Client;

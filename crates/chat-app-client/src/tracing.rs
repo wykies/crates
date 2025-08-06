@@ -1,6 +1,6 @@
 #[cfg(not(target_arch = "wasm32"))]
 pub fn init() -> anyhow::Result<tracing_appender::non_blocking::WorkerGuard> {
-    use anyhow::{bail, Context};
+    use anyhow::{Context, bail};
     use wykies_shared::telemetry;
 
     let (writer, path, guard) = telemetry::setup_tracing_writer("chat_app_client")?;

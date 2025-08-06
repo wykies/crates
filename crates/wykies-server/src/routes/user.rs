@@ -1,16 +1,16 @@
 #[cfg(feature = "mysql")]
 use crate::db_utils::db_int_to_bool;
 use crate::{authentication, db_utils::validate_one_row_affected};
-use actix_web::{web, HttpResponse};
+use actix_web::{HttpResponse, web};
 use anyhow::Context;
-use argon2::{password_hash::SaltString, PasswordHasher};
+use argon2::{PasswordHasher, password_hash::SaltString};
 use secrecy::ExposeSecret;
 use wykies_shared::{
     db_types::DbPool,
     e400, e500,
     req_args::{
-        api::user::{self, AssignReqArgs, NewUserReqArgs, PasswordResetReqArgs},
         RonWrapper,
+        api::user::{self, AssignReqArgs, NewUserReqArgs, PasswordResetReqArgs},
     },
     uac::{
         ListUsersRoles, ResetPasswordError, RoleIdAndName, UserInfo, UserMetadata, UserMetadataDiff,
@@ -239,9 +239,13 @@ async fn role_list(pool: &DbPool) -> actix_web::Result<Vec<RoleIdAndName>> {
 
 async fn user_list(pool: &DbPool) -> actix_web::Result<Vec<UserMetadata>> {
     #[cfg(feature = "mysql")]
-    let query = sqlx::query!("SELECT `UserName`, `DisplayName`, `ForcePassChange`, `AssignedRole`, `Enabled`, `LockedOut`, `FailedAttempts`, `PassChangeDate` FROM `user`",);
+    let query = sqlx::query!(
+        "SELECT `UserName`, `DisplayName`, `ForcePassChange`, `AssignedRole`, `Enabled`, `LockedOut`, `FailedAttempts`, `PassChangeDate` FROM `user`",
+    );
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
-    let query = sqlx::query!("SELECT user_name, display_name, force_pass_change, assigned_role, is_enabled, locked_out, failed_attempts, pass_change_date FROM users",);
+    let query = sqlx::query!(
+        "SELECT user_name, display_name, force_pass_change, assigned_role, is_enabled, locked_out, failed_attempts, pass_change_date FROM users",
+    );
     query
         .fetch_all(pool)
         .await

@@ -6,7 +6,7 @@ use std::fmt::Debug;
 use wykies_shared::{
     const_config::{path::PATH_WS_TOKEN_CHAT, web_socket::WS_INITIAL_MSG_TIMEOUT},
     uac::get_required_permissions,
-    websockets::{wake_fn, WsConnTxRx},
+    websockets::{WsConnTxRx, wake_fn},
 };
 
 mod frontend;

@@ -1,4 +1,4 @@
-use anyhow::{anyhow, bail, Context};
+use anyhow::{Context, anyhow, bail};
 use reqwest_cross::reqwest::{self, Method, RequestBuilder, StatusCode};
 use reqwest_cross::{fetch, fetch_plus, oneshot};
 use secrecy::ExposeSecret as _;
@@ -8,7 +8,7 @@ use tracing::{info, warn};
 use wykies_shared::uac::LoginResponse;
 use wykies_shared::{
     branch::Branch,
-    const_config::path::{PathSpec, PATH_BRANCH_LIST, PATH_HEALTH_CHECK, PATH_LOGIN},
+    const_config::path::{PATH_BRANCH_LIST, PATH_HEALTH_CHECK, PATH_LOGIN, PathSpec},
     req_args::LoginReqArgs,
     uac::UserInfo,
 };

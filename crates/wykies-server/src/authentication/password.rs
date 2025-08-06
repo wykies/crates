@@ -145,7 +145,8 @@ pub async fn validate_credentials(
     let retrieved_user = match get_user_from_db(&credentials.username, pool).await {
         Ok(x) => x,
         Err(err_msg) => {
-            // Log error at a higher level as caller is usually the login which reports errors at info
+            // Log error at a higher level as caller is usually the login which reports
+            // errors at info
             error!(?err_msg);
             return Err(err_msg.into());
         }
@@ -398,7 +399,10 @@ mod tests {
     #[test]
     fn assumptions_on_default_db_user() {
         let db_user = DbUser::default();
-        assert_eq!(db_user.username, "", "default username must be empty to make it easy to identify if it is still the default value");
+        assert_eq!(
+            db_user.username, "",
+            "default username must be empty to make it easy to identify if it is still the default value"
+        );
         assert_ne!(
             db_user.password_hash.expose_secret(),
             "",

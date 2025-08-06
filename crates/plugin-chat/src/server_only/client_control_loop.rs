@@ -4,13 +4,13 @@
 use super::ChatServerHandle;
 use crate::{ChatIM, ChatMsg};
 use actix_ws::{CloseCode, CloseReason};
-use anyhow::{bail, Context};
+use anyhow::{Context, bail};
 use futures_util::StreamExt as _;
 use std::{pin::pin, sync::Arc};
 use tokio::{select, sync::mpsc};
-use tracing::{info, instrument, Span};
+use tracing::{Span, info, instrument};
 use ws_helpers::client_control_loop::{
-    process_stream_from_client, send_message_to_client, StreamOutcome,
+    StreamOutcome, process_stream_from_client, send_message_to_client,
 };
 use wykies_shared::{
     const_config::CHANNEL_BUFFER_SIZE,
@@ -129,8 +129,11 @@ fn validate_im_from_client(im: &mut ChatIM, username: &Username) -> anyhow::Resu
     im.timestamp = Timestamp::now(); // Replace timestamp with server time to ensure monotonicity
 
     if &im.author != username {
-        debug_panic!("unexpected message author found. Author has been reset to expected value. Expected '{}' Found: '{}'",
-            username, im.author,);
+        debug_panic!(
+            "unexpected message author found. Author has been reset to expected value. Expected '{}' Found: '{}'",
+            username,
+            im.author,
+        );
         im.author = username.clone();
     }
 

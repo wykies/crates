@@ -1,4 +1,4 @@
-use crate::{client::DUMMY_ARGUMENT, Client};
+use crate::{Client, client::DUMMY_ARGUMENT};
 use reqwest_cross::oneshot;
 use wykies_shared::{
     branch::BranchId,

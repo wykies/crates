@@ -163,7 +163,10 @@ impl UiPage {
                 };
             }
         }
-        let msg = format!("execution should never get here. All pages should be able to be found but {:?} not found", T::title_base());
+        let msg = format!(
+            "execution should never get here. All pages should be able to be found but {:?} not found",
+            T::title_base()
+        );
         error!("{msg}");
         unreachable!("{msg}");
     }

@@ -1,6 +1,6 @@
 #[cfg(feature = "server_only")]
 use crate::db_types::Db;
-use crate::{branch::BranchId, errors::ConversionError, string_wrapper, AlwaysCase};
+use crate::{AlwaysCase, branch::BranchId, errors::ConversionError, string_wrapper};
 
 string_wrapper!(HostId, 50, AlwaysCase::Any);
 

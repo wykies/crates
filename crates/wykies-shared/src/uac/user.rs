@@ -1,7 +1,7 @@
 use super::{Permissions, RoleIdAndName, RoleName};
 #[cfg(feature = "server_only")]
 use crate::db_types::Db;
-use crate::{branch::BranchId, errors::ConversionError, string_wrapper, uac::RoleId, AlwaysCase};
+use crate::{AlwaysCase, branch::BranchId, errors::ConversionError, string_wrapper, uac::RoleId};
 use anyhow::bail;
 use chrono::NaiveDate;
 

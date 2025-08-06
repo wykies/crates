@@ -1,4 +1,4 @@
-use anyhow::{bail, Context};
+use anyhow::{Context, bail};
 use clap::{Parser, ValueEnum};
 use cli::Cli;
 use std::{
@@ -10,9 +10,9 @@ use std::{
 };
 use tracing::{debug, info};
 use tracing_subscriber::{
+    EnvFilter,
     fmt::{self, format::FmtSpan},
     prelude::*,
-    EnvFilter,
 };
 use version_control_clean_check::check_version_control;
 

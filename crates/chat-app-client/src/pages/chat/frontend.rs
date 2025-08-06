@@ -1,15 +1,15 @@
 use anyhow::Context;
 use connected_users::ConnectedUsers;
 use egui::{
-    scroll_area::ScrollBarVisibility, Align, KeyboardShortcut, Layout, Modifiers, ScrollArea,
+    Align, KeyboardShortcut, Layout, Modifiers, ScrollArea, scroll_area::ScrollBarVisibility,
 };
 use egui_helpers::UiHelpers as _;
 use ewebsock::{WsEvent, WsMessage};
 use plugin_chat::{
+    ChatIM, ChatImText, ChatMsg, ChatMsgsHistory, ReqHistoryBody,
     consts::{
         CHAT_HISTORY_REQUEST_SIZE, CHAT_MIN_TIME_BETWEEN_HISTORY_REQUESTS, CHAT_SYSTEM_USERNAME,
     },
-    ChatIM, ChatImText, ChatMsg, ChatMsgsHistory, ReqHistoryBody,
 };
 use tracing::{error, info};
 use wykies_shared::{internal_error_msg, uac::Username, websockets::WsConnTxRx};

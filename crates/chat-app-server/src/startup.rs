@@ -2,7 +2,7 @@ use crate::websocket::WsServiceIds;
 use actix_web::web::{self, ServiceConfig};
 use anyhow::Context;
 use plugin_chat::server_only::{
-    chat_ws_start_client_handler_loop, ChatPlugin, ChatPluginConfig, ChatSettings,
+    ChatPlugin, ChatPluginConfig, ChatSettings, chat_ws_start_client_handler_loop,
 };
 use shuttle_runtime::async_trait;
 use tokio::task::{JoinError, JoinSet};
@@ -10,9 +10,8 @@ use tracing::{error, info};
 use tracked_cancellations::CancellationTracker;
 use ws_auth::ws_get_route_add_closures;
 use wykies_server::{
-    cancel_remaining_tasks,
+    ApiServerBuilder, ServerTask as _, cancel_remaining_tasks,
     plugin::{ServerPlugin, ServerPluginArtifacts},
-    ApiServerBuilder, ServerTask as _,
 };
 use wykies_shared::{
     const_config::web_socket::WS_INITIAL_MSG_TIMEOUT, uac::init_permissions_to_defaults,

@@ -1,13 +1,13 @@
 use crate::helpers::{no_cb, spawn_app};
 use ewebsock::{WsEvent, WsMessage};
 use plugin_chat::{
-    consts::{CHAT_HISTORY_RECENT_CAPACITY, CHAT_HISTORY_REQUEST_SIZE},
     ChatIM, ChatImText, ChatMsg, ChatMsgsHistory, ChatUser, InitialStateBody, ReqHistoryBody,
+    consts::{CHAT_HISTORY_RECENT_CAPACITY, CHAT_HISTORY_REQUEST_SIZE},
 };
 use pretty_assertions::{assert_eq, assert_ne};
 use std::time::Duration;
 use tokio::time::sleep;
-use wykies_server_test_helper::{expect_ok, TEST_MSG_WAIT_TIMEOUT};
+use wykies_server_test_helper::{TEST_MSG_WAIT_TIMEOUT, expect_ok};
 use wykies_shared::{const_config::path::PATH_WS_TOKEN_CHAT, uac::Username};
 use wykies_time::Timestamp;
 
@@ -16,14 +16,16 @@ async fn sent_messages_received() {
     // Arrange
     let app = spawn_app().await;
     app.login_assert().await;
-    let mut conn1 =
-        expect_ok!(app
-            .core_client
-            .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb));
-    let mut conn2 =
-        expect_ok!(app
-            .core_client
-            .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb));
+    let mut conn1 = expect_ok!(app.core_client.ws_connect(
+        PATH_WS_TOKEN_CHAT,
+        TEST_MSG_WAIT_TIMEOUT,
+        no_cb
+    ));
+    let mut conn2 = expect_ok!(app.core_client.ws_connect(
+        PATH_WS_TOKEN_CHAT,
+        TEST_MSG_WAIT_TIMEOUT,
+        no_cb
+    ));
     let author: Username = app.test_user.username.clone().try_into().unwrap();
     let expected_im = ChatMsg::IM(ChatIM {
         author: author.clone(),
@@ -81,9 +83,10 @@ async fn connect_to_chat() {
     app.login_assert().await;
 
     // Connect Websocket
-    expect_ok!(app
-        .core_client
-        .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb));
+    expect_ok!(
+        app.core_client
+            .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb)
+    );
 }
 
 #[tokio::test]
@@ -97,10 +100,11 @@ async fn chat_initial_buffered_history() {
         .collect();
 
     // Act - Connect Websocket
-    let mut conn =
-        expect_ok!(app
-            .core_client
-            .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb));
+    let mut conn = expect_ok!(app.core_client.ws_connect(
+        PATH_WS_TOKEN_CHAT,
+        TEST_MSG_WAIT_TIMEOUT,
+        no_cb
+    ));
 
     // Act - Send messages
     for im in expected_ims_texts.iter() {
@@ -118,9 +122,10 @@ async fn chat_initial_buffered_history() {
     conn.close();
 
     // Act - Start a new connection to see if messages are included in the history
-    conn = expect_ok!(app
-        .core_client
-        .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb));
+    conn = expect_ok!(
+        app.core_client
+            .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb)
+    );
 
     // Act - Wait for initial state message
     let incoming = conn
@@ -162,10 +167,11 @@ async fn chat_overflowing_server_history_buffer() {
         .collect();
 
     // Act - Connect Websocket
-    let mut conn =
-        expect_ok!(app
-            .core_client
-            .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb));
+    let mut conn = expect_ok!(app.core_client.ws_connect(
+        PATH_WS_TOKEN_CHAT,
+        TEST_MSG_WAIT_TIMEOUT,
+        no_cb
+    ));
 
     // Act - Send messages
     let sleep_interval = CHAT_HISTORY_REQUEST_SIZE as usize / 2;
@@ -192,9 +198,10 @@ async fn chat_overflowing_server_history_buffer() {
     conn.close();
 
     // Act - Start a new connection to see if messages are included in the history
-    conn = expect_ok!(app
-        .core_client
-        .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb));
+    conn = expect_ok!(
+        app.core_client
+            .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb)
+    );
 
     // Act - Wait for initial state message
     let incoming = conn

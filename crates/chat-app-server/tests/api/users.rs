@@ -4,8 +4,8 @@ use wykies_client_core::LoginOutcome;
 use wykies_server_test_helper::expect_ok;
 use wykies_shared::{
     req_args::{
-        api::user::{NewUserReqArgs, PasswordResetReqArgs},
         LoginReqArgs,
+        api::user::{NewUserReqArgs, PasswordResetReqArgs},
     },
     uac::{PasswordComplexity, ResetPasswordError, UserMetadata, UserMetadataDiff, Username},
 };
@@ -39,9 +39,10 @@ async fn user() {
     app.login_assert().await;
 
     // Act
-    let actual = expect_ok!(app
-        .core_client
-        .user_get(app.test_user.username.clone().try_into().unwrap()));
+    let actual = expect_ok!(
+        app.core_client
+            .user_get(app.test_user.username.clone().try_into().unwrap())
+    );
 
     // Assert
     insta::assert_json_snapshot!(actual, {
@@ -116,9 +117,10 @@ async fn common_update_user_test(f: impl FnOnce(UserMetadata) -> UserMetadata) {
     app.login_assert().await;
 
     // Arrange -- Get User from DB
-    let original_user = expect_ok!(app
-        .core_client
-        .user_get(app.test_user.username.clone().try_into().unwrap()));
+    let original_user = expect_ok!(
+        app.core_client
+            .user_get(app.test_user.username.clone().try_into().unwrap())
+    );
 
     // Arrange -- Create modified user
     let edited_user = f(original_user.clone());
@@ -132,9 +134,10 @@ async fn common_update_user_test(f: impl FnOnce(UserMetadata) -> UserMetadata) {
     expect_ok!(app.core_client.update_user(diff));
 
     // Act -- Get updated user
-    let actual = expect_ok!(app
-        .core_client
-        .user_get(app.test_user.username.clone().try_into().unwrap()));
+    let actual = expect_ok!(
+        app.core_client
+            .user_get(app.test_user.username.clone().try_into().unwrap())
+    );
 
     // Assert
     assert_eq!(actual, edited_user);
@@ -196,9 +199,11 @@ async fn password_reset_normal() {
     app_admin.login_assert().await;
 
     // Act - Change password
-    expect_ok!(app_admin
-        .core_client
-        .reset_password(password_reset_req_args));
+    expect_ok!(
+        app_admin
+            .core_client
+            .reset_password(password_reset_req_args)
+    );
 
     // Act - Login using the new password
     app_normal.test_user.password = new_password.expose_secret().to_string();

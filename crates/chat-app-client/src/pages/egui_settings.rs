@@ -1,6 +1,6 @@
 use tracing::info;
 
-use crate::{displayable_page_common, ChatApp};
+use crate::{ChatApp, displayable_page_common};
 
 use super::DisplayablePage;
 

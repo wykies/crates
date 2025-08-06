@@ -1,8 +1,8 @@
-use anyhow::{bail, Context};
+use anyhow::{Context, bail};
 use std::fmt::Display;
 #[cfg(feature = "server_only")]
 use wykies_shared::db_types::Db;
-use wykies_shared::{errors::ConversionError, string_wrapper, uac::Username, AlwaysCase};
+use wykies_shared::{AlwaysCase, errors::ConversionError, string_wrapper, uac::Username};
 use wykies_time::Timestamp;
 
 string_wrapper!(ChatImText, 255, AlwaysCase::Any);
@@ -108,7 +108,9 @@ impl ChatMsgsHistory {
         // Ensure the precondition about the objects is met
         match (self.first(), other.last()) {
             (Some(first), Some(last)) if first.timestamp < last.timestamp => {
-                bail!("Prepending Chat IM history failed. Last message in other is after our first message. Our first: {first:?}, Other Last: {last:?}");
+                bail!(
+                    "Prepending Chat IM history failed. Last message in other is after our first message. Our first: {first:?}, Other Last: {last:?}"
+                );
             }
             _ => (), // No possible conflict in any other case
         }

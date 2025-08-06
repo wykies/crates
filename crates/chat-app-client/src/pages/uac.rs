@@ -14,8 +14,8 @@ use wykies_shared::{
     const_config::{error::err_role_name, path::PATH_API_USERS_LIST_AND_ROLES},
     debug_panic,
     uac::{
-        get_required_permissions, DisplayName, ListUsersRoles, RoleId, RoleName, UserMetadata,
-        Username,
+        DisplayName, ListUsersRoles, RoleId, RoleName, UserMetadata, Username,
+        get_required_permissions,
     },
 };
 use wykies_time::Seconds;

@@ -3,7 +3,7 @@ mod password;
 
 pub use middleware::validate_user_access;
 pub use password::{
-    argon2_settings, change_password, validate_credentials, AuthUserInfo, Credentials,
+    AuthUserInfo, Credentials, argon2_settings, change_password, validate_credentials,
 };
 
 #[derive(Debug, Clone, Copy)]

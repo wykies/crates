@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-use anyhow::{bail, Ok};
+use anyhow::{Ok, bail};
 use plugin_chat::ChatUser;
 
 #[derive(Debug, Default)]

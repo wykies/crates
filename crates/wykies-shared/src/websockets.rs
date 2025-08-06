@@ -1,5 +1,5 @@
 use crate::token::AuthToken;
-use anyhow::{bail, Context as _};
+use anyhow::{Context as _, bail};
 use ewebsock::{WsEvent, WsMessage};
 use std::{
     fmt::{Debug, Display},
@@ -168,7 +168,9 @@ impl WsConnTxRx {
                     // Using I'm a teapot to communicate it's an Unexpected Client as we can only
                     // get the status code
                     warn!("UnexpectedClient");
-                    bail!("Server Reported Unexpected Connection (This may happen sometimes but should not happen very often)")
+                    bail!(
+                        "Server Reported Unexpected Connection (This may happen sometimes but should not happen very often)"
+                    )
                 } else {
                     bail!("{base_err_msg}n error: {err_msg}")
                 }
