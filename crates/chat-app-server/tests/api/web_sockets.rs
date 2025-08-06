@@ -29,7 +29,7 @@ async fn rejected_without_requesting_token() {
 
     // Assert
     assert_eq!(
-        format!("{:?}", response),
+        format!("{response:?}"),
         format!(
             "{:?}",
             WsEvent::Error("HTTP error: 418 I'm a teapot".to_string())
@@ -74,5 +74,5 @@ async fn fails_to_connect_without_correct_token() {
 
     // Assert - Assert that `Closed` is received. Note anything but `Closed` is an
     // error including `Ping`
-    assert_eq!(format!("{:?}", response), format!("{:?}", WsEvent::Closed));
+    assert_eq!(format!("{response:?}"), format!("{:?}", WsEvent::Closed));
 }

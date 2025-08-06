@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use anyhow::{bail, Context};
+use anyhow::{Context, bail};
 use ringbuffer::{AllocRingBuffer, RingBuffer};
 use sqlx::QueryBuilder;
 use tokio::{select, sync::mpsc, time::Sleep};
@@ -59,7 +59,7 @@ impl ChatHistory {
 
     #[instrument]
     pub async fn push(&mut self, im: ChatIM) -> anyhow::Result<()> {
-        self.recent.push(im.clone());
+        self.recent.enqueue(im.clone());
         self.db_writer_handle
             .enqueue_for_saving(im)
             .await

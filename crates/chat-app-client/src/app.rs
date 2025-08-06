@@ -5,13 +5,13 @@ use tracing::{info, warn};
 use wykies_shared::uac::init_permissions_to_defaults;
 use wykies_time::Timestamp;
 
+use crate::DisplayablePage;
 use crate::lockout::ScreenLockInfo;
 use crate::pages::{
-    change_password::UiChangePassword, chat::UiChat, egui_settings::UiEguiSettings, uac::UiUAC,
-    UiLogin, UiPage,
+    UiLogin, UiPage, change_password::UiChangePassword, chat::UiChat,
+    egui_settings::UiEguiSettings, uac::UiUAC,
 };
 use crate::shortcuts::Shortcuts;
-use crate::DisplayablePage;
 
 const VERSION_STR: &str = concat!("ver: ", env!("CARGO_PKG_VERSION"));
 
@@ -82,7 +82,10 @@ impl DataShared {
             error!(
                 "Attempt to get user information when it doesn't exist. Isn't the user logged in?"
             );
-            debug_assert!(false, "This shouldn't happen we should only be checking user information after login when it exists");
+            debug_assert!(
+                false,
+                "This shouldn't happen we should only be checking user information after login when it exists"
+            );
             return false;
         };
         T::has_permissions(&permissions)
@@ -139,7 +142,9 @@ impl ChatApp {
                     value
                 }
                 None => {
-                    warn!("App state loading failed, no value saved or loading failed (see message a debug level from egui if failed)");
+                    warn!(
+                        "App state loading failed, no value saved or loading failed (see message a debug level from egui if failed)"
+                    );
                     Default::default()
                 }
             }
@@ -168,19 +173,19 @@ impl ChatApp {
             ui.separator();
             if ui.button("Open All Pages").clicked() {
                 self.open_all_pages();
-                ui.close_menu();
+                ui.close();
             }
             if ui.button("Close All Pages").clicked() {
                 self.close_all_pages();
-                ui.close_menu();
+                ui.close();
             }
             if ui.button("Deactivate All Pages").clicked() {
                 self.deactivate_all_pages();
-                ui.close_menu();
+                ui.close();
             }
             if ui.button("Sort Pages By Name").clicked() {
                 self.sort_pages_by_name();
-                ui.close_menu();
+                ui.close();
             }
             if ui
                 .add(
@@ -190,14 +195,14 @@ impl ChatApp {
                 .clicked()
             {
                 do_organize_pages(ui);
-                ui.close_menu();
+                ui.close();
             }
         });
     }
 
     fn top_panel(&mut self, ctx: &egui::Context) {
         egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
-            egui::menu::bar(ui, |ui| {
+            egui::MenuBar::new().ui(ui, |ui| {
                 egui::widgets::global_theme_preference_switch(ui);
                 if self.is_logged_in() && !self.is_locked() {
                     ui.separator();
@@ -274,7 +279,7 @@ impl ChatApp {
             };
             self.active_pages
                 .push(UiPage::new_page_with_unique_number::<T>(new_num));
-            ui.close_menu();
+            ui.close();
         }
     }
 
@@ -298,12 +303,12 @@ impl ChatApp {
 
             if ui.button("Lock").clicked() {
                 self.lock();
-                ui.close_menu();
+                ui.close();
             }
 
             if ui.button("Logout").clicked() {
                 self.logout();
-                ui.close_menu();
+                ui.close();
             }
 
             #[cfg(not(target_arch = "wasm32"))] // no File->Quit on web pages!

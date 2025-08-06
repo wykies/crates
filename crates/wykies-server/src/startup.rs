@@ -1,5 +1,6 @@
 use crate::{
-    authentication::{validate_user_access, LoginAttemptLimit},
+    Configuration, DatabaseSettings,
+    authentication::{LoginAttemptLimit, validate_user_access},
     configuration::ApplicationSettings,
     get_configuration,
     routes::{
@@ -8,17 +9,16 @@ use crate::{
         role_assign, role_new, route_not_found, status, user, user_new, user_update,
         users_and_roles_list,
     },
-    Configuration, DatabaseSettings,
 };
+use actix_session::SessionMiddleware;
 #[cfg(all(not(feature = "redis-session-rustls"), feature = "cookie-session"))]
 use actix_session::storage::CookieSessionStore;
 #[cfg(feature = "redis-session-rustls")]
 use actix_session::storage::RedisSessionStore;
-use actix_session::SessionMiddleware;
 use actix_web::{
+    App, HttpResponse, HttpServer,
     middleware::from_fn,
     web::{self, ServiceConfig},
-    App, HttpResponse, HttpServer,
 };
 use anyhow::Context as _;
 use secrecy::ExposeSecret as _;
@@ -172,7 +172,7 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
         };
 
         let listener = TcpListener::bind(addr)
-            .with_context(|| format!("failed to bind to address: {}", addr))?;
+            .with_context(|| format!("failed to bind to address: {addr}",))?;
         let port = listener
             .local_addr()
             .context("failed to get local address of listener")?

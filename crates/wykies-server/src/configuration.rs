@@ -76,8 +76,8 @@ impl DatabaseSettings {
     }
 }
 
-pub fn get_configuration<T: Clone + DeserializeOwned>(
-) -> Result<Configuration<T>, config::ConfigError> {
+pub fn get_configuration<T: Clone + DeserializeOwned>()
+-> Result<Configuration<T>, config::ConfigError> {
     let base_path = std::env::current_dir().expect("failed to determine the current directory");
     #[cfg(feature = "running-from-workspace-root")]
     let base_path = base_path.join("crates/chat-app-server");
@@ -137,8 +137,7 @@ impl TryFrom<String> for Environment {
             "local" => Ok(Self::Local),
             "production" => Ok(Self::Production),
             other => Err(format!(
-                "{} is not a supported environment. Use either `local` or `production`.",
-                other
+                "{other} is not a supported environment. Use either `local` or `production`.",
             )),
         }
     }
