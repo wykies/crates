@@ -95,10 +95,10 @@ impl EditUserInfo {
     }
 
     fn check_edit_user_valid(&mut self) {
-        if let Some(secs) = self.time_before_auto_unload_user() {
-            if secs.is_zero() {
-                self.unload_user_info();
-            }
+        if let Some(secs) = self.time_before_auto_unload_user()
+            && secs.is_zero()
+        {
+            self.unload_user_info();
         }
     }
 

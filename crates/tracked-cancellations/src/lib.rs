@@ -45,7 +45,7 @@ impl TrackedCancellationToken {
         self.token.cancel()
     }
 
-    pub fn cancelled(&self) -> WaitForCancellationFuture {
+    pub fn cancelled(&'_ self) -> WaitForCancellationFuture<'_> {
         self.token.cancelled()
     }
 
