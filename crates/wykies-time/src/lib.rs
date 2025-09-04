@@ -48,7 +48,7 @@ impl Timestamp {
             .into()
     }
 
-    pub fn display_as_locale_datetime_long(&self) -> String {
+    pub fn display_as_local_datetime_long(&self) -> String {
         self.as_local_datetime()
             .format(Self::LONG_DISPLAY_FORMAT)
             .to_string()
