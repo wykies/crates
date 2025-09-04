@@ -49,6 +49,7 @@ impl Timestamp {
     }
 
     pub fn display_as_local_datetime_long(&self) -> String {
+        // TODO 2: Remove this function and use the one that takes a timezone only as local time does not appear to be well defined in the browser. Closes: https://discord.com/channels/720482228072874056/1364629884110114816
         self.as_local_datetime()
             .format(Self::LONG_DISPLAY_FORMAT)
             .to_string()
