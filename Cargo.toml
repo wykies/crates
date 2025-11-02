@@ -82,6 +82,9 @@ wykies-server = { version = "*", path = "crates/wykies-server", default-features
 wykies-server-test-helper = { version = "*", path = "crates/wykies-server-test-helper" }
 wykies-shared = { version = "*", path = "crates/wykies-shared" }
 wykies-time = { version = "*", path = "crates/wykies-time" }
+lettre = "0.11.10"
+regex = "1.11.1"
+reqwest = "0.12.9"
 
 [profile.release]
 opt-level = 2 # fast and small wasm
