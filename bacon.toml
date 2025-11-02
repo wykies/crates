@@ -126,11 +126,27 @@ command = [
   "shuttle",
 ]
 
+# TODO 2: Test bacon notification job
+[jobs.run_bunyan_notify]
+command = [
+  "cargo",
+  "run",
+  "--package",
+  "bunyan_log_monitor",
+  "--",
+  "--test-notification",
+  "bacon test notification",
+]
+need_stdout = true
+allow_warnings = true
+background = false
+
 [keybindings]
 alt-t = "job:test-trace"
 e = "job:run-client-egui"
 alt-e = "job:run-client-egui-release"
 i = "job:include-ignored"
+n = "job:run_bunyan_notify"
 p = "job:test-chat-server-standalone-pg"
 alt-p = "job:test-chat-server-standalone-pg-trace"
 r = "job:run-server-standalone-mysql"
