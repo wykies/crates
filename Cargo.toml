@@ -45,7 +45,7 @@ plugin-chat = { version = "*", path = "crates/plugin-chat" }
 pretty_assertions = "1.4.1"
 rand = "0.10.0"
 regex = "1.12.3"
-reqwest-cross = { version = "0.9.0", default-features = false, features = ["native-tokio", "json", "cookies", "http2", "rustls-no-provider", "query"] }
+reqwest-cross = { version = "0.9.0", default-features = false, features = ["native-tokio", "json", "cookies", "http2", "rustls", "query"] }
 ringbuffer = "0.16.0"
 ron = "0.12.0"
 rstest = "0.26.1"
