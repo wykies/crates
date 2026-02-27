@@ -7,7 +7,6 @@
     "getrandom",
     "HOSTBRANCH",
     "LASTVAL",
-    "pemfile",
     "PGPASSWORD",
     "psql",
     "realip",

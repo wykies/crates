@@ -10,7 +10,7 @@ use wykies_time as _;
 #[cfg(feature = "disable-tls")]
 mod warning_suppress_disabled_tls {
     use rustls as _;
-    use rustls_pemfile as _;
+    use rustls_pki_types as _;
 }
 
 #[cfg(all(feature = "disable-cors", not(debug_assertions)))]

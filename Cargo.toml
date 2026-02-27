@@ -50,7 +50,7 @@ ringbuffer = "0.16.0"
 ron = "0.12.0"
 rstest = "0.26.1"
 rustls = "0.23.37"
-rustls-pemfile = "2.2.0"
+rustls-pki-types = "1.14.0"
 secrecy = { version = "0.10.3", features = ["serde"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde-aux = "4.7.0"
