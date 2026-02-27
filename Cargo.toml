@@ -1,7 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
-  "crates/bunyan_log_monitor",
+  # "crates/bunyan_log_monitor", # TODO 2: restore to work on notification program
   "crates/chat-app-client",
   "crates/chat-app-server",
   "crates/db-types",
