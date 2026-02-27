@@ -43,8 +43,8 @@ impl LogInfo {
     }
 
     /// Expects to receive the input without the surrounding tags but including inner tags to be replaced
-    fn add_error_or_warning(&mut self, msg: String) {
-        let msg = msg.replace("&quot;", "\"");
+    fn add_error_or_warning(&mut self, err_msg: String) {
+        let msg = err_msg.replace("&quot;", "\"");
         let msg = msg.replace("<br>", "; ");
         self.errors_and_warnings.push(msg);
     }
