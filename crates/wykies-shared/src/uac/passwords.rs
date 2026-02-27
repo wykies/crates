@@ -1,5 +1,4 @@
 use super::Username;
-use rand::Rng as _;
 use secrecy::{ExposeSecret, SecretString};
 use std::fmt::Display;
 use thiserror::Error;
@@ -110,6 +109,7 @@ impl PasswordComplexity {
     }
 
     pub fn generate_random_password() -> SecretString {
+        use rand::RngExt as _;
         let mut rng = rand::rng();
         let leading_char = rng.random_range('a'..='z');
         let mid = Uuid::new_v4();

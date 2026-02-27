@@ -2,8 +2,10 @@
 use crate::db_utils::db_int_to_bool;
 use crate::db_utils::validate_one_row_affected;
 use anyhow::Context;
-use argon2::password_hash::SaltString;
-use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version};
+use argon2::{
+    Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version,
+    password_hash::{SaltString, rand_core},
+};
 use secrecy::{ExposeSecret, SecretString};
 use tracing::{error, info};
 use wykies_shared::branch::BranchId;
@@ -377,7 +379,7 @@ pub async fn change_password(
 }
 
 fn compute_password_hash(password: SecretString) -> Result<SecretString, anyhow::Error> {
-    let salt = SaltString::generate(&mut rand_old::thread_rng());
+    let salt = SaltString::generate(&mut rand_core::OsRng);
     let password_hash = argon2_settings()
         .hash_password(password.expose_secret().as_bytes(), &salt)?
         .to_string();

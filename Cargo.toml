@@ -23,8 +23,8 @@ members = [
 actix-cors = "0.7.1"
 actix-files = "0.6.8"
 actix-session = "0.11.0"
-actix-web = { version = "4.11.0", features = ["rustls-0_23"] }
-actix-ws = "0.3.0"
+actix-web = { version = "4.13.0", features = ["rustls-0_23"] }
+actix-ws = "0.4.0"
 anyhow = "1.0.100"
 argon2 = "0.5.3"
 bytestring = "1.5.0"
@@ -32,51 +32,49 @@ chrono = { version = "0.4.42", default-features = false, features = ["clock", "s
 clap = "4.5.51"
 config = { version = "0.15.18", default-features = false, features = ["toml"] }
 db-types = { version = "*", path = "crates/db-types", default-features = false }
-eframe = { version = "0.32.0", default-features = false }
-egui = { version = "0.33.0", default-features = false }
+eframe = { version = "0.33.0", default-features = false }
+egui = { version = "0.33.3", default-features = false }
 egui-helpers = { version = "*", path = "crates/egui-helpers" }
-egui_extras = "0.32.0"
+egui_extras = "0.33.3"
 ewebsock = { version = "0.8.0", features = ["tls"] }
-futures-util = "0.3.31"
+futures-util = "0.3.32"
 insta = "1.43.2"
 lettre = "0.11.19"
 log = "0.4.28"
 plugin-chat = { version = "*", path = "crates/plugin-chat" }
 pretty_assertions = "1.4.1"
-rand = "0.9.2"
-rand_old = { version = "0.9.2", package = "rand" }
-regex = "1.12.2"
-reqwest = "0.12.24"
-reqwest-cross = { version = "0.8.1", default-features = false, features = ["native-tokio", "json", "cookies", "http2", "rustls-tls-native-roots"] }
+rand = "0.10.0"
+regex = "1.12.3"
+reqwest-cross = { version = "0.9.0", default-features = false, features = ["native-tokio", "json", "cookies", "http2", "rustls-no-provider", "query"] }
 ringbuffer = "0.16.0"
-ron = "0.11.0"
+ron = "0.12.0"
 rstest = "0.26.1"
-rustls = "0.23.31"
+rustls = "0.23.37"
 rustls-pemfile = "2.2.0"
 secrecy = { version = "0.10.3", features = ["serde"] }
 serde = { version = "1.0.228", features = ["derive"] }
 serde-aux = "4.7.0"
 serde_json = "1.0.145"
-shuttle-runtime = { version = "0.57.0", default-features = false }
+shuttle-runtime = { version = "0.57.0", default-features = false } # TODO 4: Need to remove shuttle as they are no longer a going concern
 shuttle-shared-db = { version = "0.57.0", default-features = false }
 sqlx = { version = "0.8.6", default-features = false }
 static_assertions = "1.1.0"
-strum = { version = "0.27.2", features = ["derive"] }
-thiserror = "2.0.17"
+strum = { version = "0.28.0", features = ["derive"] }
+thiserror = "2.0.18"
 tokio = { version = "1.48.0", default-features = false }
 tokio-tungstenite = { version = "0.28.0", default-features = false, features = ["rustls-tls-native-roots"] }
-tokio-util = "0.7.16"
+tokio-util = "0.7.18"
 tracing = "0.1.41"
-tracing-actix-web = "0.7.19"
-tracing-appender = "0.2.3"
+tracing-actix-web = "0.7.21"
+tracing-appender = "0.2.4"
 tracing-bunyan-formatter = "0.3.10"
 tracing-log = "0.2.0"
-tracing-subscriber = { version = "0.3.20", features = ["fmt", "json"] }
+tracing-subscriber = { version = "0.3.22", features = ["fmt", "json"] }
 tracked-cancellations = { version = "*", path = "crates/tracked-cancellations" }
-uuid = { version = "1.18.1", features = ["v4", "serde", "rng-getrandom"] }
+uuid = { version = "1.21.0", features = ["v4", "serde", "rng-getrandom"] }
 version-control-clean-check = "0.1.4"
-wasm-bindgen-test = "0.3.55"
-web-sys = "0.3.77"
+wasm-bindgen-test = "0.3.64"
+web-sys = "0.3.91"
 web-time = "1.1.0"
 ws-auth = { version = "*", path = "crates/ws-auth" }
 ws-helpers = { version = "*", path = "crates/ws-helpers" }
@@ -91,5 +89,3 @@ opt-level = 2 # fast and small wasm
 
 # https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html#testing-a-bugfix
 [patch.crates-io]
-# shuttle-runtime = { git = "https://github.com/shuttle-hq/shuttle" }
-# shuttle-shared-db = { git = "https://github.com/shuttle-hq/shuttle" }

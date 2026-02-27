@@ -3,7 +3,10 @@ use crate::db_utils::db_int_to_bool;
 use crate::{authentication, db_utils::validate_one_row_affected};
 use actix_web::{HttpResponse, web};
 use anyhow::Context;
-use argon2::{PasswordHasher, password_hash::SaltString};
+use argon2::{
+    PasswordHasher,
+    password_hash::{SaltString, rand_core},
+};
 use secrecy::ExposeSecret;
 use wykies_shared::{
     db_types::DbPool,
@@ -78,7 +81,7 @@ pub async fn user_new(
     web::Json(args): web::Json<NewUserReqArgs>,
 ) -> actix_web::Result<HttpResponse> {
     let pool: &DbPool = &pool;
-    let salt = SaltString::generate(&mut rand_old::thread_rng());
+    let salt = SaltString::generate(&mut rand_core::OsRng);
     let password_hash = authentication::argon2_settings()
         .hash_password(args.password.expose_secret().as_bytes(), &salt)
         .unwrap()
