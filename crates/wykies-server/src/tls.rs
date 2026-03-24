@@ -22,26 +22,16 @@ pub fn load_rustls_config() -> anyhow::Result<rustls::ServerConfig> {
         std::fs::File::open(&cert_path)
             .with_context(|| format!("failed to open cert file: {cert_path:?}"))?,
     );
-    let key_file = &mut std::io::BufReader::new(
-        std::fs::File::open(&key_path)
-            .with_context(|| format!("failed to open key file: {key_path:?}"))?,
-    );
 
     // convert files to key/cert objects
-    let cert_chain = rustls_pemfile::certs(cert_file)
+    let cert_chain = rustls_pki_types::pem::ReadIter::new(cert_file)
         .collect::<Result<Vec<_>, _>>()
         .with_context(|| format!("failed to extract certificate from: {cert_path:?}"))?;
-    let mut keys = rustls_pemfile::pkcs8_private_keys(key_file)
-        .map(|key| key.map(rustls::pki_types::PrivateKeyDer::Pkcs8))
-        .collect::<Result<Vec<_>, _>>()
+    use rustls_pki_types::pem::PemObject;
+    let key = rustls_pki_types::PrivateKeyDer::from_pem_file(&key_path)
         .with_context(|| format!("failed to extract keys from: {key_path:?}"))?;
 
-    // exit if no keys could be parsed
-    if keys.is_empty() {
-        anyhow::bail!("Could not locate PKCS 8 private keys.");
-    }
-
     config
-        .with_single_cert(cert_chain, keys.remove(0))
+        .with_single_cert(cert_chain, key)
         .context("key_der invalid or private key does not match end-entity")
 }
