@@ -255,6 +255,18 @@ macro_rules! id_wrapper {
             }
         }
 
+        impl From<$name> for egui::WidgetText {
+            fn from(value: $name) -> Self {
+                value.to_string().into()
+            }
+        }
+
+        impl From<&$name> for egui::WidgetText {
+            fn from(value: &$name) -> Self {
+                value.to_string().into()
+            }
+        }
+
         impl From<u64> for $name {
             fn from(value: u64) -> Self {
                 Self(value)
