@@ -249,6 +249,12 @@ macro_rules! id_wrapper {
         )]
         pub struct $name(u64);
 
+        impl std::fmt::Display for $name {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                write!(f, "{}", self.0)
+            }
+        }
+
         impl From<u64> for $name {
             fn from(value: u64) -> Self {
                 Self(value)
