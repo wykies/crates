@@ -48,19 +48,6 @@ impl Timestamp {
             .into()
     }
 
-    pub fn display_as_local_datetime_long(&self) -> String {
-        // TODO 2: Remove this function and use the one that takes a timezone only as local time does not appear to be well defined in the browser. Closes: https://discord.com/channels/720482228072874056/1364629884110114816
-        self.as_local_datetime()
-            .format(Self::LONG_DISPLAY_FORMAT)
-            .to_string()
-    }
-
-    pub fn display_as_local_datetime_short(&self) -> String {
-        self.as_local_datetime()
-            .format(Self::SHORT_DISPLAY_FORMAT)
-            .to_string()
-    }
-
     pub fn as_utc_datetime(&self) -> chrono::DateTime<chrono::Utc> {
         chrono::DateTime::from_timestamp(self.0.try_into().unwrap(), 0)
             .expect("wow this program wasn't meant to last that long")
