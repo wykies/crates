@@ -56,14 +56,14 @@ impl FrontEnd {
         }
     }
 
-    pub fn show(&mut self, ui: &mut eframe::egui::Ui, connection: &mut WsConnTxRx) {
+    pub fn show(&mut self, ui: &mut egui::Ui, connection: &mut WsConnTxRx) {
         if self.error_status.is_none() {
             self.check_for_server_msgs(connection);
         }
         let half_height = ui.available_height() / 2.;
-        egui::TopBottomPanel::bottom(self.generate_id("bottom panel"))
+        egui::Panel::bottom(self.generate_id("bottom panel"))
             .resizable(true)
-            .max_height(half_height)
+            .max_size(half_height)
             .show_inside(ui, |ui| {
                 if self.error_status.is_none() {
                     self.ui_send_area(ui, connection)
@@ -72,8 +72,8 @@ impl FrontEnd {
                 }
             });
 
-        egui::SidePanel::right(self.generate_id("connected users"))
-            .min_width(20.)
+        egui::Panel::right(self.generate_id("connected users"))
+            .min_size(20.)
             .show_inside(ui, |ui| self.ui_connected_users(ui));
 
         egui::CentralPanel::default().show_inside(ui, |ui| self.ui_messages(ui, connection));

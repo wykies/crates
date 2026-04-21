@@ -129,10 +129,7 @@ impl UiHelpers for egui::Ui {
     /// Returns a string representation of a shortcut with a hint if supplied
     fn shortcut_hint_text(&mut self, hint_msg: &str, shortcut: &KeyboardShortcut) -> String {
         let space = if hint_msg.is_empty() { "" } else { " " };
-        format!(
-            "{hint_msg}{space}({})",
-            self.ctx().format_shortcut(shortcut)
-        )
+        format!("{hint_msg}{space}({})", self.format_shortcut(shortcut))
     }
 
     /// Adds labels with x's the left that if clicked remove the item from the

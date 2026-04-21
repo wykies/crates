@@ -92,7 +92,7 @@ impl DisplayablePage for UiChangePassword {
         get_required_permissions(PATH_API_CHANGE_PASSWORD.path).expect("failed to get permissions")
     );
 
-    fn show(&mut self, ui: &mut eframe::egui::Ui, data_shared: &mut crate::DataShared) {
+    fn show(&mut self, ui: &mut egui::Ui, data_shared: &mut crate::DataShared) {
         self.should_send = false; // Reset at top of the loop
         ui.vertical_centered(|ui| {
             if let Some(heading_text) = self.heading_text.as_ref() {

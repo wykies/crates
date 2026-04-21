@@ -29,27 +29,27 @@ anyhow = "1.0.100"
 argon2 = "0.5.3"
 bytestring = "1.5.0"
 chrono = { version = "0.4.42", default-features = false, features = ["clock", "serde"] }
-clap = "4.5.51"
-config = { version = "0.15.18", default-features = false, features = ["toml"] }
+clap = "4.6.1"
+config = { version = "0.15.22", default-features = false, features = ["toml"] }
 db-types = { version = "*", path = "crates/db-types", default-features = false }
-eframe = { version = "0.33.0", default-features = false }
-egui = { version = "0.33.3", default-features = false }
+eframe = { version = "0.34.1", default-features = false }
+egui = { version = "0.34.1", default-features = false }
 egui-helpers = { version = "*", path = "crates/egui-helpers" }
-egui_extras = "0.33.3"
+egui_extras = "0.34.1"
 ewebsock = { version = "0.8.0", features = ["tls"] }
 futures-util = "0.3.32"
-insta = "1.43.2"
+insta = "1.47.2"
 lettre = "0.11.19"
 log = "0.4.28"
 plugin-chat = { version = "*", path = "crates/plugin-chat" }
 pretty_assertions = "1.4.1"
-rand = "0.10.0"
+rand = "0.10.1"
 regex = "1.12.3"
-reqwest-cross = { version = "0.9.0", default-features = false, features = ["native-tokio", "json", "cookies", "http2", "rustls", "query"] }
+reqwest-cross = { version = "0.10.0", default-features = false, features = ["native-tokio", "json", "cookies", "http2", "rustls", "query"] }
 ringbuffer = "0.16.0"
-ron = "0.12.0"
+ron = "0.12.1"
 rstest = "0.26.1"
-rustls = "0.23.37"
+rustls = "0.23.38"
 rustls-pki-types = "1.14.0"
 secrecy = { version = "0.10.3", features = ["serde"] }
 serde = { version = "1.0.228", features = ["derive"] }
@@ -61,20 +61,20 @@ sqlx = { version = "0.8.6", default-features = false }
 static_assertions = "1.1.0"
 strum = { version = "0.28.0", features = ["derive"] }
 thiserror = "2.0.18"
-tokio = { version = "1.48.0", default-features = false }
-tokio-tungstenite = { version = "0.28.0", default-features = false, features = ["rustls-tls-native-roots"] }
+tokio = { version = "1.52.1", default-features = false }
+tokio-tungstenite = { version = "0.29.0", default-features = false, features = ["rustls-tls-native-roots"] }
 tokio-util = "0.7.18"
 tracing = "0.1.41"
 tracing-actix-web = "0.7.21"
-tracing-appender = "0.2.4"
+tracing-appender = "0.2.5"
 tracing-bunyan-formatter = "0.3.10"
 tracing-log = "0.2.0"
-tracing-subscriber = { version = "0.3.22", features = ["fmt", "json"] }
+tracing-subscriber = { version = "0.3.23", features = ["fmt", "json"] }
 tracked-cancellations = { version = "*", path = "crates/tracked-cancellations" }
-uuid = { version = "1.21.0", features = ["v4", "serde", "rng-getrandom"] }
+uuid = { version = "1.23.1", features = ["v4", "serde", "rng-getrandom"] }
 version-control-clean-check = "0.1.4"
-wasm-bindgen-test = "0.3.64"
-web-sys = "0.3.91"
+wasm-bindgen-test = "0.3.68"
+web-sys = "0.3.95"
 web-time = "1.1.0"
 ws-auth = { version = "*", path = "crates/ws-auth" }
 ws-helpers = { version = "*", path = "crates/ws-helpers" }

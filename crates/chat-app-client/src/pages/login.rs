@@ -71,7 +71,7 @@ impl UiLogin {
                 } else {
                     data_shared.mark_login_complete();
                 }
-                ui.ctx().request_repaint(); // Repaint with new value
+                ui.request_repaint(); // Repaint with new value
             }
             DataState::Present(LoginOutcome::RetryWithBranchSet) => {
                 ui.label("Please select the branch to set");
@@ -85,7 +85,7 @@ impl UiLogin {
                         "Response received for login attempt. New state is: {new_state:?}"
                     );
                     self.login_attempt_status = new_state;
-                    ui.ctx().request_repaint();
+                    ui.request_repaint();
                 } else {
                     ui.spinner();
                 }
@@ -102,8 +102,8 @@ impl UiLogin {
         }
     }
 
-    pub fn show(&mut self, ctx: &egui::Context, data_shared: &mut DataShared) {
-        egui::CentralPanel::default().show(ctx, |ui| {
+    pub fn show(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared) {
+        egui::CentralPanel::default().show_inside(ui, |ui| {
             if matches!(
                 self.login_attempt_status,
                 DataState::Present(LoginOutcome::ForcePasswordChange),

@@ -60,7 +60,7 @@ pub trait DisplayablePage: Default + serde::Serialize + serde::de::DeserializeOw
     }
 
     /// Displays the page
-    fn show(&mut self, ui: &mut eframe::egui::Ui, data_shared: &mut DataShared);
+    fn show(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared);
 
     /// Base of the page's title (numbers get appended to duplicates)
     ///
@@ -171,8 +171,8 @@ impl UiPage {
         unreachable!("{msg}");
     }
 
-    pub fn display_page(&mut self, ctx: &egui::Context, data_shared: &mut DataShared) {
-        do_on_ui_page!(self, page, { show_page(page, ctx, data_shared) })
+    pub fn display_page(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared) {
+        do_on_ui_page!(self, page, { show_page(page, ui, data_shared) })
     }
 
     pub fn title_base(&self) -> &'static str {
@@ -200,7 +200,7 @@ impl UiPage {
     }
 }
 
-fn show_page<P: DisplayablePage>(page: &mut P, ctx: &egui::Context, data_shared: &mut DataShared) {
+fn show_page<P: DisplayablePage>(page: &mut P, ui: &mut egui::Ui, data_shared: &mut DataShared) {
     let mut is_open = page.is_page_open();
     if !is_open {
         return;
@@ -209,7 +209,7 @@ fn show_page<P: DisplayablePage>(page: &mut P, ctx: &egui::Context, data_shared:
     window = page.adjust_window_settings(window);
     window
         .open(&mut is_open)
-        .show(ctx, |ui| page.show(ui, data_shared));
+        .show(ui, |ui| page.show(ui, data_shared));
     if !is_open {
         page.close_page();
     }

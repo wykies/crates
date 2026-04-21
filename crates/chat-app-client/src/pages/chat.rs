@@ -28,7 +28,7 @@ impl DisplayablePage for UiChat {
         get_required_permissions(PATH_WS_TOKEN_CHAT.path).expect("failed to get permissions")
     );
 
-    fn show(&mut self, ui: &mut eframe::egui::Ui, data_shared: &mut crate::DataShared) {
+    fn show(&mut self, ui: &mut egui::Ui, data_shared: &mut crate::DataShared) {
         let title = self.title(); // Needed to allocate it to not capture self
         let frontend_init = || {
             FrontEnd::new(
@@ -39,7 +39,7 @@ impl DisplayablePage for UiChat {
             )
         };
         if self.data_state.is_none() {
-            let ctx = ui.ctx().clone();
+            let ctx = ui.clone();
             self.data_state.egui_start_request(ui, || {
                 data_shared.client.ws_connect(
                     PATH_WS_TOKEN_CHAT,

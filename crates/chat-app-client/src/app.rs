@@ -101,16 +101,15 @@ impl eframe::App for ChatApp {
     }
 
     /// Called each time the UI needs repainting, which may be many times per
-    /// second. Put your widgets into a `SidePanel`, `TopPanel`,
-    /// `CentralPanel`, `Window` or `Area`.
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+    /// second.
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.data_shared.screen_lock_info.tick();
-        self.top_panel(ctx);
-        self.bottom_panel(ctx);
-        self.show_pages(ctx);
+        self.top_panel(ui);
+        self.bottom_panel(ui);
+        self.show_pages(ui);
 
         // Request repaint after 1 second
-        ctx.request_repaint_after(std::time::Duration::from_secs(1));
+        ui.request_repaint_after(std::time::Duration::from_secs(1));
     }
 }
 
@@ -158,9 +157,9 @@ impl ChatApp {
         self.data_shared.is_logged_in()
     }
 
-    fn menu(&mut self, ui: &mut egui::Ui, ctx: &egui::Context) {
+    fn menu(&mut self, ui: &mut egui::Ui) {
         ui.style_mut().wrap_mode = Some(egui::TextWrapMode::Extend);
-        self.ui_menu_file(ui, ctx);
+        self.ui_menu_file(ui);
         self.ui_menu_pages(ui);
     }
 
@@ -190,7 +189,7 @@ impl ChatApp {
             if ui
                 .add(
                     egui::Button::new("Organize Pages")
-                        .shortcut_text(ui.ctx().format_shortcut(&self.shortcuts.organize_pages)),
+                        .shortcut_text(ui.format_shortcut(&self.shortcuts.organize_pages)),
                 )
                 .clicked()
             {
@@ -200,21 +199,21 @@ impl ChatApp {
         });
     }
 
-    fn top_panel(&mut self, ctx: &egui::Context) {
-        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
+    fn top_panel(&mut self, ui: &mut egui::Ui) {
+        egui::Panel::top("top_panel").show_inside(ui, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
                 egui::widgets::global_theme_preference_switch(ui);
                 if self.is_logged_in() && !self.is_locked() {
                     ui.separator();
-                    self.menu(ui, ctx);
+                    self.menu(ui);
                 }
                 ui.label(VERSION_STR);
             });
         });
     }
 
-    fn bottom_panel(&mut self, ctx: &egui::Context) {
-        egui::TopBottomPanel::bottom("bottom_panel").show(ctx, |ui| {
+    fn bottom_panel(&mut self, ui: &mut egui::Ui) {
+        egui::Panel::bottom("bottom_panel").show_inside(ui, |ui| {
             ui.with_layout(egui::Layout::right_to_left(egui::Align::BOTTOM), |ui| {
                 ui.label(self.current_time());
                 if self.is_logged_in() {
@@ -233,16 +232,16 @@ impl ChatApp {
         });
     }
 
-    fn show_pages(&mut self, ctx: &egui::Context) {
+    fn show_pages(&mut self, ui: &mut egui::Ui) {
         if !self.is_logged_in() || self.is_locked() {
             self.login_page
                 .get_or_insert(Default::default())
-                .show(ctx, &mut self.data_shared);
+                .show(ui, &mut self.data_shared);
         } else {
-            self.ui_active_pages_panel(ctx);
+            self.ui_active_pages_panel(ui);
             self.login_page = None; // Clear out login page once we are logged in
             for page in self.active_pages.iter_mut() {
-                page.display_page(ctx, &mut self.data_shared);
+                page.display_page(ui, &mut self.data_shared);
             }
         }
     }
@@ -285,7 +284,7 @@ impl ChatApp {
     }
 
     #[cfg_attr(target_arch = "wasm32", allow(unused_variables))]
-    fn ui_menu_file(&mut self, ui: &mut egui::Ui, ctx: &egui::Context) {
+    fn ui_menu_file(&mut self, ui: &mut egui::Ui) {
         ui.menu_button("File", |ui| {
             self.ui_menu_page_btn::<UiChangePassword>(ui);
 
@@ -294,11 +293,10 @@ impl ChatApp {
             {
                 ui.separator();
                 egui::gui_zoom::zoom_menu_buttons(ui);
-                ui.weak(format!(
-                    "Current zoom: {:.0}%",
-                    100.0 * ui.ctx().zoom_factor()
-                ))
-                .on_hover_text("The UI zoom level, on top of the operating system's default value");
+                ui.weak(format!("Current zoom: {:.0}%", 100.0 * ui.zoom_factor()))
+                    .on_hover_text(
+                        "The UI zoom level, on top of the operating system's default value",
+                    );
                 ui.separator();
             }
 
@@ -314,16 +312,16 @@ impl ChatApp {
 
             #[cfg(not(target_arch = "wasm32"))] // no File->Quit on web pages!
             if ui.button("Quit").clicked() {
-                ctx.send_viewport_cmd(egui::ViewportCommand::Close);
+                ui.send_viewport_cmd(egui::ViewportCommand::Close);
             }
         });
     }
 
-    fn ui_active_pages_panel(&mut self, ctx: &egui::Context) {
-        egui::SidePanel::right("side_panel")
+    fn ui_active_pages_panel(&mut self, ui: &mut egui::Ui) {
+        egui::Panel::right("side_panel")
             .resizable(false)
-            .default_width(200.0)
-            .show(ctx, |ui| {
+            .default_size(200.0)
+            .show_inside(ui, |ui| {
                 self.process_shortcuts(ui);
 
                 ui.vertical_centered(|ui| {
@@ -360,9 +358,8 @@ impl ChatApp {
                 }
                 if ui
                     .add(
-                        egui::Button::new("Organize Pages").shortcut_text(
-                            ui.ctx().format_shortcut(&self.shortcuts.organize_pages),
-                        ),
+                        egui::Button::new("Organize Pages")
+                            .shortcut_text(ui.format_shortcut(&self.shortcuts.organize_pages)),
                     )
                     .clicked()
                 {
@@ -408,7 +405,7 @@ impl ChatApp {
 }
 
 fn do_organize_pages(ui: &mut egui::Ui) {
-    ui.ctx().memory_mut(|mem| mem.reset_areas());
+    ui.memory_mut(|mem| mem.reset_areas());
 }
 
 impl Default for ChatApp {

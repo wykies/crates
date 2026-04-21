@@ -13,11 +13,11 @@ pub struct UiEguiSettings {
     prev_ui_options: Option<egui::Options>,
 }
 impl UiEguiSettings {
-    fn save_current_ui_options(&mut self, ctx: egui::Context) {
-        let current_ui_options = ctx.options(|o| o.clone());
+    fn save_current_ui_options(&mut self, ui: &mut egui::Ui) {
+        let current_ui_options = ui.options(|o| o.clone());
         self.prev_ui_options = Some(current_ui_options);
-        let visuals = ctx.style().visuals.clone();
-        ctx.data_mut(|w| w.insert_persisted(egui::Id::new(ChatApp::VISUALS_KEY), visuals));
+        let visuals = ui.global_style().visuals.clone();
+        ui.data_mut(|w| w.insert_persisted(egui::Id::new(ChatApp::VISUALS_KEY), visuals));
         info!("Saved UI Visuals");
     }
 }
@@ -25,16 +25,16 @@ impl UiEguiSettings {
 impl DisplayablePage for UiEguiSettings {
     displayable_page_common!("UI Settings", &[]);
 
-    fn show(&mut self, ui: &mut eframe::egui::Ui, _data_shared: &mut crate::DataShared) {
-        let ctx = ui.ctx().clone();
+    fn show(&mut self, ui: &mut egui::Ui, _data_shared: &mut crate::DataShared) {
+        let ctx = ui.clone();
         ctx.settings_ui(ui);
         match self.prev_ui_options.as_ref() {
             Some(prev) => {
-                if ctx.options(|o| o != prev) {
-                    self.save_current_ui_options(ctx)
+                if ui.options(|o| o != prev) {
+                    self.save_current_ui_options(ui)
                 }
             }
-            None => self.save_current_ui_options(ctx),
+            None => self.save_current_ui_options(ui),
         }
     }
 }

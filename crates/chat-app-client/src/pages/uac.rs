@@ -96,7 +96,7 @@ impl DisplayablePage for UiUAC {
             .expect("failed to get permissions")
     );
 
-    fn show(&mut self, ui: &mut eframe::egui::Ui, data_shared: &mut crate::DataShared) {
+    fn show(&mut self, ui: &mut egui::Ui, data_shared: &mut crate::DataShared) {
         if self.should_refresh {
             self.reset_to_default(super::private::Token {});
         }
@@ -105,8 +105,9 @@ impl DisplayablePage for UiUAC {
                 .egui_start_request(ui, || data_shared.client.list_users_and_roles());
         }
         if let Some(data) = self.data_state.egui_poll_mut(ui, None) {
-            egui::TopBottomPanel::bottom(format!("user edit panel{}", self.page_unique_number))
-                .show_inside(ui, |ui| {
+            egui::Panel::bottom(format!("user edit panel{}", self.page_unique_number)).show_inside(
+                ui,
+                |ui| {
                     ui.vertical_centered(|ui| {
                         // Centering only works on the label and button but the grid is not centered
                         if ui_show_user_op(ui, &data_shared.client, data, &mut self.user_op)
@@ -115,7 +116,8 @@ impl DisplayablePage for UiUAC {
                             self.should_refresh = true;
                         };
                     });
-                });
+                },
+            );
 
             egui::CentralPanel::default().show_inside(ui, |ui| {
                 if self.user_op.has_changes() {
