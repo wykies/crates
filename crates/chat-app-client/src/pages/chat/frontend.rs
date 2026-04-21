@@ -25,7 +25,7 @@ const SCROLLS_TO_GET_TO_BOTTOM: u8 = 2;
 pub struct FrontEnd {
     username: Username,
     system_username: Username,
-    page_unique_name: String,
+    unique_id_prefix: String,
     history: ChatMsgsHistory,
     text_to_send: String,
     error_status: Option<ChatUiError>,
@@ -46,7 +46,7 @@ impl FrontEnd {
             username,
             system_username: Username::try_from(CHAT_SYSTEM_USERNAME)
                 .expect("username is from a constant should either always work or always fail"),
-            page_unique_name,
+            unique_id_prefix: page_unique_name,
             history: Default::default(),
             text_to_send: Default::default(),
             error_status: Default::default(),
@@ -61,7 +61,7 @@ impl FrontEnd {
             self.check_for_server_msgs(connection);
         }
         let half_height = ui.available_height() / 2.;
-        egui::Panel::bottom(self.generate_id("bottom panel"))
+        egui::Panel::bottom(format!("{}bottom", self.unique_id_prefix))
             .resizable(true)
             .max_size(half_height)
             .show_inside(ui, |ui| {
@@ -72,7 +72,7 @@ impl FrontEnd {
                 }
             });
 
-        egui::Panel::right(self.generate_id("connected users"))
+        egui::Panel::right(format!("{}connected users", self.unique_id_prefix))
             .min_size(20.)
             .show_inside(ui, |ui| self.ui_connected_users(ui));
 
@@ -359,11 +359,6 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
                 "Unable to clear this error please try reopening the window",
             );
         }
-    }
-
-    /// Needed to prevent duplicate ID in different windows
-    fn generate_id(&self, id_name: &str) -> String {
-        format!("{id_name}{}", self.page_unique_name)
     }
 
     fn request_scroll_to_bottom(&mut self) {

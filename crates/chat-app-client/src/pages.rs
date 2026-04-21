@@ -90,6 +90,26 @@ pub trait DisplayablePage: Default + serde::Serialize + serde::de::DeserializeOw
         }
     }
 
+    /// Provides a consistent way to generate IDs that are unique throughout the
+    /// application
+    ///
+    /// Needed to prevent duplicate ID if multiple of the same window are used
+    /// and not need to be aware of the global namespace for panels or other
+    /// controls that can have conflict. Provides a prefix as it my be used by
+    /// called functions and not have direct access to this method.
+    ///
+    /// # Precondition
+    ///
+    /// `id_name` is unique for the page on which it is provided or will be
+    /// joined with something that is unique on a subpage
+    ///
+    /// # Assumptions
+    ///
+    /// - `Self::title` is unique throughout the application
+    fn unique_prefix_for_id(&self, id_name: &str) -> String {
+        format!("{}{id_name}", self.title())
+    }
+
     fn is_page_open(&self) -> bool;
 
     fn open_page(&mut self) {

@@ -200,6 +200,7 @@ impl ChatApp {
     }
 
     fn top_panel(&mut self, ui: &mut egui::Ui) {
+        // Single instance of this global panel so unique ID guaranteed by virtue of that
         egui::Panel::top("top_panel").show_inside(ui, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
                 egui::widgets::global_theme_preference_switch(ui);
@@ -213,6 +214,7 @@ impl ChatApp {
     }
 
     fn bottom_panel(&mut self, ui: &mut egui::Ui) {
+        // Single instance of this global panel so unique ID guaranteed by virtue of that
         egui::Panel::bottom("bottom_panel").show_inside(ui, |ui| {
             ui.with_layout(egui::Layout::right_to_left(egui::Align::BOTTOM), |ui| {
                 ui.label(self.current_time());
@@ -318,7 +320,8 @@ impl ChatApp {
     }
 
     fn ui_active_pages_panel(&mut self, ui: &mut egui::Ui) {
-        egui::Panel::right("side_panel")
+        // Single instance of this global panel so unique ID guaranteed by virtue of that
+        egui::Panel::right("right_side_panel")
             .resizable(false)
             .default_size(200.0)
             .show_inside(ui, |ui| {

@@ -104,20 +104,18 @@ impl DisplayablePage for UiUAC {
             self.data_state
                 .egui_start_request(ui, || data_shared.client.list_users_and_roles());
         }
+        let bottom_panel_id = self.unique_prefix_for_id("bottom");
         if let Some(data) = self.data_state.egui_poll_mut(ui, None) {
-            egui::Panel::bottom(format!("user edit panel{}", self.page_unique_number)).show_inside(
-                ui,
-                |ui| {
-                    ui.vertical_centered(|ui| {
-                        // Centering only works on the label and button but the grid is not centered
-                        if ui_show_user_op(ui, &data_shared.client, data, &mut self.user_op)
-                            == OpResult::ResetPage
-                        {
-                            self.should_refresh = true;
-                        };
-                    });
-                },
-            );
+            egui::Panel::bottom(bottom_panel_id).show_inside(ui, |ui| {
+                ui.vertical_centered(|ui| {
+                    // Centering only works on the label and button but the grid is not centered
+                    if ui_show_user_op(ui, &data_shared.client, data, &mut self.user_op)
+                        == OpResult::ResetPage
+                    {
+                        self.should_refresh = true;
+                    };
+                });
+            });
 
             egui::CentralPanel::default().show_inside(ui, |ui| {
                 if self.user_op.has_changes() {
