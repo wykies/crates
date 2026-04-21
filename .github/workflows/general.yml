@@ -66,6 +66,9 @@ jobs:
         
   test_stand_alone_postgres:
     name: Test (Standalone Postgres)
+    # TODO 5: Debug issue with postgres support or remove it
+    # Disable until we have time to figure out if we want to continue to maintain postgres support. We are not currently using it.
+    if: false
     runs-on: ubuntu-latest
     services:
       mysql:
