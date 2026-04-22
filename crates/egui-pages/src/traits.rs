@@ -107,11 +107,4 @@ pub trait DisplayablePage<DataShared, Permission: 'static, PrivateToken: Default
 
     /// Provides the permissions required for a page
     fn page_permissions() -> &'static [Permission];
-
-    fn has_permissions<F>(f: F) -> bool
-    where
-        F: FnOnce(&[Permission]) -> bool,
-    {
-        f(Self::page_permissions())
-    }
 }
