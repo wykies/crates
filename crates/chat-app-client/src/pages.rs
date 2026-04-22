@@ -10,10 +10,6 @@ mod private {
     /// Used to make some trait methods private
     pub struct Token;
 }
-/// Used to allow outside types to refer to the trait without needing the
-/// private token
-pub trait DisplayablePageExternal: DisplayablePage<DataShared, Permission, private::Token> {} // TODO 1: Make sure this is still needed
-impl<U: DisplayablePage<DataShared, Permission, private::Token>> DisplayablePageExternal for U {}
 
 use change_password::UiChangePassword;
 use chat::UiChat;
@@ -65,7 +61,7 @@ macro_rules! do_on_ui_page {
 
 impl PageContainer<DataShared, Permission, private::Token> for UiPage {
     #[tracing::instrument(ret)]
-    fn new_page_with_unique_number<T: DisplayablePageExternal>(
+    fn new_page_with_unique_number<T: DisplayablePage<DataShared, Permission, private::Token>>(
         page_unique_number: usize,
     ) -> UiPage {
         for page in Self::iter() {
