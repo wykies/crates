@@ -27,7 +27,7 @@ pub enum UiPage {
     ChangePassword(UiChangePassword),
     Chat(UiChat),
     EguiSetting(UiEguiSettings),
-    UAC(UiUAC),
+    Uac(UiUAC),
 }
 
 impl RemovableItem for UiPage {
@@ -54,7 +54,7 @@ macro_rules! do_on_ui_page {
             UiPage::ChangePassword($page) => $body,
             UiPage::Chat($page) => $body,
             UiPage::EguiSetting($page) => $body,
-            UiPage::UAC($page) => $body,
+            UiPage::Uac($page) => $body,
         }
     };
 }
@@ -76,8 +76,8 @@ impl PageContainer<DataShared, Permission, private::Token> for UiPage {
                     UiPage::EguiSetting(_) => Self::EguiSetting(
                         UiEguiSettings::new_page(page_unique_number).and_open_page(),
                     ),
-                    UiPage::UAC(_) => {
-                        Self::UAC(UiUAC::new_page(page_unique_number).and_open_page())
+                    UiPage::Uac(_) => {
+                        Self::Uac(UiUAC::new_page(page_unique_number).and_open_page())
                     }
                 };
             }
