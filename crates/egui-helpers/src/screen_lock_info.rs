@@ -24,12 +24,9 @@ impl ScreenLockInfo {
     }
 
     pub fn is_locked(&mut self) -> bool {
-        if self
-            .last_user_activity
-            .elapsed()
-            .expect("user activity should never be in the future")
-            > self.client_idle_timeout
-        {
+        // Using this `if` statement allows us to implement latching. Will lock but not
+        // unlock on activity.
+        if self.elapsed_time_since_user_activity() > self.client_idle_timeout {
             self.is_locked = true;
         }
         self.is_locked
@@ -49,7 +46,10 @@ impl ScreenLockInfo {
     /// activity based on the threshold that was passed in when it was setup
     pub fn tick(&mut self) {
         self.tick_count += 1;
-        let elapsed = self.elapsed_time_since_user_activity();
+        let elapsed = self
+            .last_tick_marker
+            .elapsed()
+            .expect("last marker should never be in the future");
         if elapsed >= Seconds::new(1) {
             let has_activity =
                 self.tick_count >= self.client_ticks_per_second_for_active * usize::from(elapsed);
@@ -62,9 +62,9 @@ impl ScreenLockInfo {
     }
 
     pub fn elapsed_time_since_user_activity(&self) -> Seconds {
-        self.last_tick_marker
+        self.last_user_activity
             .elapsed()
-            .expect("last marker should never be in the future")
+            .expect("last user activity should never be in the future")
     }
 
     pub fn client_idle_timeout(&self) -> Seconds {
