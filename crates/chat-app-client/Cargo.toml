@@ -16,6 +16,7 @@ eframe = { workspace = true, features = [ # put all features on their own line
   "wayland","x11",] }
 egui.workspace = true
 egui-helpers.workspace = true
+egui-pages.workspace = true
 egui_extras.workspace = true
 plugin-chat = { workspace = true, features = ["client_only"] }
 reqwest-cross = { workspace = true, features = ["egui"] }

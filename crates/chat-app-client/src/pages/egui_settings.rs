@@ -1,8 +1,7 @@
+use crate::{ChatApp, DataShared, pages::private};
+use egui_pages::{DisplayablePage, displayable_page_common};
 use tracing::info;
-
-use crate::{ChatApp, displayable_page_common};
-
-use super::DisplayablePage;
+use wykies_shared::uac::Permission;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Default)]
 #[serde(default)]
@@ -22,8 +21,8 @@ impl UiEguiSettings {
     }
 }
 
-impl DisplayablePage for UiEguiSettings {
-    displayable_page_common!("UI Settings", &[]);
+impl DisplayablePage<DataShared, Permission, private::Token> for UiEguiSettings {
+    displayable_page_common!("UI Settings", &[], private::Token);
 
     fn show(&mut self, ui: &mut egui::Ui, _data_shared: &mut crate::DataShared) {
         let ctx = ui.clone();

@@ -1,15 +1,14 @@
+use crate::{DataShared, pages::private};
 use egui::Button;
 use egui_helpers::{ResponseHelpers, UiHelpers as _};
+use egui_pages::{DisplayablePage, displayable_page_common};
 use reqwest_cross::{Awaiting, DataState};
 use secrecy::{ExposeSecret as _, SecretString};
 use wykies_shared::{
-    const_config::path::PATH_API_CHANGE_PASSWORD, req_args::api::ChangePasswordReqArgs,
-    uac::get_required_permissions,
+    const_config::path::PATH_API_CHANGE_PASSWORD,
+    req_args::api::ChangePasswordReqArgs,
+    uac::{Permission, get_required_permissions},
 };
-
-use crate::displayable_page_common;
-
-use super::DisplayablePage;
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 #[serde(default)]
@@ -86,10 +85,11 @@ impl UiChangePassword {
     }
 }
 
-impl DisplayablePage for UiChangePassword {
+impl DisplayablePage<DataShared, Permission, private::Token> for UiChangePassword {
     displayable_page_common!(
         "Change Password",
-        get_required_permissions(PATH_API_CHANGE_PASSWORD.path).expect("failed to get permissions")
+        get_required_permissions(PATH_API_CHANGE_PASSWORD.path).expect("failed to get permissions"),
+        private::Token
     );
 
     fn show(&mut self, ui: &mut egui::Ui, data_shared: &mut crate::DataShared) {

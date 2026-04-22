@@ -1,0 +1,10 @@
+[package]
+name = "egui-pages"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+egui.workspace = true
+ron.workspace = true
+serde.workspace = true
+tracing.workspace = true

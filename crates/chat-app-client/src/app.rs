@@ -5,8 +5,8 @@ use tracing::{info, warn};
 use wykies_shared::uac::init_permissions_to_defaults;
 use wykies_time::Timestamp;
 
-use crate::DisplayablePage;
 use crate::lockout::ScreenLockInfo;
+use crate::pages::DisplayablePageExternal;
 use crate::pages::{
     UiLogin, UiPage, change_password::UiChangePassword, chat::UiChat,
     egui_settings::UiEguiSettings, uac::UiUAC,
@@ -77,7 +77,7 @@ impl DataShared {
         self.screen_lock_info.lock()
     }
 
-    fn has_permissions<T: DisplayablePage>(&self) -> bool {
+    fn has_permissions<T: DisplayablePageExternal>(&self) -> bool {
         let Some(permissions) = self.client.user_info().map(|user| user.permissions.clone()) else {
             error!(
                 "Attempt to get user information when it doesn't exist. Isn't the user logged in?"
@@ -88,7 +88,9 @@ impl DataShared {
             );
             return false;
         };
-        T::has_permissions(&permissions)
+        permissions
+            .includes(T::page_permissions())
+            .has_required_permissions()
     }
 }
 
@@ -200,7 +202,7 @@ impl ChatApp {
     }
 
     fn top_panel(&mut self, ui: &mut egui::Ui) {
-        // Single instance of this global panel so unique ID guaranteed by virtue of that
+        // Single instance of global panel thus unique
         egui::Panel::top("top_panel").show_inside(ui, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
                 egui::widgets::global_theme_preference_switch(ui);
@@ -214,7 +216,7 @@ impl ChatApp {
     }
 
     fn bottom_panel(&mut self, ui: &mut egui::Ui) {
-        // Single instance of this global panel so unique ID guaranteed by virtue of that
+        // Single instance of global panel thus unique
         egui::Panel::bottom("bottom_panel").show_inside(ui, |ui| {
             ui.with_layout(egui::Layout::right_to_left(egui::Align::BOTTOM), |ui| {
                 ui.label(self.current_time());
@@ -262,7 +264,7 @@ impl ChatApp {
             ron::from_str(&pages).expect("failed to convert back into pages from ron");
     }
 
-    fn ui_menu_page_btn<T: DisplayablePage>(&mut self, ui: &mut egui::Ui) {
+    fn ui_menu_page_btn<T: DisplayablePageExternal>(&mut self, ui: &mut egui::Ui) {
         if !self.data_shared.has_permissions::<T>() {
             return;
         }
@@ -320,7 +322,7 @@ impl ChatApp {
     }
 
     fn ui_active_pages_panel(&mut self, ui: &mut egui::Ui) {
-        // Single instance of this global panel so unique ID guaranteed by virtue of that
+        // Single instance of global panel thus unique
         egui::Panel::right("right_side_panel")
             .resizable(false)
             .default_size(200.0)

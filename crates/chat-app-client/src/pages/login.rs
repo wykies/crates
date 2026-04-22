@@ -1,6 +1,7 @@
-use super::{DisplayablePage, change_password::UiChangePassword};
+use super::change_password::UiChangePassword;
 use crate::DataShared;
 use egui_helpers::{ResponseHelpers, UiHelpers as _};
+use egui_pages::DisplayablePage as _;
 use reqwest_cross::{Awaiting, DataState};
 use secrecy::{ExposeSecret, SecretString};
 use std::fmt::Debug;

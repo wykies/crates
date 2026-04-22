@@ -1,13 +1,14 @@
-use super::DisplayablePage;
-use crate::displayable_page_common;
+use egui_pages::{DisplayablePage, displayable_page_common};
 use frontend::FrontEnd;
 use reqwest_cross::DataState;
 use std::fmt::Debug;
 use wykies_shared::{
     const_config::{path::PATH_WS_TOKEN_CHAT, web_socket::WS_INITIAL_MSG_TIMEOUT},
-    uac::get_required_permissions,
+    uac::{Permission, get_required_permissions},
     websockets::{WsConnTxRx, wake_fn},
 };
+
+use crate::{DataShared, pages::private};
 
 mod frontend;
 
@@ -22,10 +23,11 @@ pub struct UiChat {
     data_state: DataState<WsConnTxRx>,
 }
 
-impl DisplayablePage for UiChat {
+impl DisplayablePage<DataShared, Permission, private::Token> for UiChat {
     displayable_page_common!(
         "Chat",
-        get_required_permissions(PATH_WS_TOKEN_CHAT.path).expect("failed to get permissions")
+        get_required_permissions(PATH_WS_TOKEN_CHAT.path).expect("failed to get permissions"),
+        private::Token
     );
 
     fn show(&mut self, ui: &mut egui::Ui, data_shared: &mut crate::DataShared) {

@@ -1,9 +1,11 @@
-use super::DisplayablePage;
-use crate::displayable_page_common;
+use crate::DataShared;
+
+use super::private;
 use edit_user_info::EditUserInfo;
 use egui::Button;
 use egui_extras::{Column, TableBuilder};
 use egui_helpers::UiHelpers;
+use egui_pages::{DisplayablePage, displayable_page_common};
 use new_user_info::NewUserInfo;
 use pass_reset_user_info::PassResetUserInfo;
 use reqwest_cross::DataState;
@@ -14,7 +16,7 @@ use wykies_shared::{
     const_config::{error::err_role_name, path::PATH_API_USERS_LIST_AND_ROLES},
     debug_panic,
     uac::{
-        DisplayName, ListUsersRoles, RoleId, RoleName, UserMetadata, Username,
+        DisplayName, ListUsersRoles, Permission, RoleId, RoleName, UserMetadata, Username,
         get_required_permissions,
     },
 };
@@ -89,16 +91,17 @@ impl UserOp {
     }
 }
 
-impl DisplayablePage for UiUAC {
+impl DisplayablePage<DataShared, Permission, private::Token> for UiUAC {
     displayable_page_common!(
         "User Account Control",
         get_required_permissions(PATH_API_USERS_LIST_AND_ROLES.path)
-            .expect("failed to get permissions")
+            .expect("failed to get permissions"),
+        private::Token
     );
 
     fn show(&mut self, ui: &mut egui::Ui, data_shared: &mut crate::DataShared) {
         if self.should_refresh {
-            self.reset_to_default(super::private::Token {});
+            self.reset_to_default();
         }
         if self.data_state.is_none() {
             self.data_state

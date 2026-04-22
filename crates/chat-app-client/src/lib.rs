@@ -15,7 +15,6 @@ mod shortcuts;
 pub mod tracing;
 
 pub use app::{ChatApp, DataShared};
-pub use pages::DisplayablePage;
 pub use pages::UiPage;
 
 /// Function is here to ensure lib also uses the log create to prevent the

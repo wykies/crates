@@ -1,6 +1,6 @@
 #[macro_export]
 macro_rules! displayable_page_common {
-    ($page_name: expr, $permissions: expr) => {
+    ($page_name: expr, $permissions: expr, $private_token: ty) => {
         fn title_base() -> &'static str {
             $page_name
         }
@@ -19,13 +19,13 @@ macro_rules! displayable_page_common {
                 ..Default::default()
             }
         }
-        fn internal_do_open_page(&mut self, _: super::private::Token) {
+        fn internal_do_open_page(&mut self, _: $private_token) {
             self.is_open = true;
         }
 
-        fn internal_do_close_page(&mut self, _: super::private::Token) {
+        fn internal_do_close_page(&mut self, _: $private_token) {
             self.is_open = false;
-            self.reset_to_default(super::private::Token {});
+            self.reset_to_default();
         }
 
         fn page_permissions() -> &'static [wykies_shared::uac::Permission] {

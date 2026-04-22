@@ -6,6 +6,7 @@ members = [
   "crates/chat-app-server",
   "crates/db-types",
   "crates/egui-helpers",
+  "crates/egui-pages",
   "crates/plugin-chat",
   "crates/switch-db",
   "crates/tracked-cancellations",
@@ -35,6 +36,7 @@ db-types = { version = "*", path = "crates/db-types", default-features = false }
 eframe = { version = "0.34.1", default-features = false }
 egui = { version = "0.34.1", default-features = false }
 egui-helpers = { version = "*", path = "crates/egui-helpers" }
+egui-pages = { version = "*", path = "crates/egui-pages" }
 egui_extras = "0.34.1"
 ewebsock = { version = "0.8.0", features = ["tls"] }
 futures-util = "0.3.32"

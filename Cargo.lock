@@ -910,6 +910,7 @@ dependencies = [
  "eframe",
  "egui",
  "egui-helpers",
+ "egui-pages",
  "egui_extras",
  "ewebsock",
  "log",
@@ -1656,6 +1657,16 @@ version = "0.2.0"
 dependencies = [
  "egui",
  "secrecy",
+]
+
+[[package]]
+name = "egui-pages"
+version = "0.1.0"
+dependencies = [
+ "egui",
+ "ron",
+ "serde",
+ "tracing",
 ]
 
 [[package]]
