@@ -225,12 +225,16 @@ where
         active_pages.sort_by_key(|x| x.title());
     }
 
+    /// # Assumption
+    ///
+    /// There is only one panel in the application and thus we don't need to set
+    /// a more unique ID than the one used
     fn ui_active_pages_panel(
         ui: &mut egui::Ui,
         active_pages: &mut Vec<Self>,
         organize_shortcut: &egui::KeyboardShortcut,
     ) {
-        egui::Panel::right("right_side_panel")
+        egui::Panel::right("active pages panel")
             .resizable(false)
             .default_size(200.0)
             .show_inside(ui, |ui| {
