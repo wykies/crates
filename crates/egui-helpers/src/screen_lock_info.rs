@@ -49,10 +49,7 @@ impl ScreenLockInfo {
     /// activity based on the threshold that was passed in when it was setup
     pub fn tick(&mut self) {
         self.tick_count += 1;
-        let elapsed = self
-            .last_tick_marker
-            .elapsed()
-            .expect("last marker should never be in the future");
+        let elapsed = self.elapsed_time_since_user_activity();
         if elapsed >= Seconds::new(1) {
             let has_activity =
                 self.tick_count >= self.client_ticks_per_second_for_active * usize::from(elapsed);
@@ -62,5 +59,11 @@ impl ScreenLockInfo {
             self.tick_count = 0;
             self.last_tick_marker = Timestamp::now();
         }
+    }
+
+    pub fn elapsed_time_since_user_activity(&self) -> Seconds {
+        self.last_tick_marker
+            .elapsed()
+            .expect("last marker should never be in the future")
     }
 }
