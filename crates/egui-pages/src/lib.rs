@@ -24,3 +24,7 @@ pub fn show_page<Permission, DataShared, Page, PrivateToken: Default>(
         page.close_page();
     }
 }
+
+pub fn do_organize_pages(ui: &mut egui::Ui) {
+    ui.memory_mut(|mem| mem.reset_areas());
+}

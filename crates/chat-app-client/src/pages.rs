@@ -14,7 +14,7 @@ mod private {
 use change_password::UiChangePassword;
 use chat::UiChat;
 use egui_helpers::RemovableItem;
-use egui_pages::{DisplayablePage, PageContainer, PermissionValidator as _, show_page};
+use egui_pages::{DisplayablePage, PageContainer, show_page};
 use egui_settings::UiEguiSettings;
 pub use login::UiLogin;
 use strum::{EnumIter, IntoEnumIterator};
@@ -123,25 +123,7 @@ impl PageContainer<DataShared, Permission, private::Token> for UiPage {
         data_shared: &DataShared,
         active_pages: &mut Vec<Self>,
     ) {
-        if !data_shared.has_permissions(T::page_permissions()) {
-            return;
-        }
-        let base_title = T::title_base();
-        if ui.button(base_title).clicked() {
-            let mut max_id_found = None;
-            for page in active_pages.iter_mut() {
-                if page.title_base() == base_title {
-                    max_id_found = max_id_found.max(Some(page.page_unique_number()))
-                }
-            }
-            let new_num = if let Some(val) = max_id_found {
-                val + 1
-            } else {
-                0
-            };
-            active_pages.push(Self::new_page_with_unique_number::<T>(new_num));
-            ui.close();
-        }
+        Self::internal_do_ui_menu_page_btn::<T>(ui, data_shared, active_pages);
     }
 }
 

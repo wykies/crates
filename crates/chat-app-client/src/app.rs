@@ -6,7 +6,7 @@ use crate::pages::{
 use crate::shortcuts::Shortcuts;
 use egui::ScrollArea;
 use egui_helpers::UiHelpers;
-use egui_pages::{PageContainer as _, PermissionValidator};
+use egui_pages::{PageContainer as _, PermissionValidator, do_organize_pages};
 use tracing::{debug, error, instrument};
 use tracing::{info, warn};
 use wykies_shared::uac::{Permission, init_permissions_to_defaults};
@@ -177,32 +177,11 @@ impl ChatApp {
             );
 
             ui.separator();
-            if ui.button("Open All Pages").clicked() {
-                self.open_all_pages();
-                ui.close();
-            }
-            if ui.button("Close All Pages").clicked() {
-                self.close_all_pages();
-                ui.close();
-            }
-            if ui.button("Deactivate All Pages").clicked() {
-                self.deactivate_all_pages();
-                ui.close();
-            }
-            if ui.button("Sort Pages By Name").clicked() {
-                self.sort_pages_by_name();
-                ui.close();
-            }
-            if ui
-                .add(
-                    egui::Button::new("Organize Pages")
-                        .shortcut_text(ui.format_shortcut(&self.shortcuts.organize_pages)),
-                )
-                .clicked()
-            {
-                do_organize_pages(ui);
-                ui.close();
-            }
+            UiPage::ui_pages_management_controls(
+                ui,
+                &mut self.active_pages,
+                &self.shortcuts.organize_pages,
+            );
         });
     }
 
@@ -335,49 +314,13 @@ impl ChatApp {
 
                 ui.separator();
 
-                if ui.button("Open All Pages").clicked() {
-                    self.open_all_pages();
-                }
-                if ui.button("Close All Pages").clicked() {
-                    self.close_all_pages();
-                }
-                if ui.button("Deactivate All Pages").clicked() {
-                    self.deactivate_all_pages();
-                }
-                if ui.button("Sort Pages by Name").clicked() {
-                    self.sort_pages_by_name();
-                }
-                if ui
-                    .add(
-                        egui::Button::new("Organize Pages")
-                            .shortcut_text(ui.format_shortcut(&self.shortcuts.organize_pages)),
-                    )
-                    .clicked()
-                {
-                    do_organize_pages(ui);
-                }
+                UiPage::ui_pages_management_controls(
+                    ui,
+                    &mut self.active_pages,
+                    &self.shortcuts.organize_pages,
+                );
             });
         });
-    }
-
-    fn deactivate_all_pages(&mut self) {
-        self.active_pages.clear();
-    }
-
-    fn close_all_pages(&mut self) {
-        self.active_pages
-            .iter_mut()
-            .for_each(|page| page.close_page())
-    }
-
-    fn open_all_pages(&mut self) {
-        self.active_pages
-            .iter_mut()
-            .for_each(|page| page.open_page())
-    }
-
-    fn sort_pages_by_name(&mut self) {
-        self.active_pages.sort_by_key(|x| x.title());
     }
 
     fn process_shortcuts(&mut self, ui: &mut egui::Ui) {
@@ -393,10 +336,6 @@ impl ChatApp {
     fn lock(&mut self) {
         self.data_shared.lock();
     }
-}
-
-fn do_organize_pages(ui: &mut egui::Ui) {
-    ui.memory_mut(|mem| mem.reset_areas());
 }
 
 impl Default for ChatApp {

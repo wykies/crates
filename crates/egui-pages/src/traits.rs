@@ -1,3 +1,4 @@
+use crate::do_organize_pages;
 use tracing::info;
 
 /// Trait for types that can be treated as pages to display
@@ -136,9 +137,89 @@ where
 
     fn close_page(&mut self);
 
+    /// This function is intended to allow the implementer to specify the
+    /// relevant types and then call the "internal_do_" version
     fn ui_menu_page_btn<T: DisplayablePage<DataShared, Permission, PrivateToken>>(
         ui: &mut egui::Ui,
         data_shared: &DataShared,
         active_pages: &mut Vec<Self>,
-    );
+    ) where
+        DataShared: PermissionValidator<Permission>;
+
+    fn internal_do_ui_menu_page_btn<T: DisplayablePage<DataShared, Permission, PrivateToken>>(
+        ui: &mut egui::Ui,
+        data_shared: &DataShared,
+        active_pages: &mut Vec<Self>,
+    ) where
+        DataShared: PermissionValidator<Permission>,
+    {
+        if !data_shared.has_permissions(T::page_permissions()) {
+            return;
+        }
+        let base_title = T::title_base();
+        if ui.button(base_title).clicked() {
+            let mut max_id_found = None;
+            for page in active_pages.iter_mut() {
+                if page.title_base() == base_title {
+                    max_id_found = max_id_found.max(Some(page.page_unique_number()))
+                }
+            }
+            let new_num = if let Some(val) = max_id_found {
+                val + 1
+            } else {
+                0
+            };
+            active_pages.push(Self::new_page_with_unique_number::<T>(new_num));
+            ui.close();
+        }
+    }
+
+    fn ui_pages_management_controls(
+        ui: &mut egui::Ui,
+        pages: &mut Vec<Self>,
+        organize_shortcut: &egui::KeyboardShortcut,
+    ) {
+        if ui.button("Open All Pages").clicked() {
+            Self::open_all_pages(pages);
+            ui.close();
+        }
+        if ui.button("Close All Pages").clicked() {
+            Self::close_all_pages(pages);
+            ui.close();
+        }
+        if ui.button("Deactivate All Pages").clicked() {
+            Self::deactivate_all_pages(pages);
+            ui.close();
+        }
+        if ui.button("Sort Pages By Name").clicked() {
+            Self::sort_pages_by_name(pages);
+            ui.close();
+        }
+        if ui
+            .add(
+                egui::Button::new("Organize Pages")
+                    .shortcut_text(ui.format_shortcut(organize_shortcut)),
+            )
+            .clicked()
+        {
+            do_organize_pages(ui);
+            ui.close();
+        }
+    }
+
+    fn open_all_pages(active_pages: &mut Vec<Self>) {
+        active_pages.iter_mut().for_each(|page| page.open_page());
+    }
+
+    fn close_all_pages(active_pages: &mut Vec<Self>) {
+        active_pages.iter_mut().for_each(|page| page.close_page());
+    }
+
+    fn deactivate_all_pages(active_pages: &mut Vec<Self>) {
+        active_pages.clear();
+    }
+
+    fn sort_pages_by_name(active_pages: &mut Vec<Self>) {
+        active_pages.sort_by_key(|x| x.title());
+    }
 }
