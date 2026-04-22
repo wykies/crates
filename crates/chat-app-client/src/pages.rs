@@ -12,13 +12,13 @@ mod private {
 }
 /// Used to allow outside types to refer to the trait without needing the
 /// private token
-pub trait DisplayablePageExternal: DisplayablePage<DataShared, Permission, private::Token> {}
+pub trait DisplayablePageExternal: DisplayablePage<DataShared, Permission, private::Token> {} // TODO 1: Make sure this is still needed
 impl<U: DisplayablePage<DataShared, Permission, private::Token>> DisplayablePageExternal for U {}
 
 use change_password::UiChangePassword;
 use chat::UiChat;
 use egui_helpers::RemovableItem;
-use egui_pages::{DisplayablePage, show_page};
+use egui_pages::{DisplayablePage, PageContainer, PermissionValidator as _, show_page};
 use egui_settings::UiEguiSettings;
 pub use login::UiLogin;
 use strum::{EnumIter, IntoEnumIterator};
@@ -63,9 +63,9 @@ macro_rules! do_on_ui_page {
     };
 }
 
-impl UiPage {
+impl PageContainer<DataShared, Permission, private::Token> for UiPage {
     #[tracing::instrument(ret)]
-    pub fn new_page_with_unique_number<T: DisplayablePageExternal>(
+    fn new_page_with_unique_number<T: DisplayablePageExternal>(
         page_unique_number: usize,
     ) -> UiPage {
         for page in Self::iter() {
@@ -94,32 +94,58 @@ impl UiPage {
         unreachable!("{msg}");
     }
 
-    pub fn display_page(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared) {
+    fn display_page(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared) {
         do_on_ui_page!(self, page, { show_page(page, ui, data_shared) })
     }
 
-    pub fn title_base(&self) -> &'static str {
+    fn title_base(&self) -> &'static str {
         do_on_ui_page!(self, page, { page.title_base_from_instance() })
     }
 
-    pub fn page_unique_number(&self) -> usize {
+    fn page_unique_number(&self) -> usize {
         do_on_ui_page!(self, page, { page.page_unique_number() })
     }
 
-    pub fn is_page_open(&self) -> bool {
+    fn is_page_open(&self) -> bool {
         do_on_ui_page!(self, page, { page.is_page_open() })
     }
 
-    pub fn title(&self) -> String {
+    fn title(&self) -> String {
         do_on_ui_page!(self, page, { page.title() })
     }
 
-    pub fn open_page(&mut self) {
+    fn open_page(&mut self) {
         do_on_ui_page!(self, page, { page.open_page() })
     }
 
-    pub fn close_page(&mut self) {
+    fn close_page(&mut self) {
         do_on_ui_page!(self, page, { page.close_page() })
+    }
+
+    fn ui_menu_page_btn<T: DisplayablePage<DataShared, Permission, private::Token>>(
+        ui: &mut egui::Ui,
+        data_shared: &DataShared,
+        active_pages: &mut Vec<Self>,
+    ) {
+        if !data_shared.has_permissions(T::page_permissions()) {
+            return;
+        }
+        let base_title = T::title_base();
+        if ui.button(base_title).clicked() {
+            let mut max_id_found = None;
+            for page in active_pages.iter_mut() {
+                if page.title_base() == base_title {
+                    max_id_found = max_id_found.max(Some(page.page_unique_number()))
+                }
+            }
+            let new_num = if let Some(val) = max_id_found {
+                val + 1
+            } else {
+                0
+            };
+            active_pages.push(Self::new_page_with_unique_number::<T>(new_num));
+            ui.close();
+        }
     }
 }
 

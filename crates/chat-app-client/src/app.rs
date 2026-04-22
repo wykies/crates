@@ -1,17 +1,16 @@
-use egui::ScrollArea;
-use egui_helpers::UiHelpers;
-use tracing::{debug, error, instrument};
-use tracing::{info, warn};
-use wykies_shared::uac::init_permissions_to_defaults;
-use wykies_time::Timestamp;
-
 use crate::lockout::ScreenLockInfo;
-use crate::pages::DisplayablePageExternal;
 use crate::pages::{
     UiLogin, UiPage, change_password::UiChangePassword, chat::UiChat,
     egui_settings::UiEguiSettings, uac::UiUAC,
 };
 use crate::shortcuts::Shortcuts;
+use egui::ScrollArea;
+use egui_helpers::UiHelpers;
+use egui_pages::{PageContainer as _, PermissionValidator};
+use tracing::{debug, error, instrument};
+use tracing::{info, warn};
+use wykies_shared::uac::{Permission, init_permissions_to_defaults};
+use wykies_time::Timestamp;
 
 const VERSION_STR: &str = concat!("ver: ", env!("CARGO_PKG_VERSION"));
 
@@ -76,8 +75,10 @@ impl DataShared {
     pub fn lock(&mut self) {
         self.screen_lock_info.lock()
     }
+}
 
-    fn has_permissions<T: DisplayablePageExternal>(&self) -> bool {
+impl PermissionValidator<Permission> for DataShared {
+    fn has_permissions(&self, required_permissions: &[Permission]) -> bool {
         let Some(permissions) = self.client.user_info().map(|user| user.permissions.clone()) else {
             error!(
                 "Attempt to get user information when it doesn't exist. Isn't the user logged in?"
@@ -89,7 +90,7 @@ impl DataShared {
             return false;
         };
         permissions
-            .includes(T::page_permissions())
+            .includes(required_permissions)
             .has_required_permissions()
     }
 }
@@ -167,9 +168,13 @@ impl ChatApp {
 
     fn ui_menu_pages(&mut self, ui: &mut egui::Ui) {
         ui.menu_button("Pages", |ui| {
-            self.ui_menu_page_btn::<UiChat>(ui);
-            self.ui_menu_page_btn::<UiUAC>(ui);
-            self.ui_menu_page_btn::<UiEguiSettings>(ui);
+            UiPage::ui_menu_page_btn::<UiChat>(ui, &self.data_shared, &mut self.active_pages);
+            UiPage::ui_menu_page_btn::<UiUAC>(ui, &self.data_shared, &mut self.active_pages);
+            UiPage::ui_menu_page_btn::<UiEguiSettings>(
+                ui,
+                &self.data_shared,
+                &mut self.active_pages,
+            );
 
             ui.separator();
             if ui.button("Open All Pages").clicked() {
@@ -264,33 +269,14 @@ impl ChatApp {
             ron::from_str(&pages).expect("failed to convert back into pages from ron");
     }
 
-    fn ui_menu_page_btn<T: DisplayablePageExternal>(&mut self, ui: &mut egui::Ui) {
-        if !self.data_shared.has_permissions::<T>() {
-            return;
-        }
-        let base_title = T::title_base();
-        if ui.button(base_title).clicked() {
-            let mut max_id_found = None;
-            for page in self.active_pages.iter_mut() {
-                if page.title_base() == base_title {
-                    max_id_found = max_id_found.max(Some(page.page_unique_number()))
-                }
-            }
-            let new_num = if let Some(val) = max_id_found {
-                val + 1
-            } else {
-                0
-            };
-            self.active_pages
-                .push(UiPage::new_page_with_unique_number::<T>(new_num));
-            ui.close();
-        }
-    }
-
     #[cfg_attr(target_arch = "wasm32", allow(unused_variables))]
     fn ui_menu_file(&mut self, ui: &mut egui::Ui) {
         ui.menu_button("File", |ui| {
-            self.ui_menu_page_btn::<UiChangePassword>(ui);
+            UiPage::ui_menu_page_btn::<UiChangePassword>(
+                ui,
+                &self.data_shared,
+                &mut self.active_pages,
+            );
 
             // On the web the browser controls the zoom
             #[cfg(not(target_arch = "wasm32"))]

@@ -108,3 +108,37 @@ pub trait DisplayablePage<DataShared, Permission: 'static, PrivateToken: Default
     /// Provides the permissions required for a page
     fn page_permissions() -> &'static [Permission];
 }
+
+/// Provides a way to validate some set of permissions is met
+pub trait PermissionValidator<Permission: 'static> {
+    fn has_permissions(&self, required_permissions: &[Permission]) -> bool;
+}
+
+pub trait PageContainer<DataShared, Permission: 'static, PrivateToken: Default>
+where
+    Self: Sized,
+{
+    fn new_page_with_unique_number<T: DisplayablePage<DataShared, Permission, PrivateToken>>(
+        page_unique_number: usize,
+    ) -> Self;
+
+    fn display_page(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared);
+
+    fn title_base(&self) -> &'static str;
+
+    fn page_unique_number(&self) -> usize;
+
+    fn is_page_open(&self) -> bool;
+
+    fn title(&self) -> String;
+
+    fn open_page(&mut self);
+
+    fn close_page(&mut self);
+
+    fn ui_menu_page_btn<T: DisplayablePage<DataShared, Permission, PrivateToken>>(
+        ui: &mut egui::Ui,
+        data_shared: &DataShared,
+        active_pages: &mut Vec<Self>,
+    );
+}

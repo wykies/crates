@@ -1,7 +1,7 @@
 mod macros;
 mod traits;
 
-pub use traits::DisplayablePage;
+pub use traits::{DisplayablePage, PageContainer, PermissionValidator};
 
 pub fn show_page<Permission, DataShared, Page, PrivateToken: Default>(
     page: &mut Page,
