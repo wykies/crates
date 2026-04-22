@@ -1,4 +1,5 @@
 #[macro_export]
+/// You need to have a type called `Permission` in scope to use this macro
 macro_rules! displayable_page_common {
     ($page_name: expr, $permissions: expr, $private_token: ty) => {
         fn title_base() -> &'static str {
@@ -28,7 +29,7 @@ macro_rules! displayable_page_common {
             self.reset_to_default();
         }
 
-        fn page_permissions() -> &'static [wykies_shared::uac::Permission] {
+        fn page_permissions() -> &'static [Permission] {
             $permissions
         }
     };
