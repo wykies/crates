@@ -66,4 +66,8 @@ impl ScreenLockInfo {
             .elapsed()
             .expect("last marker should never be in the future")
     }
+
+    pub fn client_idle_timeout(&self) -> Seconds {
+        self.client_idle_timeout
+    }
 }
