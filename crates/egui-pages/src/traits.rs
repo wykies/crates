@@ -1,4 +1,5 @@
 use crate::do_organize_pages;
+use egui_helpers::{RemovableItem, UiHelpers as _};
 use tracing::info;
 
 /// Trait for types that can be treated as pages to display
@@ -115,7 +116,8 @@ pub trait PermissionValidator<Permission: 'static> {
     fn has_permissions(&self, required_permissions: &[Permission]) -> bool;
 }
 
-pub trait PageContainer<DataShared, Permission: 'static, PrivateToken: Default>
+pub trait PageContainer<DataShared, Permission: 'static, PrivateToken: Default>:
+    RemovableItem
 where
     Self: Sized,
 {
@@ -221,5 +223,53 @@ where
 
     fn sort_pages_by_name(active_pages: &mut Vec<Self>) {
         active_pages.sort_by_key(|x| x.title());
+    }
+
+    fn ui_active_pages_panel(
+        ui: &mut egui::Ui,
+        active_pages: &mut Vec<Self>,
+        organize_shortcut: &egui::KeyboardShortcut,
+    ) {
+        egui::Panel::right("right_side_panel")
+            .resizable(false)
+            .default_size(200.0)
+            .show_inside(ui, |ui| {
+                ui.vertical_centered(|ui| {
+                    ui.heading("Active Pages");
+                });
+
+                ui.separator();
+
+                Self::ui_pages_list(ui, active_pages, organize_shortcut);
+            });
+    }
+
+    fn ui_display_pages(
+        ui: &mut egui::Ui,
+        active_pages: &mut Vec<Self>,
+        data_shared: &mut DataShared,
+    ) {
+        for page in active_pages.iter_mut() {
+            page.display_page(ui, data_shared);
+        }
+    }
+
+    fn ui_pages_list(
+        ui: &mut egui::Ui,
+        active_pages: &mut Vec<Self>,
+        organize_shortcut: &egui::KeyboardShortcut,
+    ) {
+        egui::ScrollArea::vertical().show(ui, |ui| {
+            ui.with_layout(egui::Layout::top_down_justified(egui::Align::LEFT), |ui| {
+                ui.removable_items_list(
+                    Some(active_pages),
+                    "NO PAGES ARE ACTIVE.\nUse top menu to activate a page",
+                );
+
+                ui.separator();
+
+                Self::ui_pages_management_controls(ui, active_pages, organize_shortcut);
+            });
+        });
     }
 }

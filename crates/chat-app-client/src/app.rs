@@ -4,8 +4,6 @@ use crate::pages::{
     egui_settings::UiEguiSettings, uac::UiUAC,
 };
 use crate::shortcuts::Shortcuts;
-use egui::ScrollArea;
-use egui_helpers::UiHelpers;
 use egui_pages::{PageContainer as _, PermissionValidator, do_organize_pages};
 use tracing::{debug, error, instrument};
 use tracing::{info, warn};
@@ -226,11 +224,14 @@ impl ChatApp {
                 .get_or_insert(Default::default())
                 .show(ui, &mut self.data_shared);
         } else {
-            self.ui_active_pages_panel(ui);
             self.login_page = None; // Clear out login page once we are logged in
-            for page in self.active_pages.iter_mut() {
-                page.display_page(ui, &mut self.data_shared);
-            }
+            UiPage::ui_active_pages_panel(
+                ui,
+                &mut self.active_pages,
+                &self.shortcuts.organize_pages,
+            );
+            UiPage::ui_display_pages(ui, &mut self.active_pages, &mut self.data_shared);
+            self.process_shortcuts(ui);
         }
     }
 
@@ -283,43 +284,6 @@ impl ChatApp {
             if ui.button("Quit").clicked() {
                 ui.send_viewport_cmd(egui::ViewportCommand::Close);
             }
-        });
-    }
-
-    fn ui_active_pages_panel(&mut self, ui: &mut egui::Ui) {
-        // Single instance of global panel thus unique
-        egui::Panel::right("right_side_panel")
-            .resizable(false)
-            .default_size(200.0)
-            .show_inside(ui, |ui| {
-                self.process_shortcuts(ui);
-
-                ui.vertical_centered(|ui| {
-                    ui.heading("Active Pages");
-                });
-
-                ui.separator();
-
-                self.ui_pages_list(ui);
-            });
-    }
-
-    fn ui_pages_list(&mut self, ui: &mut egui::Ui) {
-        ScrollArea::vertical().show(ui, |ui| {
-            ui.with_layout(egui::Layout::top_down_justified(egui::Align::LEFT), |ui| {
-                ui.removable_items_list(
-                    Some(&mut self.active_pages),
-                    "NO PAGES ARE ACTIVE.\nUse top menu to activate a page",
-                );
-
-                ui.separator();
-
-                UiPage::ui_pages_management_controls(
-                    ui,
-                    &mut self.active_pages,
-                    &self.shortcuts.organize_pages,
-                );
-            });
         });
     }
 

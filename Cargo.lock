@@ -1664,6 +1664,7 @@ name = "egui-pages"
 version = "0.1.0"
 dependencies = [
  "egui",
+ "egui-helpers",
  "ron",
  "serde",
  "tracing",

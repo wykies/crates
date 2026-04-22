@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 egui.workspace = true
+egui-helpers.workspace = true
 ron.workspace = true
 serde.workspace = true
 tracing.workspace = true
