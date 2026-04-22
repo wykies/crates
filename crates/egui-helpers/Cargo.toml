@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 egui.workspace = true
 secrecy.workspace = true
+wykies-time.workspace = true

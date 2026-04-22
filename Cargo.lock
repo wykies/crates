@@ -1657,6 +1657,7 @@ version = "0.2.0"
 dependencies = [
  "egui",
  "secrecy",
+ "wykies-time",
 ]
 
 [[package]]
