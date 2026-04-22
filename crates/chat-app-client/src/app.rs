@@ -1,12 +1,15 @@
-use crate::lockout::ScreenLockInfo;
 use crate::pages::{
     UiLogin, UiPage, change_password::UiChangePassword, chat::UiChat,
     egui_settings::UiEguiSettings, uac::UiUAC,
 };
 use crate::shortcuts::Shortcuts;
+use egui_helpers::ScreenLockInfo;
 use egui_pages::{PageContainer as _, PermissionValidator, do_organize_pages};
 use tracing::{debug, error, instrument};
 use tracing::{info, warn};
+use wykies_shared::const_config::client::{
+    CLIENT_IDLE_TIMEOUT, CLIENT_TICKS_PER_SECOND_FOR_ACTIVE,
+};
 use wykies_shared::uac::{Permission, init_permissions_to_defaults};
 use wykies_time::Timestamp;
 
@@ -23,7 +26,7 @@ pub struct ChatApp {
     shortcuts: Shortcuts,
 }
 
-#[derive(Debug, Default, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, serde::Deserialize, serde::Serialize)]
 #[serde(default)]
 pub struct DataShared {
     pub username: String,
@@ -90,6 +93,20 @@ impl PermissionValidator<Permission> for DataShared {
         permissions
             .includes(required_permissions)
             .has_required_permissions()
+    }
+}
+
+impl Default for DataShared {
+    fn default() -> Self {
+        Self {
+            username: Default::default(),
+            is_login_completed: Default::default(),
+            client: Default::default(),
+            screen_lock_info: ScreenLockInfo::new(
+                CLIENT_IDLE_TIMEOUT,
+                CLIENT_TICKS_PER_SECOND_FOR_ACTIVE,
+            ),
+        }
     }
 }
 
