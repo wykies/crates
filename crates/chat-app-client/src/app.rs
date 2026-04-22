@@ -3,17 +3,15 @@ use crate::pages::{
     egui_settings::UiEguiSettings, uac::UiUAC,
 };
 use crate::shortcuts::Shortcuts;
-use egui_helpers::ScreenLockInfo;
-use egui_pages::{PageContainer as _, PermissionValidator, do_organize_pages};
-use tracing::{debug, error, instrument};
+pub use data_shared::DataShared;
+use egui_pages::{PageContainer as _, do_organize_pages};
 use tracing::{info, warn};
-use wykies_shared::const_config::client::{
-    CLIENT_IDLE_TIMEOUT, CLIENT_TICKS_PER_SECOND_FOR_ACTIVE,
-};
-use wykies_shared::uac::{Permission, init_permissions_to_defaults};
+use wykies_shared::uac::init_permissions_to_defaults;
 use wykies_time::Timestamp;
 
 const VERSION_STR: &str = concat!("ver: ", env!("CARGO_PKG_VERSION"));
+
+mod data_shared;
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(Debug, serde::Deserialize, serde::Serialize)]
@@ -24,90 +22,6 @@ pub struct ChatApp {
     data_shared: DataShared,
     active_pages: Vec<UiPage>,
     shortcuts: Shortcuts,
-}
-
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
-#[serde(default)]
-pub struct DataShared {
-    pub username: String,
-
-    #[serde(skip)]
-    /// Allows for forcing password change and updating of data outside of the
-    /// client-core
-    is_login_completed: bool,
-    #[serde(skip)]
-    // TODO 4: Add option for user to change the server they are connecting to (Saving a list of
-    //          recent servers)
-    pub client: wykies_client_core::Client,
-    #[serde(skip)]
-    screen_lock_info: ScreenLockInfo,
-}
-
-impl DataShared {
-    /// Doesn't do anything if the client does not have user info
-    #[instrument]
-    pub fn mark_login_complete(&mut self) {
-        if let Some(user_info) = self.client.user_info() {
-            debug!("Updating username to {}", user_info.username);
-            self.username = user_info.username.clone().into();
-            self.is_login_completed = true;
-        } else {
-            warn!("No user found in client");
-        }
-    }
-
-    pub fn is_logged_in(&mut self) -> bool {
-        if self.client.is_logged_in() {
-            self.is_login_completed
-        } else {
-            self.is_login_completed = false; // Reset completed status (ensure reset after logout)
-            false
-        }
-    }
-
-    pub fn is_screen_locked(&mut self) -> bool {
-        self.screen_lock_info.is_locked()
-    }
-
-    pub fn unlock(&mut self) {
-        self.screen_lock_info.unlock()
-    }
-
-    pub fn lock(&mut self) {
-        self.screen_lock_info.lock()
-    }
-}
-
-impl PermissionValidator<Permission> for DataShared {
-    fn has_permissions(&self, required_permissions: &[Permission]) -> bool {
-        let Some(permissions) = self.client.user_info().map(|user| user.permissions.clone()) else {
-            error!(
-                "Attempt to get user information when it doesn't exist. Isn't the user logged in?"
-            );
-            debug_assert!(
-                false,
-                "This shouldn't happen we should only be checking user information after login when it exists"
-            );
-            return false;
-        };
-        permissions
-            .includes(required_permissions)
-            .has_required_permissions()
-    }
-}
-
-impl Default for DataShared {
-    fn default() -> Self {
-        Self {
-            username: Default::default(),
-            is_login_completed: Default::default(),
-            client: Default::default(),
-            screen_lock_info: ScreenLockInfo::new(
-                CLIENT_IDLE_TIMEOUT,
-                CLIENT_TICKS_PER_SECOND_FOR_ACTIVE,
-            ),
-        }
-    }
 }
 
 impl eframe::App for ChatApp {
@@ -121,7 +35,7 @@ impl eframe::App for ChatApp {
     /// Called each time the UI needs repainting, which may be many times per
     /// second.
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
-        self.data_shared.screen_lock_info.tick();
+        self.data_shared.screen_lock_info_tick();
         self.top_panel(ui);
         self.bottom_panel(ui);
         self.show_pages(ui);
