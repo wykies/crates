@@ -7,13 +7,13 @@ concurrency:
 on:
   push:
     branches:
-      - develop
+      - main
   pull_request:
     types: [ opened, synchronize, reopened ]
     branches:
-      - develop
-  workflow_call: 
-      
+      - main
+  workflow_call:
+
 env:
   CARGO_TERM_COLOR: always
   SQLX_VERSION: 0.8.2 # When changing ensure the cache is invalidated
@@ -36,7 +36,8 @@ jobs:
           MYSQL_ROOT_HOST: "%"
         ports:
           - 3306:3306
-      redis: # Needed because all features are enabled (and redis is default)
+      redis:
+        # Needed because all features are enabled (and redis is default)
         image: redis:7
         ports:
           - 6379:6379
@@ -46,12 +47,8 @@ jobs:
           submodules: recursive
       - uses: wykies/setup-rust-toolchain@main
       - name: Install sqlx-cli
-        run:
-          cargo install sqlx-cli
-            --version=${{ env.SQLX_VERSION }}
-            --features rustls,mysql
-            --no-default-features
-            --locked
+        run: cargo install sqlx-cli --version=${{ env.SQLX_VERSION }} --features
+          rustls,mysql --no-default-features --locked
       - name: Migrate database
         run: |
           sudo apt-get install mysql-client -y
@@ -63,7 +60,7 @@ jobs:
           cargo sqlx prepare --check --workspace -- --bins --tests --all-features
       - name: Run tests
         run: cargo test
-        
+
   test_stand_alone_postgres:
     name: Test (Standalone Postgres)
     # TODO 5: Debug issue with postgres support or remove it
@@ -89,12 +86,8 @@ jobs:
           submodules: recursive
       - uses: wykies/setup-rust-toolchain@main
       - name: Install sqlx-cli
-        run:
-          cargo install sqlx-cli
-            --version=${{ env.SQLX_VERSION }}
-            --features rustls,postgres
-            --no-default-features
-            --locked
+        run: cargo install sqlx-cli --version=${{ env.SQLX_VERSION }} --features
+          rustls,postgres --no-default-features --locked
       - name: Create app user in Postgres
         run: |
           sudo apt-get install postgresql-client
@@ -115,7 +108,8 @@ jobs:
         run: |
           cargo sqlx prepare --check --workspace -- --bins --tests --no-default-features --features postgres,standalone,cookie-session
       - name: Run tests
-        run: cargo test --package chat-app-server --no-default-features --features standalone,postgres,cookie-session
+        run: cargo test --package chat-app-server --no-default-features --features
+          standalone,postgres,cookie-session
 
   fmt:
     name: Rustfmt
@@ -133,7 +127,7 @@ jobs:
 
   clippy:
     name: Clippy (Standalone)
-    runs-on: ubuntu-latest   
+    runs-on: ubuntu-latest
     steps:
       - uses: wykies/checkout@main
         with:
@@ -145,7 +139,7 @@ jobs:
         run: cargo run --bin switch-db -- standalone
       - name: Linting
         run: cargo clippy --all-features -- -D warnings
-        
+
   wasm:
     name: Clippy WASM
     runs-on: ubuntu-latest
@@ -154,10 +148,11 @@ jobs:
     steps:
       - uses: wykies/checkout@main
         with:
-            submodules: recursive
+          submodules: recursive
       - uses: wykies/setup-rust-toolchain@main
         with:
           target: wasm32-unknown-unknown
           components: clippy
       - name: Linting
-        run: cargo clippy --target="wasm32-unknown-unknown" --package chat-app-client -- -D warnings
+        run: cargo clippy --target="wasm32-unknown-unknown" --package chat-app-client --
+          -D warnings
