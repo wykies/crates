@@ -97,13 +97,16 @@ impl ChatApp {
 
     fn ui_menu_pages(&mut self, ui: &mut egui::Ui) {
         ui.menu_button("Pages", |ui| {
-            UiPage::ui_menu_page_btn::<UiChat>(ui, &self.data_shared, &mut self.active_pages);
-            UiPage::ui_menu_page_btn::<UiUAC>(ui, &self.data_shared, &mut self.active_pages);
+            UiPage::ui_menu_page_btn::<UiChat>(ui, &self.data_shared, &mut self.active_pages)
+                .expect("type is correct and defined at compile time");
+            UiPage::ui_menu_page_btn::<UiUAC>(ui, &self.data_shared, &mut self.active_pages)
+                .expect("type is correct and defined at compile time");
             UiPage::ui_menu_page_btn::<UiEguiSettings>(
                 ui,
                 &self.data_shared,
                 &mut self.active_pages,
-            );
+            )
+            .expect("type is correct and defined at compile time");
 
             ui.separator();
             UiPage::ui_pages_management_controls(
@@ -187,7 +190,8 @@ impl ChatApp {
                 ui,
                 &self.data_shared,
                 &mut self.active_pages,
-            );
+            )
+            .expect("type is correct and defined at compile time");
 
             // On the web the browser controls the zoom
             #[cfg(not(target_arch = "wasm32"))]
@@ -239,7 +243,11 @@ impl Default for ChatApp {
         Self {
             login_page: Default::default(),
             data_shared: Default::default(),
-            active_pages: vec![UiPage::new_page_with_unique_number::<UiChat>(0)],
+            active_pages: vec![
+                UiPage::type_to_instance::<UiChat>()
+                    .expect("invalid page type")
+                    .new_page_with_unique_number(0),
+            ],
             shortcuts: Default::default(),
         }
     }

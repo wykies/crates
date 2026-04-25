@@ -11,6 +11,7 @@ mod private {
     pub struct Token;
 }
 
+use anyhow::bail;
 use change_password::UiChangePassword;
 use chat::UiChat;
 use egui_helpers::RemovableItem;
@@ -18,7 +19,6 @@ use egui_pages::{DisplayablePage, PageContainer, show_page};
 use egui_settings::UiEguiSettings;
 pub use login::UiLogin;
 use strum::{EnumIter, IntoEnumIterator};
-use tracing::error;
 use uac::UiUAC;
 use wykies_shared::uac::Permission;
 
@@ -61,33 +61,51 @@ macro_rules! do_on_ui_page {
 
 impl PageContainer<DataShared, Permission, private::Token> for UiPage {
     #[tracing::instrument(ret)]
-    fn new_page_with_unique_number<T: DisplayablePage<DataShared, Permission, private::Token>>(
-        page_unique_number: usize,
-    ) -> UiPage {
+    fn new_page_with_unique_number(&self, page_unique_number: usize) -> Self {
+        match self {
+            UiPage::Chat(_) => Self::Chat(UiChat::new_page(page_unique_number).and_open_page()),
+            UiPage::ChangePassword(_) => {
+                Self::ChangePassword(UiChangePassword::new_page(page_unique_number).and_open_page())
+            }
+            UiPage::EguiSetting(_) => {
+                Self::EguiSetting(UiEguiSettings::new_page(page_unique_number).and_open_page())
+            }
+            UiPage::Uac(_) => Self::Uac(UiUAC::new_page(page_unique_number).and_open_page()),
+        }
+    }
+
+    fn type_to_instance<T: DisplayablePage<DataShared, Permission, private::Token>>()
+    -> anyhow::Result<Self> {
         for page in Self::iter() {
             if page.title_base() == T::title_base() {
-                return match page {
-                    UiPage::Chat(_) => {
-                        Self::Chat(UiChat::new_page(page_unique_number).and_open_page())
-                    }
-                    UiPage::ChangePassword(_) => Self::ChangePassword(
-                        UiChangePassword::new_page(page_unique_number).and_open_page(),
-                    ),
-                    UiPage::EguiSetting(_) => Self::EguiSetting(
-                        UiEguiSettings::new_page(page_unique_number).and_open_page(),
-                    ),
-                    UiPage::Uac(_) => {
-                        Self::Uac(UiUAC::new_page(page_unique_number).and_open_page())
-                    }
-                };
+                return Ok(match page {
+                    UiPage::Chat(_) => Self::Chat(UiChat::default()),
+                    UiPage::ChangePassword(_) => Self::ChangePassword(UiChangePassword::default()),
+                    UiPage::EguiSetting(_) => Self::EguiSetting(UiEguiSettings::default()),
+                    UiPage::Uac(_) => Self::Uac(UiUAC::default()),
+                });
             }
         }
-        let msg = format!(
-            "execution should never get here. All pages should be able to be found but {:?} not found",
+        bail!(
+            "invalid type passed. `UiPage` does not support: '{}'",
             T::title_base()
-        );
-        error!("{msg}");
-        unreachable!("{msg}");
+        )
+    }
+
+    fn ui_menu_page_btn<T: DisplayablePage<DataShared, Permission, private::Token>>(
+        ui: &mut egui::Ui,
+        data_shared: &DataShared,
+        active_pages: &mut Vec<Self>,
+    ) -> anyhow::Result<()>
+    where
+        DataShared: egui_pages::PermissionValidator<Permission>,
+    {
+        Self::type_to_instance::<T>()?.ui_menu_page_btn_inst(ui, data_shared, active_pages);
+        Ok(())
+    }
+
+    fn page_permissions(&self) -> &[Permission] {
+        do_on_ui_page!(self, page, { page.page_permissions_from_inst() })
     }
 
     fn display_page(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared) {
@@ -117,21 +135,12 @@ impl PageContainer<DataShared, Permission, private::Token> for UiPage {
     fn close_page(&mut self) {
         do_on_ui_page!(self, page, { page.close_page() })
     }
-
-    fn ui_menu_page_btn<T: DisplayablePage<DataShared, Permission, private::Token>>(
-        ui: &mut egui::Ui,
-        data_shared: &DataShared,
-        active_pages: &mut Vec<Self>,
-    ) {
-        Self::internal_do_ui_menu_page_btn::<T>(ui, data_shared, active_pages);
-    }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::HashSet;
-
     use super::*;
+    use std::collections::HashSet;
 
     #[test]
     fn all_page_base_names_are_unique() {

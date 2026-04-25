@@ -107,8 +107,13 @@ pub trait DisplayablePage<DataShared, Permission: 'static, PrivateToken: Default
         window
     }
 
-    /// Provides the permissions required for a page
+    /// Provides the permissions required for a page type
     fn page_permissions() -> &'static [Permission];
+
+    /// Provides the permissions required for a page instance
+    fn page_permissions_from_inst(&self) -> &'static [Permission] {
+        Self::page_permissions()
+    }
 }
 
 /// Provides a way to validate some set of permissions is met
@@ -116,14 +121,24 @@ pub trait PermissionValidator<Permission: 'static> {
     fn has_permissions(&self, required_permissions: &[Permission]) -> bool;
 }
 
-pub trait PageContainer<DataShared, Permission: 'static, PrivateToken: Default>:
-    RemovableItem
-where
+pub trait PageContainer<
+    DataShared: PermissionValidator<Permission>,
+    Permission: 'static,
+    PrivateToken: Default,
+>: RemovableItem + strum::IntoEnumIterator where
     Self: Sized,
 {
-    fn new_page_with_unique_number<T: DisplayablePage<DataShared, Permission, PrivateToken>>(
-        page_unique_number: usize,
-    ) -> Self;
+    /// Returns a default instance for the type passed.
+    ///
+    /// Note: the returned value is not suitable for display as the new function will not have been called but is suitable for calling methods that generate a valid version such as `new_page_with_unique_number`
+    ///
+    /// # Errors
+    ///
+    /// This function will return an error if the type passed does not match any of the variants of the implementing type
+    fn type_to_instance<T: DisplayablePage<DataShared, Permission, PrivateToken>>()
+    -> anyhow::Result<Self>;
+
+    fn new_page_with_unique_number(&self, page_unique_number: usize) -> Self;
 
     fn display_page(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared);
 
@@ -139,26 +154,34 @@ where
 
     fn close_page(&mut self);
 
+    fn page_permissions(&self) -> &[Permission];
+
     /// This function is intended to allow the implementer to specify the
-    /// relevant types and then call the "internal_do_" version
+    /// relevant generics and then call the `ui_menu_page_inst` version
+    ///
+    /// # Errors
+    ///
+    /// May return an error if `T` does not match the type of any of the variants
     fn ui_menu_page_btn<T: DisplayablePage<DataShared, Permission, PrivateToken>>(
         ui: &mut egui::Ui,
         data_shared: &DataShared,
         active_pages: &mut Vec<Self>,
-    ) where
+    ) -> anyhow::Result<()>
+    where
         DataShared: PermissionValidator<Permission>;
 
-    fn internal_do_ui_menu_page_btn<T: DisplayablePage<DataShared, Permission, PrivateToken>>(
+    fn ui_menu_page_btn_inst(
+        &self,
         ui: &mut egui::Ui,
         data_shared: &DataShared,
         active_pages: &mut Vec<Self>,
     ) where
         DataShared: PermissionValidator<Permission>,
     {
-        if !data_shared.has_permissions(T::page_permissions()) {
+        if !data_shared.has_permissions(self.page_permissions()) {
             return;
         }
-        let base_title = T::title_base();
+        let base_title = self.title_base();
         if ui.button(base_title).clicked() {
             let mut max_id_found = None;
             for page in active_pages.iter_mut() {
@@ -171,7 +194,7 @@ where
             } else {
                 0
             };
-            active_pages.push(Self::new_page_with_unique_number::<T>(new_num));
+            active_pages.push(self.new_page_with_unique_number(new_num));
             ui.close();
         }
     }
@@ -275,5 +298,15 @@ where
                 Self::ui_pages_management_controls(ui, active_pages, organize_shortcut);
             });
         });
+    }
+
+    fn add_all_page_btns(
+        ui: &mut egui::Ui,
+        data_shared: &DataShared,
+        active_pages: &mut Vec<Self>,
+    ) {
+        for page in Self::iter() {
+            page.ui_menu_page_btn_inst(ui, data_shared, active_pages);
+        }
     }
 }

@@ -1711,12 +1711,14 @@ dependencies = [
 
 [[package]]
 name = "egui-pages"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
+ "anyhow",
  "egui",
  "egui-helpers",
  "ron",
  "serde",
+ "strum 0.28.0",
  "tracing",
 ]
 
