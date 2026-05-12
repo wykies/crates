@@ -1702,7 +1702,7 @@ dependencies = [
 
 [[package]]
 name = "egui-helpers"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "egui",
  "secrecy",
