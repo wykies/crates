@@ -6,7 +6,8 @@ pub trait UiHelpers {
     fn label_truncate(&mut self, text: impl Into<WidgetText>) -> Response;
     fn error_label(&mut self, text: impl Into<RichText>) -> Response;
     fn warn_label(&mut self, text: impl Into<RichText>) -> Response;
-    fn strong_label(&mut self, text: impl Into<String>) -> Response;
+    /// Alias for ui.strong
+    fn strong_label(&mut self, text: impl Into<RichText>) -> Response;
     fn text_height(&mut self) -> f32;
     fn password_edit(&mut self, password: &mut SecretString, hint_text: &str) -> Response;
     fn readonly_checkbox_no_text(&mut self, value: bool) -> Response;
@@ -57,8 +58,8 @@ impl UiHelpers for egui::Ui {
         self.colored_label(self.visuals().warn_fg_color, text)
     }
 
-    fn strong_label(&mut self, text: impl Into<String>) -> Response {
-        self.label(egui::RichText::new(text).strong())
+    fn strong_label(&mut self, text: impl Into<RichText>) -> Response {
+        self.strong(text)
     }
 
     fn text_height(&mut self) -> f32 {
