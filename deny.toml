@@ -3,10 +3,7 @@
 # https://embarkstudios.github.io/cargo-deny/checks/advisories/cfg.html
 [advisories]
 ignore = [
-  # "RUSTSEC-0000-0000",
-
-  # TODO 4: Check if fixes are available for advisories
-
-  # https://github.com/RustCrypto/RSA/issues/19#issuecomment-1822995643
-  "RUSTSEC-2023-0071",
+  { id = "RUSTSEC-2023-0071", reason = "See https://github.com/RustCrypto/RSA/issues/19#issuecomment-1822995643 seems to be fixed just waiting on a new release which is planned as per https://github.com/RustCrypto/RSA/issues/647" },
+  { id = "RUSTSEC-2026-0194", reason = "Likely used to parse system files so not likely to be untrusted. Issue opened to track resolution https://github.com/Smithay/client-toolkit/issues/535" },
+  { id = "RUSTSEC-2026-0195", reason = "See reason for RUSTSEC-2026-0194" },
 ]
