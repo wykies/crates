@@ -26,11 +26,6 @@ command = [
 ]
 allow_warnings = true
 
-[jobs.run-server-shuttle]
-command = ["shuttle", "run"]
-allow_warnings = true
-kill = ["pkill", "-TERM", "-P"]
-
 [jobs.run-client-egui]
 command = ["cargo", "run", "--bin", "chat-app-client", "--all-features"]
 allow_warnings = true
@@ -104,28 +99,6 @@ command = [
 ]
 env.TEST_LOG = "true"
 
-[jobs.check-shuttle]
-command = [
-  "cargo",
-  "check",
-  "--package",
-  "chat-app-server",
-  "--no-default-features",
-  "--features",
-  "shuttle",
-]
-
-[jobs.clippy-shuttle]
-command = [
-  "cargo",
-  "clippy",
-  "--package",
-  "chat-app-server",
-  "--no-default-features",
-  "--features",
-  "shuttle",
-]
-
 # TODO 2: Test bacon notification job
 [jobs.run_bunyan_notify]
 command = [
@@ -151,9 +124,6 @@ p = "job:test-chat-server-standalone-pg"
 alt-p = "job:test-chat-server-standalone-pg-trace"
 r = "job:run-server-standalone-mysql"
 alt-r = "job:run-server-standalone-postgres"
-ctrl-r = "job:run-server-shuttle"
 s = "job:test-chat-server-standalone-mysql"
 alt-s = "job:test-chat-server-standalone-mysql-trace"
-v = "job:clippy-shuttle"
-alt-v = "job:check-shuttle"
 w = "job:check-wasm-client"

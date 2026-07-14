@@ -1,16 +1,14 @@
 use crate::websocket::WsServiceIds;
 use actix_web::web::{self, ServiceConfig};
-use anyhow::Context;
 use plugin_chat::server_only::{
     ChatPlugin, ChatPluginConfig, ChatSettings, chat_ws_start_client_handler_loop,
 };
-use shuttle_runtime::async_trait;
 use tokio::task::{JoinError, JoinSet};
 use tracing::{error, info};
 use tracked_cancellations::CancellationTracker;
 use ws_auth::ws_get_route_add_closures;
 use wykies_server::{
-    ApiServerBuilder, ServerTask as _, cancel_remaining_tasks,
+    ApiServerBuilder, ServerTask as _,
     plugin::{ServerPlugin, ServerPluginArtifacts},
 };
 use wykies_shared::{
@@ -104,20 +102,18 @@ pub async fn start_servers(
 
 pub struct AppService(pub ApiServerBuilder<CustomConfiguration>);
 
-#[async_trait]
-impl shuttle_runtime::Service for AppService {
-    async fn bind(self, addr: std::net::SocketAddr) -> Result<(), shuttle_runtime::Error> {
-        let (mut join_set, cancellation_tracker, _) = start_servers(self.0, addr).await;
-        let join_outcome = join_set.join_next().await.context("no tasks in join set")?;
-        report_exit(join_outcome);
-
-        // Cancel any remaining tasks
-        cancel_remaining_tasks(cancellation_tracker).await;
-
-        Ok(())
+impl AppService {
+    pub async fn bind(&self, _addr: std::net::SocketAddr) -> anyhow::Result<()> {
+        todo!(
+            "Need to setup to work without shuttle (note to dev, see internal version to match what we do there)"
+        )
     }
 }
 
+#[expect(
+    unused,
+    reason = "needs to be linked in once we make it run again without shuttle"
+)]
 fn report_exit(join_set_outcome: Result<(&str, Result<anyhow::Result<()>, JoinError>), JoinError>) {
     match join_set_outcome {
         Ok((task_name, spawn_join_outcome)) => match spawn_join_outcome {

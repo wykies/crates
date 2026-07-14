@@ -9,7 +9,7 @@ on:
     branches:
       - main
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types: [opened, synchronize, reopened]
     branches:
       - main
   workflow_call:
@@ -98,12 +98,10 @@ jobs:
 
           # Grant create db privileges to the app user
           GRANT_QUERY="ALTER USER ${APP_USER} CREATEDB;"
-          PGPASSWORD="password" psql -U "postgres" -h "localhost" -c "${GRANT_QUERY}"    
+          PGPASSWORD="password" psql -U "postgres" -h "localhost" -c "${GRANT_QUERY}"
       - name: Migrate database
         run: |
           cd crates/chat-app-server && SKIP_DOCKER=true ./scripts/init_db_pg.sh
-      - name: Load sqlx query files for postgres
-        run: cargo run --bin switch-db -- shuttle
       - name: Check sqlx prepared queries for postgres are is up-to-date
         run: |
           cargo sqlx prepare --check --workspace -- --bins --tests --no-default-features --features postgres,standalone,cookie-session

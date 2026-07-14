@@ -9,9 +9,5 @@ traces/
 # Ignore new snapshot files
 *.snap.new
 
-# For Shuttle
-.shuttle*
-Secrets*.toml
-
 # We are using two separate folders for sqlx query files because we have 2 databases supported and files generated need to be moved to one of those
 .sqlx/query*.json

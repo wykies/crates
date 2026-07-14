@@ -12,13 +12,9 @@ case $1 in
   "Standalone" | "mysql")
     MODE="Standalone"
     ;;
-
-  "Shuttle" | "postgres")
-    MODE="Shuttle"
-    ;;
     
     *)
-    echo "Error: Got \"$1\" but expected one of: Standalone | Shuttle | mysql | postgres"
+    echo "Error: Got \"$1\" but expected one of: Standalone | mysql "
     exit 1
 esac
 

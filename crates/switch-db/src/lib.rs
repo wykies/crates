@@ -42,7 +42,6 @@ pub fn run() -> anyhow::Result<()> {
 enum Mode {
     #[default]
     Standalone,
-    Shuttle,
 }
 
 enum FileType {
@@ -66,7 +65,6 @@ impl Display for Mode {
             "{}",
             match self {
                 Mode::Standalone => "Standalone",
-                Mode::Shuttle => "Shuttle",
             }
         )
     }

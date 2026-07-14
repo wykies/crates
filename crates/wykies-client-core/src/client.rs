@@ -35,7 +35,9 @@ impl Default for Client {
         if cfg!(debug_assertions) {
             Self::new("http://localhost:8789".to_string())
         } else {
-            Self::new("https://chat-demo-umon.shuttle.app".to_string())
+            todo!(
+                "figure out how to get address when running in prod. We don't currently have a prod version since we shuttle moved away"
+            )
         }
     }
 }
