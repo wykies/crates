@@ -11,7 +11,7 @@ macro_rules! enum_repr_u8_impls {
         impl sqlx::Encode<'_, sqlx::MySql> for $name {
             fn encode_by_ref(
                 &self,
-                buf: &mut <sqlx::MySql as sqlx::Database>::ArgumentBuffer<'_>,
+                buf: &mut <sqlx::MySql as sqlx::Database>::ArgumentBuffer,
             ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
                 let x = *self as u8;
                 x.encode_by_ref(buf)
