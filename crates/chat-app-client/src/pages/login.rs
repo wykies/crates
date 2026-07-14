@@ -104,7 +104,7 @@ impl UiLogin {
     }
 
     pub fn show(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared) {
-        egui::CentralPanel::default().show_inside(ui, |ui| {
+        egui::CentralPanel::default().show(ui, |ui| {
             if matches!(
                 self.login_attempt_status,
                 DataState::Present(LoginOutcome::ForcePasswordChange),

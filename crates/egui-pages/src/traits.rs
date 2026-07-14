@@ -130,11 +130,14 @@ pub trait PageContainer<
 {
     /// Returns a default instance for the type passed.
     ///
-    /// Note: the returned value is not suitable for display as the new function will not have been called but is suitable for calling methods that generate a valid version such as `new_page_with_unique_number`
+    /// Note: the returned value is not suitable for display as the new function
+    /// will not have been called but is suitable for calling methods that
+    /// generate a valid version such as `new_page_with_unique_number`
     ///
     /// # Errors
     ///
-    /// This function will return an error if the type passed does not match any of the variants of the implementing type
+    /// This function will return an error if the type passed does not match any
+    /// of the variants of the implementing type
     fn type_to_instance<T: DisplayablePage<DataShared, Permission, PrivateToken>>()
     -> anyhow::Result<Self>;
 
@@ -161,7 +164,8 @@ pub trait PageContainer<
     ///
     /// # Errors
     ///
-    /// May return an error if `T` does not match the type of any of the variants
+    /// May return an error if `T` does not match the type of any of the
+    /// variants
     fn ui_menu_page_btn<T: DisplayablePage<DataShared, Permission, PrivateToken>>(
         ui: &mut egui::Ui,
         data_shared: &DataShared,
@@ -260,7 +264,7 @@ pub trait PageContainer<
         egui::Panel::right("active pages panel")
             .resizable(false)
             .default_size(200.0)
-            .show_inside(ui, |ui| {
+            .show(ui, |ui| {
                 ui.vertical_centered(|ui| {
                     ui.heading("Active Pages");
                 });

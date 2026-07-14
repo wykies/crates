@@ -179,7 +179,7 @@ impl ChatDbWriter {
                 .push_bind(im.timestamp)
                 .push_bind(im.content);
         });
-        debug!(query_builder.sql = query_builder.sql(), "Query Builder SQL");
+        debug!(query_builder.sql = ?query_builder.sql(), "Query Builder SQL");
 
         // TODO 5: Optimizations left on the table are to try to have the size sent be
         // more similar so caching would work and reusing the query_builder (see reset)

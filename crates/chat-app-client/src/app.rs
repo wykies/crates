@@ -119,7 +119,7 @@ impl ChatApp {
 
     fn top_panel(&mut self, ui: &mut egui::Ui) {
         // Single instance of global panel thus unique
-        egui::Panel::top("top_panel").show_inside(ui, |ui| {
+        egui::Panel::top("top_panel").show(ui, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
                 egui::widgets::global_theme_preference_switch(ui);
                 if self.is_logged_in() && !self.is_locked() {
@@ -133,7 +133,7 @@ impl ChatApp {
 
     fn bottom_panel(&mut self, ui: &mut egui::Ui) {
         // Single instance of global panel thus unique
-        egui::Panel::bottom("bottom_panel").show_inside(ui, |ui| {
+        egui::Panel::bottom("bottom_panel").show(ui, |ui| {
             ui.with_layout(egui::Layout::right_to_left(egui::Align::BOTTOM), |ui| {
                 ui.label(self.current_time());
                 if self.is_logged_in() {

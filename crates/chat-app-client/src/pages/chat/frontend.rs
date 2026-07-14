@@ -64,7 +64,7 @@ impl FrontEnd {
         egui::Panel::bottom(format!("{}bottom", self.unique_id_prefix))
             .resizable(true)
             .max_size(half_height)
-            .show_inside(ui, |ui| {
+            .show(ui, |ui| {
                 if self.error_status.is_none() {
                     self.ui_send_area(ui, connection)
                 } else {
@@ -74,9 +74,9 @@ impl FrontEnd {
 
         egui::Panel::right(format!("{}connected users", self.unique_id_prefix))
             .min_size(20.)
-            .show_inside(ui, |ui| self.ui_connected_users(ui));
+            .show(ui, |ui| self.ui_connected_users(ui));
 
-        egui::CentralPanel::default().show_inside(ui, |ui| self.ui_messages(ui, connection));
+        egui::CentralPanel::default().show(ui, |ui| self.ui_messages(ui, connection));
     }
 
     fn check_for_server_msgs(&mut self, connection: &mut WsConnTxRx) {

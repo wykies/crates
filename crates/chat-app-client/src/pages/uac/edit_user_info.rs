@@ -73,7 +73,7 @@ impl EditUserInfo {
         if !self.edit_user.is_present() {
             self.load_time = Some(Timestamp::now());
             if self.edit_user.is_none() {
-                self.edit_user.egui_start_request(ui, || {
+                self.edit_user.egui_start_task(ui, || {
                     client_core.user_get(self.original_user.username.clone())
                 });
             }

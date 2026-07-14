@@ -42,7 +42,7 @@ impl DisplayablePage<DataShared, Permission, private::Token> for UiChat {
         };
         if self.data_state.is_none() {
             let ctx = ui.clone();
-            self.data_state.egui_start_request(ui, || {
+            self.data_state.egui_start_task(ui, || {
                 data_shared.client.ws_connect(
                     PATH_WS_TOKEN_CHAT,
                     WS_INITIAL_MSG_TIMEOUT,

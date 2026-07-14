@@ -97,7 +97,7 @@ macro_rules! string_wrapper {
         impl sqlx::Encode<'_, Db> for $name {
             fn encode_by_ref(
                 &self,
-                buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
+                buf: &mut <Db as sqlx::Database>::ArgumentBuffer,
             ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
                 <String as sqlx::Encode<'_, Db>>::encode_by_ref(&self.0, buf)
             }
@@ -207,7 +207,7 @@ macro_rules! char_array_wrapper {
         impl sqlx::Encode<'_, Db> for $name {
             fn encode_by_ref(
                 &self,
-                buf: &mut <Db as sqlx::Database>::ArgumentBuffer<'_>,
+                buf: &mut <Db as sqlx::Database>::ArgumentBuffer,
             ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
                 <String as sqlx::Encode<'_, Db>>::encode_by_ref(&self.to_string(), buf)
             }

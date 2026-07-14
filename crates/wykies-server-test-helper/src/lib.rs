@@ -187,8 +187,12 @@ async fn create_database(config: &DatabaseSettings) -> DbPool {
     let query = format!(r#"CREATE DATABASE `{}`;"#, config.database_name);
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
     let query = format!(r#"CREATE DATABASE "{}";"#, config.database_name);
+
+    // This code shouldn't run often and the string shouldn't be long
+    let leaked_query = query.leak();
+
     connection
-        .execute(&*query)
+        .execute(&*leaked_query)
         .await
         .expect("Failed to create database");
 

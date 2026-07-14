@@ -17,7 +17,7 @@ macro_rules! impl_encode_for_newtype_around_u64 {
         impl sqlx::Encode<'_, sqlx::MySql> for $type {
             fn encode_by_ref(
                 &self,
-                buf: &mut <sqlx::MySql as sqlx::Database>::ArgumentBuffer<'_>,
+                buf: &mut <sqlx::MySql as sqlx::Database>::ArgumentBuffer,
             ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
                 self.0.encode_by_ref(buf)
             }
@@ -27,7 +27,7 @@ macro_rules! impl_encode_for_newtype_around_u64 {
         impl sqlx::Encode<'_, sqlx::Postgres> for $type {
             fn encode_by_ref(
                 &self,
-                buf: &mut <sqlx::Postgres as sqlx::Database>::ArgumentBuffer<'_>,
+                buf: &mut <sqlx::Postgres as sqlx::Database>::ArgumentBuffer,
             ) -> Result<sqlx::encode::IsNull, sqlx::error::BoxDynError> {
                 let converted: i64 = self
                     .0

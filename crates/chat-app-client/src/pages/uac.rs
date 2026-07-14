@@ -105,11 +105,11 @@ impl DisplayablePage<DataShared, Permission, private::Token> for UiUAC {
         }
         if self.data_state.is_none() {
             self.data_state
-                .egui_start_request(ui, || data_shared.client.list_users_and_roles());
+                .egui_start_task(ui, || data_shared.client.list_users_and_roles());
         }
         let bottom_panel_id = self.unique_prefix_for_id("bottom");
         if let Some(data) = self.data_state.egui_poll_mut(ui, None) {
-            egui::Panel::bottom(bottom_panel_id).show_inside(ui, |ui| {
+            egui::Panel::bottom(bottom_panel_id).show(ui, |ui| {
                 ui.vertical_centered(|ui| {
                     // Centering only works on the label and button but the grid is not centered
                     if ui_show_user_op(ui, &data_shared.client, data, &mut self.user_op)
@@ -120,7 +120,7 @@ impl DisplayablePage<DataShared, Permission, private::Token> for UiUAC {
                 });
             });
 
-            egui::CentralPanel::default().show_inside(ui, |ui| {
+            egui::CentralPanel::default().show(ui, |ui| {
                 if self.user_op.has_changes() {
                     // Reduce risk of accidental data loss by changing user
                     ui.disable();
