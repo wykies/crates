@@ -9,7 +9,14 @@
         "type_info": {
           "type": "Long",
           "flags": "NOT_NULL | PRIMARY_KEY | AUTO_INCREMENT",
+          "collation": 63,
           "max_size": 11
+        },
+        "origin": {
+          "Table": {
+            "table": "chat_demo.roles",
+            "name": "RoleID"
+          }
         }
       },
       {
@@ -18,7 +25,14 @@
         "type_info": {
           "type": "VarString",
           "flags": "NOT_NULL | UNIQUE_KEY | NO_DEFAULT_VALUE",
+          "collation": 255,
           "max_size": 64
+        },
+        "origin": {
+          "Table": {
+            "table": "chat_demo.roles",
+            "name": "Name"
+          }
         }
       },
       {
@@ -27,7 +41,14 @@
         "type_info": {
           "type": "VarString",
           "flags": "NOT_NULL",
+          "collation": 255,
           "max_size": 200
+        },
+        "origin": {
+          "Table": {
+            "table": "chat_demo.roles",
+            "name": "Description"
+          }
         }
       },
       {
@@ -36,7 +57,14 @@
         "type_info": {
           "type": "VarString",
           "flags": "NOT_NULL | NO_DEFAULT_VALUE",
+          "collation": 255,
           "max_size": 1024
+        },
+        "origin": {
+          "Table": {
+            "table": "chat_demo.roles",
+            "name": "Permissions"
+          }
         }
       }
     ],

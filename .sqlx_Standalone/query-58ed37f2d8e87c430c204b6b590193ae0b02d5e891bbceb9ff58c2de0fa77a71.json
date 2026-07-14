@@ -9,7 +9,14 @@
         "type_info": {
           "type": "Tiny",
           "flags": "NOT_NULL",
+          "collation": 63,
           "max_size": 4
+        },
+        "origin": {
+          "Table": {
+            "table": "chat_demo.user",
+            "name": "FailedAttempts"
+          }
         }
       }
     ],

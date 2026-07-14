@@ -9,7 +9,14 @@
         "type_info": {
           "type": "VarString",
           "flags": "NOT_NULL | PRIMARY_KEY | NO_DEFAULT_VALUE",
+          "collation": 255,
           "max_size": 64
+        },
+        "origin": {
+          "Table": {
+            "table": "chat_demo.user",
+            "name": "UserName"
+          }
         }
       },
       {
@@ -18,7 +25,14 @@
         "type_info": {
           "type": "VarString",
           "flags": "NOT_NULL | UNIQUE_KEY | NO_DEFAULT_VALUE",
+          "collation": 255,
           "max_size": 120
+        },
+        "origin": {
+          "Table": {
+            "table": "chat_demo.user",
+            "name": "DisplayName"
+          }
         }
       },
       {
@@ -27,7 +41,14 @@
         "type_info": {
           "type": "Tiny",
           "flags": "NOT_NULL",
+          "collation": 63,
           "max_size": 1
+        },
+        "origin": {
+          "Table": {
+            "table": "chat_demo.user",
+            "name": "ForcePassChange"
+          }
         }
       },
       {
@@ -36,7 +57,14 @@
         "type_info": {
           "type": "Long",
           "flags": "MULTIPLE_KEY",
+          "collation": 63,
           "max_size": 11
+        },
+        "origin": {
+          "Table": {
+            "table": "chat_demo.user",
+            "name": "AssignedRole"
+          }
         }
       },
       {
@@ -45,7 +73,14 @@
         "type_info": {
           "type": "Tiny",
           "flags": "NOT_NULL",
+          "collation": 63,
           "max_size": 1
+        },
+        "origin": {
+          "Table": {
+            "table": "chat_demo.user",
+            "name": "Enabled"
+          }
         }
       },
       {
@@ -54,7 +89,14 @@
         "type_info": {
           "type": "Tiny",
           "flags": "NOT_NULL",
+          "collation": 63,
           "max_size": 1
+        },
+        "origin": {
+          "Table": {
+            "table": "chat_demo.user",
+            "name": "LockedOut"
+          }
         }
       },
       {
@@ -63,7 +105,14 @@
         "type_info": {
           "type": "Tiny",
           "flags": "NOT_NULL",
+          "collation": 63,
           "max_size": 4
+        },
+        "origin": {
+          "Table": {
+            "table": "chat_demo.user",
+            "name": "FailedAttempts"
+          }
         }
       },
       {
@@ -72,7 +121,14 @@
         "type_info": {
           "type": "Date",
           "flags": "NOT_NULL | BINARY | NO_DEFAULT_VALUE",
+          "collation": 63,
           "max_size": 10
+        },
+        "origin": {
+          "Table": {
+            "table": "chat_demo.user",
+            "name": "PassChangeDate"
+          }
         }
       }
     ],
