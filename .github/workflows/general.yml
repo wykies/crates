@@ -16,7 +16,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  SQLX_VERSION: 0.8.2 # When changing ensure the cache is invalidated
+  SQLX_VERSION: 0.9.0 # When changing ensure the cache is invalidated
   APP_USER: db_user
   APP_USER_PWD: password
   APP_DB_NAME: chat_demo
