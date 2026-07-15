@@ -114,7 +114,22 @@ need_stdout = true
 allow_warnings = true
 background = false
 
+[jobs.test-other-than-server]
+command = [
+  "cargo",
+  "test",
+  "--workspace",
+  "--exclude",
+  "wykies-server-test-helper",
+  "--exclude",
+  "chat-app-server",
+  "--exclude",
+  "wykies-client-core",
+]
+env.TEST_LOG = "true"
+
 [keybindings]
+t = "job:test-other-than-server"
 alt-t = "job:test-trace"
 e = "job:run-client-egui"
 alt-e = "job:run-client-egui-release"

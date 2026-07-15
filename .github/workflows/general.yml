@@ -22,8 +22,20 @@ env:
   APP_DB_NAME: chat_demo
 
 jobs:
+  test_other_than_server:
+    name: Test (Other than server)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: wykies/checkout@main
+        with:
+          submodules: recursive
+      - uses: wykies/setup-rust-toolchain@main
+      - name: Load sqlx query files for mysql # Required to compile code
+        run: cargo run --bin switch-db -- standalone
+      - name: Run tests without server
+        run: cargo test --workspace --exclude wykies-server-test-helper --exclude chat-app-server --exclude wykies-client-core
   test_stand_alone_mysql:
-    # TODO 1: Disabling for now as we don't have time to debug what went wrong with the shuttle removal
+    # TODO 1: Disabling for now as we don't have time to debug what went wrong with the shuttle removal, remove "test_other_than_server" job once restored to not duplicate work (and bacon job test_other_than_server)
     if: false
     name: Test (Standalone MySQL)
     runs-on: ubuntu-latest
