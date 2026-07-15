@@ -1,0 +1,10 @@
+[package]
+name = "umya-helper"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow.workspace = true
+jiff.workspace = true
+tracing.workspace = true
+umya-spreadsheet.workspace = true

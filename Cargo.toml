@@ -2,6 +2,7 @@
 resolver = "2"
 members = [
   # "crates/bunyan_log_monitor", # TODO 2: restore to work on notification program
+  "crates/cache",
   "crates/chat-app-client",
   "crates/chat-app-server",
   "crates/db-types",
@@ -10,6 +11,7 @@ members = [
   "crates/plugin-chat",
   "crates/switch-db",
   "crates/tracked-cancellations",
+  "crates/umya-helper",
   "crates/ws-auth",
   "crates/ws-helpers",
   "crates/wykies-client-core",
@@ -41,6 +43,7 @@ egui_extras = "0.35.0"
 ewebsock = { version = "0.8.0", features = ["tls"] }
 futures-util = "0.3.32"
 insta = "1.48.0"
+jiff = { version = "0.2.32", features = ["logging", "serde"] }
 lettre = "0.11.22"
 log = "0.4.33"
 plugin-chat = { version = "*", path = "crates/plugin-chat" }
@@ -71,6 +74,7 @@ tracing-bunyan-formatter = "0.3.10"
 tracing-log = "0.2.0"
 tracing-subscriber = { version = "0.3.23", features = ["fmt", "json"] }
 tracked-cancellations = { version = "*", path = "crates/tracked-cancellations" }
+umya-spreadsheet = { version = "3.0.0", git = "https://github.com/MathNya/umya-spreadsheet", default-features = false, rev = "39b1f1a3e4d5eea5b58f90308c078bd605b2fdd6" }
 uuid = { version = "1.23.5", features = ["v4", "serde", "rng-getrandom"] }
 version-control-clean-check = "0.1.4"
 wasm-bindgen-test = "0.3.76"
