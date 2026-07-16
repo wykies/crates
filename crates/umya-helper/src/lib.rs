@@ -71,6 +71,18 @@ where
 }
 
 #[inline]
+pub fn get_expected_cell_value_as_date<T>(
+    sheet: &Worksheet,
+    coordinate: T,
+    value_name: &str,
+) -> anyhow::Result<civil::Date>
+where
+    T: Into<CellCoordinates> + Debug,
+{
+    Ok(get_expected_cell_value_as_date_time(sheet, coordinate, value_name)?.date())
+}
+
+#[inline]
 pub fn get_expected_cell_value_as_bool<T>(
     sheet: &Worksheet,
     coordinate: T,
