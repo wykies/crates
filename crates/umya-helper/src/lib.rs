@@ -151,7 +151,7 @@ pub fn str_to_bool(cell_value: &str) -> anyhow::Result<bool> {
 #[inline]
 pub fn f64_str_to_date_time(value: &str, value_name: &str) -> anyhow::Result<civil::DateTime> {
     let value: f64 = value.parse().with_context(|| {
-        format!("failed to convert to numeric value for date of {value_name:?}")
+        format!("failed to convert to numeric value for date of {value_name:?} on value: {value:?}")
     })?;
     Ok(excel_to_date_time_jiff(value))
 }
