@@ -220,3 +220,44 @@ pub fn set_size_cols<'a>(
         sheet.column_dimension_by_number_mut(col).set_width(value);
     }
 }
+
+/// Sets the any split values set to `Some(_)` and returns an error if neither
+/// are set
+pub fn set_frozen_pane(
+    sheet: &mut Worksheet,
+    vertical_split_value: Option<f64>,
+    horizontal_split_value: Option<f64>,
+) -> anyhow::Result<()> {
+    if vertical_split_value.is_none() && horizontal_split_value.is_none() {
+        bail!("neither vertical nor horizontal spit are set");
+    }
+
+    let sheet_views = sheet.sheet_views_mut();
+
+    // If no sheet view exists yet, push a default one onto the list
+    if sheet_views.sheet_view_list_mut().is_empty() {
+        sheet_views.add_sheet_view_list_mut(umya_spreadsheet::SheetView::default());
+    }
+
+    let sheet_view = sheet_views
+        .sheet_view_list_mut()
+        .get_mut(0)
+        .context("failed to get first sheet view")?;
+
+    // Initialize the pane if it is currently None
+    if sheet_view.pane().is_none() {
+        sheet_view.set_pane(umya_spreadsheet::structs::Pane::default());
+    }
+
+    let pane = sheet_view
+        .pane_mut()
+        .context("failed to get pane in sheet_view")?;
+    if let Some(value) = vertical_split_value {
+        pane.set_vertical_split(value);
+    }
+    if let Some(value) = horizontal_split_value {
+        pane.set_horizontal_split(value);
+    }
+    pane.set_state(umya_spreadsheet::PaneStateValues::Frozen);
+    Ok(())
+}
