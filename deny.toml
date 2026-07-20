@@ -3,6 +3,7 @@
 # https://embarkstudios.github.io/cargo-deny/checks/advisories/cfg.html
 [advisories]
 ignore = [
+  { id = "RUSTSEC-2024-0436", reason = "Should be resolved once I can get a chance to fix the issue with umya-spreadsheet and I can upgrade" },
   { id = "RUSTSEC-2026-0194", reason = "Likely used to parse system files so not likely to be untrusted. Issue opened to track resolution https://github.com/Smithay/client-toolkit/issues/535" },
   { id = "RUSTSEC-2026-0195", reason = "See reason for RUSTSEC-2026-0194" },
 ]
