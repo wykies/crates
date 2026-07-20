@@ -191,7 +191,12 @@ pub fn set_cell_note<S: Into<String>>(sheet: &mut Worksheet, row: u32, col: u32,
     sheet.add_comments(note);
 }
 
+#[deprecated(since = "0.1.3", note = "Use set_auto_size_cols()")]
 pub fn set_auto_size<'a>(sheet: &mut Worksheet, cols: impl Iterator<Item = &'a u32>) {
+    set_auto_size_cols(sheet, cols);
+}
+
+pub fn set_auto_size_cols<'a>(sheet: &mut Worksheet, cols: impl Iterator<Item = &'a u32>) {
     for &col in cols {
         sheet
             .column_dimension_by_number_mut(col)
