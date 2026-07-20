@@ -203,3 +203,20 @@ pub fn set_auto_size_cols<'a>(sheet: &mut Worksheet, cols: impl Iterator<Item = 
             .set_auto_width(true);
     }
 }
+
+pub fn set_best_fit_cols<'a>(sheet: &mut Worksheet, cols: impl Iterator<Item = &'a u32>) {
+    for &col in cols {
+        sheet.column_dimension_by_number_mut(col).set_best_fit(true);
+    }
+}
+
+/// Used to set the size of a set of columns. Expects column index paired with
+/// size in an iterator of tuples
+pub fn set_size_cols<'a>(
+    sheet: &mut Worksheet,
+    cols_and_sizes: impl Iterator<Item = &'a (u32, f64)>,
+) {
+    for &(col, value) in cols_and_sizes {
+        sheet.column_dimension_by_number_mut(col).set_width(value);
+    }
+}
