@@ -14,7 +14,7 @@ pub fn get_next_empty_row(sheet: &Worksheet, start_row: u32, column_to_check: u3
         .find(|&row| {
             sheet
                 .cell((column_to_check, row))
-                .is_none_or(|x| x.value().is_empty())
+                .is_none_or(|x| x.value().trim().is_empty())
         })
         .expect("runs on an infinite iterator and can only exit with a value")
 }
@@ -26,7 +26,11 @@ where
 {
     let x = sheet.cell(coordinate)?;
     let value = x.value();
-    if value.is_empty() { None } else { Some(value) }
+    if value.trim().is_empty() {
+        None
+    } else {
+        Some(value)
+    }
 }
 
 #[inline]
