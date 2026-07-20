@@ -162,6 +162,11 @@ pub fn set_cell_value<S: Into<String>>(sheet: &mut Worksheet, row: u32, col: u32
 }
 
 #[inline]
+pub fn set_cell_value_as_number(sheet: &mut Worksheet, row: u32, col: u32, value: f64) {
+    sheet.cell_mut((col, row)).set_value_number(value);
+}
+
+#[inline]
 pub fn set_cell_value_bold<S: Into<String>>(sheet: &mut Worksheet, row: u32, col: u32, value: S) {
     let mut text_element = TextElement::default();
     text_element.set_text(value).font_mut().set_bold(true);
