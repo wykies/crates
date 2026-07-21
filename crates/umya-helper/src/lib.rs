@@ -305,3 +305,14 @@ pub fn set_range_format_to<R: AsRef<str>, F: Into<String>>(
     style.number_format_mut().set_format_code(number_format);
     sheet.set_style_by_range(range.as_ref(), &style);
 }
+
+pub fn set_cell_horizontal_alignment<C: Into<CellCoordinates>>(
+    sheet: &mut Worksheet,
+    range: C,
+    alignment: umya_spreadsheet::HorizontalAlignmentValues,
+) {
+    sheet
+        .style_mut(range)
+        .alignment_mut()
+        .set_horizontal(alignment);
+}
