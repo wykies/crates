@@ -293,3 +293,15 @@ pub const fn const_only_alpha_to_index(col: &str) -> u32 {
         None => panic!("Invalid Column Letter"),
     }
 }
+
+/// See the constants attached to umya-spreadsheet::NumberingFormat eg.
+/// umya_spreadsheet::NumberingFormat::FORMAT_CURRENCY_USD_SIMPLE
+pub fn set_range_format_to<R: AsRef<str>, F: Into<String>>(
+    sheet: &mut Worksheet,
+    range: R,
+    number_format: F,
+) {
+    let mut style = umya_spreadsheet::Style::default();
+    style.number_format_mut().set_format_code(number_format);
+    sheet.set_style_by_range(range.as_ref(), &style);
+}
