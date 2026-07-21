@@ -9,6 +9,16 @@ pub fn set_cell_value<S: Into<String>>(sheet: &mut Worksheet, row: u32, col: u32
 pub fn set_cell_value_as_number(sheet: &mut Worksheet, row: u32, col: u32, value: f64) {
     sheet.cell_mut((col, row)).set_value_number(value);
 }
+#[inline]
+pub fn set_cell_value_as_datetime(
+    sheet: &mut Worksheet,
+    row: u32,
+    col: u32,
+    value: civil::DateTime,
+) {
+    let value = jiff_date_time_to_excel(value);
+    sheet.cell_mut((col, row)).set_value_number(value);
+}
 
 #[inline]
 pub fn set_cell_value_bold<S: Into<String>>(sheet: &mut Worksheet, row: u32, col: u32, value: S) {
