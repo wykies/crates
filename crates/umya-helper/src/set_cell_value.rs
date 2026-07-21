@@ -1,4 +1,7 @@
-use umya_spreadsheet::{Comment, RichText, TextElement, Worksheet};
+use jiff::civil;
+use umya_spreadsheet::{
+    Comment, RichText, Style, TextElement, Worksheet, helper::date::jiff_date_time_to_excel,
+};
 
 #[inline]
 pub fn set_cell_value<S: Into<String>>(sheet: &mut Worksheet, row: u32, col: u32, value: S) {
@@ -9,6 +12,25 @@ pub fn set_cell_value<S: Into<String>>(sheet: &mut Worksheet, row: u32, col: u32
 pub fn set_cell_value_as_number(sheet: &mut Worksheet, row: u32, col: u32, value: f64) {
     sheet.cell_mut((col, row)).set_value_number(value);
 }
+
+/// This function exists as a convenience because just setting the style on
+/// large ranges increases the file size a lot. So this makes it easy to just
+/// keep apply the same formula as you write the values. See
+/// `set_range_format_to` for how to create a style
+#[inline]
+pub fn set_cell_value_as_number_with_style(
+    sheet: &mut Worksheet,
+    row: u32,
+    col: u32,
+    value: f64,
+    style: &Style,
+) {
+    *sheet
+        .cell_mut((col, row))
+        .set_value_number(value)
+        .style_mut() = style.clone();
+}
+
 #[inline]
 pub fn set_cell_value_as_datetime(
     sheet: &mut Worksheet,
