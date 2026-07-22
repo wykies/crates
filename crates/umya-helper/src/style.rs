@@ -86,11 +86,11 @@ pub fn set_range_format_to<R: AsRef<str>, F: Into<String>>(
 
 pub fn set_cell_horizontal_alignment<C: Into<CellCoordinates>>(
     sheet: &mut Worksheet,
-    range: C,
+    coordinate: C,
     alignment: umya_spreadsheet::HorizontalAlignmentValues,
 ) {
     sheet
-        .style_mut(range)
+        .style_mut(coordinate)
         .alignment_mut()
         .set_horizontal(alignment);
 }
