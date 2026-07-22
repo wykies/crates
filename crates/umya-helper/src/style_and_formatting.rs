@@ -94,3 +94,11 @@ pub fn set_cell_horizontal_alignment<C: Into<CellCoordinates>>(
         .alignment_mut()
         .set_horizontal(alignment);
 }
+
+pub fn set_manual_page_break_on_row(sheet: &mut Worksheet, row: u32) {
+    let mut page_break = umya_spreadsheet::Break::default();
+    page_break.set_id(row);
+    page_break.set_manual_page_break(true);
+
+    sheet.row_breaks_mut().break_list_mut().push(page_break);
+}
