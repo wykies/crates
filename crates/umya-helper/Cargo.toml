@@ -1,10 +1,11 @@
 [package]
 name = "umya-helper"
-version = "0.1.7"
+version = "0.1.8"
 edition = "2024"
 
 [dependencies]
 anyhow.workspace = true
 jiff.workspace = true
+rust_decimal.workspace = true
 tracing.workspace = true
 umya-spreadsheet.workspace = true

@@ -54,6 +54,7 @@ reqwest-cross = { version = "0.12.0", default-features = false, features = ["nat
 ringbuffer = "0.16.0"
 ron = "0.12.2"
 rstest = "0.26.1"
+rust_decimal = { version = "1.42.1", default-features = false, features = ["std"] }
 rustls = "0.23.42"
 rustls-pki-types = "1.15.0"
 secrecy = { version = "0.10.3", features = ["serde"] }

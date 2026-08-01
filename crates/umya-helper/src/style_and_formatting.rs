@@ -102,3 +102,20 @@ pub fn set_manual_page_break_on_row(sheet: &mut Worksheet, row: u32) {
 
     sheet.row_breaks_mut().break_list_mut().push(page_break);
 }
+
+pub fn copy_row(sheet: &mut Worksheet, from_row: u32, to_row: u32, start_col: u32, end_col: u32) {
+    for col in start_col..=end_col {
+        let value = sheet.cell((col, from_row)).map(|c| c.cell_value().clone());
+        let style = sheet.cell((col, from_row)).map(|c| c.style().clone());
+
+        if let Some(value) = value {
+            let dst_cell = sheet.cell_mut((col, to_row));
+            dst_cell.set_cell_value(value);
+            if let Some(style) = style {
+                dst_cell.set_style(style);
+            }
+        }
+    }
+
+    sheet.copy_row_styling(from_row, to_row, Some(start_col), Some(end_col));
+}

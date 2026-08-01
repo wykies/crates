@@ -124,3 +124,32 @@ where
     let cell_value = get_cell_value(sheet, coordinate)?;
     Some(str_to_u8(&cell_value, value_name))
 }
+
+#[inline]
+pub fn get_cell_value_as_rust_decimal<T>(
+    sheet: &Worksheet,
+    coordinate: T,
+) -> Option<rust_decimal::Decimal>
+where
+    T: Into<CellCoordinates> + Debug,
+{
+    sheet.cell(coordinate)?.value_number()?.try_into().ok()
+}
+
+#[inline]
+pub fn get_expected_cell_value_as_rust_decimal<T>(
+    sheet: &Worksheet,
+    coordinate: T,
+    value_name: &str,
+) -> anyhow::Result<rust_decimal::Decimal>
+where
+    T: Into<CellCoordinates> + Debug,
+{
+    sheet
+        .cell(coordinate)
+        .with_context(|| format!("failed to get cell for {value_name:?}"))?
+        .value_number()
+        .with_context(|| format!("failed to get f64 for {value_name:?}"))?
+        .try_into()
+        .with_context(|| format!("failed to convert f64 to rust_decimal for {value_name}"))
+}
