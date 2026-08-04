@@ -75,7 +75,7 @@ tracing-bunyan-formatter = "0.3.10"
 tracing-log = "0.2.0"
 tracing-subscriber = { version = "0.3.23", features = ["fmt", "json"] }
 tracked-cancellations = { version = "*", path = "crates/tracked-cancellations" }
-umya-spreadsheet = { version = "3.0.0", git = "https://github.com/MathNya/umya-spreadsheet", default-features = false, rev = "39b1f1a3e4d5eea5b58f90308c078bd605b2fdd6" }
+umya-spreadsheet = { version = "3.0.0", git = "https://github.com/MathNya/umya-spreadsheet", default-features = false }
 uuid = { version = "1.23.5", features = ["v4", "serde", "rng-getrandom"] }
 version-control-clean-check = "0.1.4"
 wasm-bindgen-test = "0.3.76"
