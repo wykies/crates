@@ -1,7 +1,7 @@
 use anyhow::Context as _;
 use anyhow::bail;
 use jiff::civil;
-use umya_spreadsheet::helper::date::excel_to_date_time_jiff;
+use umya_spreadsheet::helper::date::excel_to_date_time_jiff_checked;
 
 #[inline]
 pub fn str_to_u8(cell_value: &str, value_name: &str) -> anyhow::Result<u8> {
@@ -24,5 +24,5 @@ pub fn f64_str_to_date_time(value: &str, value_name: &str) -> anyhow::Result<civ
     let value: f64 = value.parse().with_context(|| {
         format!("failed to convert to numeric value for date of {value_name:?} on value: {value:?}")
     })?;
-    Ok(excel_to_date_time_jiff(value))
+    excel_to_date_time_jiff_checked(value).context("failed to convert to date")
 }
