@@ -29,6 +29,16 @@ pub trait UiHelpers {
         empty_msg: &str,
     );
     fn add_space_text_height(&mut self, scalar: f32);
+    fn date_picker_with_format(
+        &mut self,
+        date: &mut jiff::civil::Date,
+        id_salt: &str,
+        format: Option<impl Into<String>>,
+    ) -> egui::Response;
+    fn date_picker(&mut self, date: &mut jiff::civil::Date, id_salt: &str) -> egui::Response {
+        let format: Option<String> = None;
+        self.date_picker_with_format(date, id_salt, format)
+    }
 }
 
 /// Provides the behaviour required for the removable item list
@@ -183,5 +193,20 @@ impl UiHelpers for egui::Ui {
     fn add_space_text_height(&mut self, scalar: f32) {
         let text_height = self.text_height();
         self.add_space(text_height * scalar);
+    }
+
+    fn date_picker_with_format(
+        &mut self,
+        date: &mut jiff::civil::Date,
+        id_salt: &str,
+        format: Option<impl Into<String>>,
+    ) -> egui::Response {
+        let mut picker = egui_extras::DatePickerButton::new(date).id_salt(id_salt);
+        picker = if let Some(format) = format {
+            picker.format(format)
+        } else {
+            picker
+        };
+        self.add(picker)
     }
 }

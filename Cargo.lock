@@ -1755,9 +1755,11 @@ dependencies = [
 
 [[package]]
 name = "egui-helpers"
-version = "0.4.0"
+version = "0.4.1"
 dependencies = [
  "egui",
+ "egui_extras",
+ "jiff",
  "secrecy",
  "wykies-time",
 ]
@@ -1827,9 +1829,11 @@ dependencies = [
  "egui",
  "enum-map",
  "itertools",
+ "jiff",
  "log",
  "mime_guess2",
  "profiling",
+ "serde",
 ]
 
 [[package]]
@@ -1888,6 +1892,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6866f3bfdf8207509a033af1a75a7b08abda06bbaaeae6669323fd5a097df2e9"
 dependencies = [
  "enum-map-derive",
+ "serde",
 ]
 
 [[package]]
@@ -3063,10 +3068,12 @@ dependencies = [
  "defmt",
  "jiff-static",
  "jiff-tzdb-platform",
+ "js-sys",
  "log",
  "portable-atomic",
  "portable-atomic-util",
  "serde_core",
+ "wasm-bindgen",
  "windows-link",
 ]
 
