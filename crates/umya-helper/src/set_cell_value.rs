@@ -9,6 +9,16 @@ pub fn set_cell_value<S: Into<String>>(sheet: &mut Worksheet, row: u32, col: u32
 }
 
 #[inline]
+pub fn set_cell_value_as_string<S: Into<String>>(
+    sheet: &mut Worksheet,
+    row: u32,
+    col: u32,
+    value: S,
+) {
+    sheet.cell_mut((col, row)).set_value_string(value);
+}
+
+#[inline]
 pub fn set_cell_value_as_number(sheet: &mut Worksheet, row: u32, col: u32, value: f64) {
     sheet.cell_mut((col, row)).set_value_number(value);
 }
