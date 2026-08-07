@@ -69,6 +69,8 @@ pub fn set_frozen_pane(
         pane.set_horizontal_split(value);
     }
     pane.set_state(umya_spreadsheet::PaneStateValues::Frozen);
+    // TODO 3: Update view area to match frozen panes if necessary (usually needed
+    // on a new document to prevent showing the same rows/cols in both panes)
     Ok(())
 }
 
