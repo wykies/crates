@@ -57,6 +57,11 @@ impl<A: PartialEq + Debug, T> Cache<A, T> {
             self.inner.as_ref().expect("we just inserted a value")
         }
     }
+
+    pub fn clear(&mut self) {
+        self.access_key = None;
+        self.inner = None;
+    }
 }
 
 #[cfg(test)]
