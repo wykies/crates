@@ -35,11 +35,11 @@ chrono = { version = "0.4.45", default-features = false, features = ["clock", "s
 clap = "4.6.1"
 config = { version = "0.15.25", default-features = false, features = ["toml"] }
 db-types = { version = "*", path = "crates/db-types", default-features = false }
-eframe = { version = "0.35.0", default-features = false }
-egui = { version = "0.35.0", default-features = false }
+eframe = { version = "0.36.1", default-features = false }
+egui = { version = "0.36.1", default-features = false }
 egui-helpers = { version = "*", path = "crates/egui-helpers" }
 egui-pages = { version = "*", path = "crates/egui-pages" }
-egui_extras = { version = "0.35.0", features = ["datepicker", "serde"] }
+egui_extras = { version = "0.36.1", features = ["datepicker", "serde"] }
 ewebsock = { version = "0.8.0", features = ["tls"] }
 futures-util = "0.3.32"
 insta = "1.48.0"
@@ -50,7 +50,7 @@ plugin-chat = { version = "*", path = "crates/plugin-chat" }
 pretty_assertions = "1.4.1"
 rand = "0.10.2"
 regex = "1.13.0"
-reqwest-cross = { version = "0.12.0", default-features = false, features = ["native-tokio", "json", "cookies", "http2", "rustls", "query"] }
+reqwest-cross = { version = "0.13.0", default-features = false, features = ["native-tokio", "json", "cookies", "http2", "rustls", "query"] }
 ringbuffer = "0.16.0"
 ron = "0.12.2"
 rstest = "0.26.1"
