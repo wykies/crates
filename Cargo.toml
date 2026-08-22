@@ -6,6 +6,7 @@ members = [
   "crates/chat-app-client",
   "crates/chat-app-server",
   "crates/db-types",
+  "crates/echo-server",
   "crates/egui-helpers",
   "crates/egui-pages",
   "crates/plugin-chat",
