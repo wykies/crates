@@ -1,7 +1,7 @@
 #[cfg(feature = "mysql")]
 use crate::db_utils::validate_one_row_affected;
 use actix_web::web;
-use anyhow::Context;
+use anyhow::Context as _;
 use wykies_shared::{
     db_types::DbPool,
     e400, e500,

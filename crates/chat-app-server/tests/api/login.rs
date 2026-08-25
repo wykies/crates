@@ -7,12 +7,12 @@ async fn login_failure_invalid_user() {
     // Arrange
     let app = spawn_app().await;
     let login_args = LoginReqArgs::new(
-        "random-username".to_string(),
-        "random-password".to_string().into(),
+        "random-username".to_owned(),
+        "random-password".to_owned().into(),
     );
 
     // Act
-    let outcome = app.core_client.login(login_args).await.unwrap();
+    let outcome = app.core_client.login(&login_args).await.unwrap();
 
     // Assert
     assert_eq!(
@@ -28,10 +28,10 @@ async fn login_failure_invalid_password() {
     let login_args = app
         .test_user
         .login_args()
-        .password("random-password".to_string().into());
+        .password("random-password".to_owned().into());
 
     // Act
-    let outcome = app.core_client.login(login_args).await.unwrap();
+    let outcome = app.core_client.login(&login_args).await.unwrap();
 
     // Assert
     assert_eq!(
@@ -117,7 +117,7 @@ async fn ensure_user_gets_locked_out() {
     let login_args = app
         .test_user
         .login_args()
-        .password("random-password".to_string().into());
+        .password("random-password".to_owned().into());
 
     // Assert - Ensure not logged in
     assert!(
@@ -130,7 +130,7 @@ async fn ensure_user_gets_locked_out() {
     let login_attempt_limit = app.login_attempt_limit;
     for _ in 1..login_attempt_limit {
         // Attempt login
-        let outcome = app.core_client.login(login_args.clone()).await.unwrap();
+        let outcome = app.core_client.login(&login_args.clone()).await.unwrap();
 
         // Ensure not locked out
         assert_eq!(
@@ -140,7 +140,7 @@ async fn ensure_user_gets_locked_out() {
     }
 
     // Attempt login again which should trigger the lockout
-    let outcome = app.core_client.login(login_args).await.unwrap();
+    let outcome = app.core_client.login(&login_args).await.unwrap();
 
     // Assert - User is locked out
     assert_eq!(
@@ -165,7 +165,7 @@ async fn ensure_locked_out_is_reset() {
     let login_args = app
         .test_user
         .login_args()
-        .password("random-password".to_string().into());
+        .password("random-password".to_owned().into());
 
     // Assert - Ensure not logged in
     assert!(
@@ -178,7 +178,7 @@ async fn ensure_locked_out_is_reset() {
     let login_attempt_limit = app.login_attempt_limit;
     for _ in 1..login_attempt_limit {
         // Attempt login
-        let outcome = app.core_client.login(login_args.clone()).await.unwrap();
+        let outcome = app.core_client.login(&login_args).await.unwrap();
 
         // Ensure not locked out
         assert_eq!(
@@ -204,7 +204,7 @@ async fn ensure_locked_out_is_reset() {
     let login_attempt_limit = app.login_attempt_limit;
     for _ in 1..login_attempt_limit {
         // Attempt login
-        let outcome = app.core_client.login(login_args.clone()).await.unwrap();
+        let outcome = app.core_client.login(&login_args).await.unwrap();
 
         // Ensure not locked out
         assert_eq!(

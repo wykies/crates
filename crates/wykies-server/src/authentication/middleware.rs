@@ -1,6 +1,6 @@
 use crate::session_state::TypedSession;
 use actix_web::{
-    FromRequest, HttpMessage,
+    FromRequest as _, HttpMessage as _,
     body::MessageBody,
     dev::{ServiceRequest, ServiceResponse},
     middleware::Next,
@@ -13,9 +13,10 @@ use wykies_shared::{
 };
 
 /// Ensures the user is logged in and has the required permissions to get to the
-/// endpoint The endpoint may do further permission checking based on the
-/// content of the request but top level endpoint permission validation happens
-/// at this point
+/// endpoint.
+///
+/// The endpoint may do further permission checking based on the content of the
+/// request but top level endpoint permission validation happens at this point
 #[tracing::instrument(skip(next))]
 pub async fn validate_user_access(
     mut req: ServiceRequest,

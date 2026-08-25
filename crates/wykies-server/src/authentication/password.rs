@@ -1,12 +1,12 @@
 #[cfg(feature = "mysql")]
 use crate::db_utils::db_int_to_bool;
 use crate::db_utils::validate_one_row_affected;
-use anyhow::Context;
+use anyhow::Context as _;
 use argon2::{
-    Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version,
+    Algorithm, Argon2, Params, PasswordHash, PasswordHasher as _, PasswordVerifier as _, Version,
     password_hash::{SaltString, rand_core},
 };
-use secrecy::{ExposeSecret, SecretString};
+use secrecy::{ExposeSecret as _, SecretString};
 use tracing::{error, info};
 use wykies_shared::branch::BranchId;
 use wykies_shared::db_types::DbPool;
@@ -134,8 +134,8 @@ impl AuthUserInfo {
     }
 }
 
-/// Uses a default (empty DbUser) to make it harder to do timing attacks to find
-/// usernames
+/// Uses a default (empty `DbUser`) to make it harder to do timing attacks to
+/// find usernames
 #[tracing::instrument(name = "Validate credentials", skip(credentials, pool))]
 pub async fn validate_credentials(
     credentials: Credentials,
@@ -161,7 +161,7 @@ pub async fn validate_credentials(
     let expected_password_hash = db_user.password_hash.clone();
 
     let password_check_status = spawn_blocking_with_tracing(move || {
-        verify_password_hash(expected_password_hash, credentials.password)
+        verify_password_hash(&expected_password_hash, &credentials.password)
     })
     .await
     .context("Failed to spawn blocking task.")?;
@@ -197,7 +197,7 @@ pub async fn validate_credentials(
             }
             return Err(e); // Return that password failed
         }
-    };
+    }
 
     let DbUser {
         username,
@@ -238,7 +238,7 @@ async fn set_locked_out_in_db(username: &str, pool: &DbPool, value: bool) -> any
     #[cfg(feature = "mysql")]
     let query = {
         // TODO 5: Do we need the manual conversion to numbers here?
-        let value = if value { 1 } else { 0 };
+        let value = i32::from(value);
         sqlx::query!(
             "UPDATE `user` SET `LockedOut` = ? WHERE `user`.`UserName` = ?;",
             value,
@@ -314,8 +314,8 @@ async fn increment_locked_out_count(
 
 #[tracing::instrument(skip(expected_password_hash, password_candidate))]
 fn verify_password_hash(
-    expected_password_hash: SecretString,
-    password_candidate: SecretString,
+    expected_password_hash: &SecretString,
+    password_candidate: &SecretString,
 ) -> Result<(), AuthError> {
     let expected_password_hash = PasswordHash::new(expected_password_hash.expose_secret())
         .context("Failed to parse hash in PHC string format.")?;
@@ -341,7 +341,7 @@ pub async fn change_password(
     should_force_pass_change: bool,
     pool: &DbPool,
 ) -> anyhow::Result<()> {
-    let password_hash = spawn_blocking_with_tracing(move || compute_password_hash(password))
+    let password_hash = spawn_blocking_with_tracing(move || compute_password_hash(&password))
         .await?
         .context("failed to hash password")?;
     #[cfg(feature = "mysql")]
@@ -378,7 +378,7 @@ pub async fn change_password(
     Ok(())
 }
 
-fn compute_password_hash(password: SecretString) -> Result<SecretString, anyhow::Error> {
+fn compute_password_hash(password: &SecretString) -> Result<SecretString, anyhow::Error> {
     let salt = SaltString::generate(&mut rand_core::OsRng);
     let password_hash = argon2_settings()
         .hash_password(password.expose_secret().as_bytes(), &salt)?

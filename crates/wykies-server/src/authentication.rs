@@ -11,6 +11,6 @@ pub struct LoginAttemptLimit(pub u8);
 
 impl LoginAttemptLimit {
     pub fn as_i8(&self) -> i8 {
-        self.0 as i8
+        self.0.cast_signed()
     }
 }

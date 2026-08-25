@@ -40,7 +40,7 @@ pub enum HostIdConversionError {
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod conversions {
-    use super::*;
+    use super::{NotLoggedInError, ConversionError, PermissionConversionError};
     use actix_web::http::StatusCode;
 
     impl actix_web::error::ResponseError for NotLoggedInError {

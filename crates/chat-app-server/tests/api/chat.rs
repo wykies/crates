@@ -69,7 +69,7 @@ async fn sent_messages_received() {
 
     // Prevent test from being flakey as server might change the time stamp
     if let (ChatMsg::IM(actual), ChatMsg::IM(expected)) = (&mut actual, &expected_im) {
-        actual.timestamp = expected.timestamp
+        actual.timestamp = expected.timestamp;
     }
 
     // Assert
@@ -139,7 +139,7 @@ async fn chat_initial_buffered_history() {
             let msg: ChatMsg = serde_json::from_str(&text).unwrap();
             let ims = match msg {
                 ChatMsg::InitialState(InitialStateBody {
-                    history: ChatMsgsHistory { ims, .. },
+                    history: ChatMsgsHistory { ims },
                     ..
                 }) => ims,
                 other => panic!("expected initial state but got: {other:?}"),
@@ -149,7 +149,7 @@ async fn chat_initial_buffered_history() {
                 "unexpected author in: {ims:?}"
             );
             let actual_im_texts: Vec<ChatImText> = ims.into_iter().map(|im| im.content).collect();
-            assert_eq!(actual_im_texts, expected_ims_texts)
+            assert_eq!(actual_im_texts, expected_ims_texts);
         }
         other => panic!("unexpected event: {other:?}"),
     }

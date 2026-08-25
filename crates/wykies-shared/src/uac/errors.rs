@@ -62,14 +62,14 @@ pub enum PermissionsError {
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod conversions {
-    use super::*;
+    use super::{AuthError, ChangePasswordError, PermissionsError, ResetPasswordError};
     use actix_web::http::StatusCode;
 
     impl actix_web::error::ResponseError for PermissionsError {
         fn status_code(&self) -> StatusCode {
             match self {
-                PermissionsError::MissingPermissions(_) => StatusCode::FORBIDDEN,
-                PermissionsError::PathNotFound(_) => StatusCode::SERVICE_UNAVAILABLE,
+                Self::MissingPermissions(_) => StatusCode::FORBIDDEN,
+                Self::PathNotFound(_) => StatusCode::SERVICE_UNAVAILABLE,
             }
         }
     }
@@ -77,7 +77,7 @@ pub mod conversions {
     impl actix_web::error::ResponseError for AuthError {
         fn status_code(&self) -> StatusCode {
             match self {
-                AuthError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+                Self::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
                 _ => StatusCode::UNAUTHORIZED,
             }
         }
@@ -86,10 +86,10 @@ pub mod conversions {
     impl actix_web::error::ResponseError for ChangePasswordError {
         fn status_code(&self) -> StatusCode {
             match self {
-                ChangePasswordError::PasswordsDoNotMatch
-                | ChangePasswordError::CurrentPasswordWrong(_) => StatusCode::BAD_REQUEST,
-                ChangePasswordError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-                ChangePasswordError::Complexity(_) => StatusCode::BAD_REQUEST,
+                Self::PasswordsDoNotMatch | Self::Complexity(_) | Self::CurrentPasswordWrong(_) => {
+                    StatusCode::BAD_REQUEST
+                }
+                Self::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
             }
         }
     }

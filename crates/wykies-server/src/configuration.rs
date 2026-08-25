@@ -1,8 +1,8 @@
-use secrecy::{ExposeSecret, SecretString};
+use secrecy::{ExposeSecret as _, SecretString};
 use serde::de::DeserializeOwned;
 use serde_aux::field_attributes::deserialize_number_from_string;
-use sqlx::ConnectOptions;
-use std::convert::{TryFrom, TryInto};
+use sqlx::ConnectOptions as _;
+use std::convert::{TryFrom, TryInto as _};
 use tracing::info;
 use ws_helpers::WebSocketSettings;
 
@@ -123,8 +123,8 @@ pub enum Environment {
 impl Environment {
     pub fn as_str(&self) -> &'static str {
         match self {
-            Environment::Local => "local",
-            Environment::Production => "production",
+            Self::Local => "local",
+            Self::Production => "production",
         }
     }
 }

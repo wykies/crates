@@ -19,7 +19,7 @@ pub trait ServerPlugin {
 
     /// The `cancellation_token` is to be used for any other tasks that they
     /// spin up. The token for the plugin itself will be passed when the
-    /// ServerTask is run
+    /// `ServerTask` is run
     fn setup(
         config: &Self::Config,
         db_pool: DbPool,

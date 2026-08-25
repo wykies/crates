@@ -12,7 +12,7 @@ pub struct UiEguiSettings {
     prev_ui_options: Option<egui::Options>,
 }
 impl UiEguiSettings {
-    fn save_current_ui_options(&mut self, ui: &mut egui::Ui) {
+    fn save_current_ui_options(&mut self, ui: &egui::Ui) {
         let current_ui_options = ui.options(|o| o.clone());
         self.prev_ui_options = Some(current_ui_options);
         let visuals = ui.global_style().visuals.clone();
@@ -30,7 +30,7 @@ impl DisplayablePage<DataShared, Permission, private::Token> for UiEguiSettings 
         match self.prev_ui_options.as_ref() {
             Some(prev) => {
                 if ui.options(|o| o != prev) {
-                    self.save_current_ui_options(ui)
+                    self.save_current_ui_options(ui);
                 }
             }
             None => self.save_current_ui_options(ui),

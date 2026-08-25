@@ -1,6 +1,6 @@
 use crate::heartbeat::HeartbeatMonitor;
 use actix_ws::{AggregatedMessage, CloseCode, CloseReason, ProtocolError, Session};
-use anyhow::Context;
+use anyhow::Context as _;
 use bytestring::ByteString;
 use std::fmt::Debug;
 use tracing::{debug, info, instrument, warn};

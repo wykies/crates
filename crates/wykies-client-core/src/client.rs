@@ -1,4 +1,4 @@
-use anyhow::{Context, anyhow, bail};
+use anyhow::{Context as _, anyhow, bail};
 use reqwest_cross::reqwest::{self, Method, RequestBuilder, StatusCode};
 use reqwest_cross::{fetch, fetch_plus, oneshot};
 use secrecy::ExposeSecret as _;
@@ -31,9 +31,10 @@ struct ClientInner {
 }
 
 impl Default for Client {
+    #[expect(clippy::todo)] // TODO 4: Setup a prod version
     fn default() -> Self {
         if cfg!(debug_assertions) {
-            Self::new("http://localhost:8789".to_string())
+            Self::new("http://localhost:8789".to_owned())
         } else {
             todo!(
                 "figure out how to get address when running in prod. We don't currently have a prod version since we shuttle moved away"
@@ -93,7 +94,7 @@ impl Client {
     }
 
     #[tracing::instrument]
-    pub fn login(&self, args: LoginReqArgs) -> oneshot::Receiver<anyhow::Result<LoginOutcome>> {
+    pub fn login(&self, args: &LoginReqArgs) -> oneshot::Receiver<anyhow::Result<LoginOutcome>> {
         let args = serde_json::json!({
             "username": args.username,
             "password": args.password.expose_secret(),

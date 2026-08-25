@@ -12,7 +12,7 @@ string_wrapper!(RoleDescription, 50, AlwaysCase::Any);
 impl RoleName {
     pub fn no_role_set() -> &'static Self {
         static RESULT: LazyLock<RoleName> = LazyLock::new(|| {
-            RoleName::try_from("[NOT SET]".to_string()).expect("test below ensure this is valid")
+            RoleName::try_from("[NOT SET]".to_owned()).expect("test below ensure this is valid")
         });
         &RESULT
     }
@@ -41,10 +41,11 @@ pub struct RoleDraft {
 
 #[cfg(test)]
 mod tests {
+    #![expect(clippy::print_stdout, reason = "ok in tests")]
     use super::*;
 
     #[test]
     fn no_role_set_is_valid_value() {
-        println!("{:?}", RoleName::no_role_set())
+        println!("{:?}", RoleName::no_role_set());
     }
 }

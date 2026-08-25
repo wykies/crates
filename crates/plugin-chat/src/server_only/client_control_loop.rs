@@ -4,7 +4,7 @@
 use super::ChatServerHandle;
 use crate::{ChatIM, ChatMsg};
 use actix_ws::{CloseCode, CloseReason};
-use anyhow::{Context, bail};
+use anyhow::{Context as _, bail};
 use futures_util::StreamExt as _;
 use std::{pin::pin, sync::Arc};
 use tokio::{select, sync::mpsc};
@@ -22,6 +22,10 @@ use wykies_shared::{
 };
 use wykies_time::{Seconds, Timestamp};
 
+#[expect(
+    clippy::let_underscore_must_use,
+    reason = "we don't have anything we should do if it fails"
+)]
 #[instrument(skip(ws_session, msg_stream, chat_server_handle), fields(request_id))]
 pub async fn chat_ws_start_client_handler_loop(
     chat_server_handle: Arc<ChatServerHandle>,
@@ -54,7 +58,7 @@ pub async fn chat_ws_start_client_handler_loop(
             _ = heartbeat.tick() => {
                 if let Some(reason) = heartbeat.process_tick(&mut ws_session).await{
                     break reason;
-                };
+                }
             }
 
             server_msg = conn_rx.recv() => {
@@ -94,7 +98,7 @@ pub async fn chat_ws_start_client_handler_loop(
     }
 
     // attempt to close connection gracefully
-    let _ = ws_session.close(Some(close_reason)).await;
+    let _: Result<(), _> = ws_session.close(Some(close_reason)).await;
 }
 
 #[instrument]
@@ -125,6 +129,10 @@ async fn process_msg_from_client(
     Ok(())
 }
 
+#[expect(
+    clippy::unnecessary_wraps,
+    reason = "maintain the API in case we want to return an error later"
+)]
 fn validate_im_from_client(im: &mut ChatIM, username: &Username) -> anyhow::Result<()> {
     im.timestamp = Timestamp::now(); // Replace timestamp with server time to ensure monotonicity
 

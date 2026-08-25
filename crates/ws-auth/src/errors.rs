@@ -22,7 +22,7 @@ pub enum WebSocketAuthError {
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod conversions {
-    use super::*;
+    use super::WebSocketAuthError;
     use actix_web::http::StatusCode;
 
     impl actix_web::error::ResponseError for WebSocketAuthError {
@@ -30,10 +30,11 @@ pub mod conversions {
             match self {
                 // Using I'm a tea pot because unable to get more than the error code on the client
                 // and want to give a better error message
-                WebSocketAuthError::UnexpectedClient { .. } => StatusCode::IM_A_TEAPOT,
-                WebSocketAuthError::InvalidToken { .. } => StatusCode::UNAUTHORIZED,
-                WebSocketAuthError::FailedToStartSession(_) => StatusCode::INTERNAL_SERVER_ERROR,
-                WebSocketAuthError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+                Self::UnexpectedClient { .. } => StatusCode::IM_A_TEAPOT,
+                Self::InvalidToken { .. } => StatusCode::UNAUTHORIZED,
+                Self::FailedToStartSession(_) | Self::UnexpectedError(_) => {
+                    StatusCode::INTERNAL_SERVER_ERROR
+                }
             }
         }
     }

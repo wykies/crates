@@ -43,14 +43,24 @@ impl Timestamp {
     }
 
     pub fn as_local_datetime(&self) -> chrono::DateTime<chrono::Local> {
-        chrono::DateTime::from_timestamp(self.0.try_into().unwrap(), 0)
-            .expect("wow this program wasn't meant to last that long")
-            .into()
+        chrono::DateTime::from_timestamp(
+            self.0
+                .try_into()
+                .expect("conversion from u64 to i64 failed"),
+            0,
+        )
+        .expect("wow this program wasn't meant to last that long")
+        .into()
     }
 
     pub fn as_utc_datetime(&self) -> chrono::DateTime<chrono::Utc> {
-        chrono::DateTime::from_timestamp(self.0.try_into().unwrap(), 0)
-            .expect("wow this program wasn't meant to last that long")
+        chrono::DateTime::from_timestamp(
+            self.0
+                .try_into()
+                .expect("conversion from u64 to i64 failed"),
+            0,
+        )
+        .expect("wow this program wasn't meant to last that long")
     }
 
     pub fn display_as_utc_datetime_long(&self) -> String {
@@ -112,7 +122,7 @@ impl TryFrom<i64> for Timestamp {
     fn try_from(value: i64) -> Result<Self, Self::Error> {
         let x: u64 = value
             .try_into()
-            .map_err(|_| TimestampConversionError::NegativeI64(value))?;
+            .map_err(|_original_error| TimestampConversionError::NegativeI64(value))?;
         Ok(Self(x))
     }
 }
@@ -127,7 +137,7 @@ impl std::ops::Add<Seconds> for Timestamp {
 
 impl std::ops::AddAssign<Seconds> for Timestamp {
     fn add_assign(&mut self, rhs: Seconds) {
-        self.0 += rhs.0
+        self.0 += rhs.0;
     }
 }
 
@@ -159,7 +169,7 @@ impl Seconds {
         self.0 == 0
     }
 
-    pub fn saturating_sub(&self, elapsed: Seconds) -> Seconds {
+    pub fn saturating_sub(&self, elapsed: Self) -> Self {
         Self(self.0.saturating_sub(elapsed.0))
     }
 }
@@ -178,7 +188,7 @@ impl From<u8> for Seconds {
 
 impl From<Seconds> for Duration {
     fn from(value: Seconds) -> Self {
-        Duration::from_secs(value.0)
+        Self::from_secs(value.0)
     }
 }
 
@@ -195,7 +205,7 @@ impl TryFrom<Seconds> for i64 {
         value
             .0
             .try_into()
-            .map_err(|_| SecondsConversionError::ExceededPositiveRangeOfI64(value))
+            .map_err(|_original_error| SecondsConversionError::ExceededPositiveRangeOfI64(value))
     }
 }
 
@@ -243,7 +253,7 @@ impl Display for Seconds {
 
 #[cfg(any(feature = "mysql", feature = "postgres"))]
 pub mod sql {
-    use super::*;
+    use super::{Seconds, Timestamp};
     use db_types::impl_encode_for_newtype_around_u64;
 
     impl_encode_for_newtype_around_u64!(Seconds, "mysql", "postgres");

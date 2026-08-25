@@ -13,8 +13,8 @@ async fn you_must_be_logged_in_to_change_your_password() {
     let new_password = Uuid::new_v4().to_string();
     let args = ChangePasswordReqArgs {
         current_password: Uuid::new_v4().to_string().into(),
-        new_password: new_password.clone().to_string().into(),
-        new_password_check: new_password.to_string().into(),
+        new_password: new_password.clone().clone().into(),
+        new_password_check: new_password.clone().into(),
     };
 
     // Act
@@ -115,7 +115,7 @@ async fn changing_password_works() {
     // Act - Login using the new password
     let login_outcome = app
         .core_client
-        .login(app.test_user.login_args().password(new_password))
+        .login(&app.test_user.login_args().password(new_password))
         .await
         .unwrap();
 
@@ -137,8 +137,8 @@ async fn password_complexity_checks_are_done() {
         .core_client
         .change_password(&ChangePasswordReqArgs {
             current_password: app.test_user.password.clone().into(),
-            new_password: new_password.to_string().into(),
-            new_password_check: new_password.to_string().into(),
+            new_password: new_password.to_owned().into(),
+            new_password_check: new_password.to_owned().into(),
         })
         .await
         .unwrap();

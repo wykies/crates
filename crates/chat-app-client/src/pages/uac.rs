@@ -4,12 +4,12 @@ use super::private;
 use edit_user_info::EditUserInfo;
 use egui::Button;
 use egui_extras::{Column, TableBuilder};
-use egui_helpers::UiHelpers;
+use egui_helpers::UiHelpers as _;
 use egui_pages::{DisplayablePage, displayable_page_common};
 use new_user_info::NewUserInfo;
 use pass_reset_user_info::PassResetUserInfo;
 use reqwest_cross::DataState;
-use secrecy::ExposeSecret;
+use secrecy::ExposeSecret as _;
 use std::ops::ControlFlow;
 use wykies_client_core::Client;
 use wykies_shared::{
@@ -67,11 +67,9 @@ impl UserOp {
     // Serves as a way to check if there are changes to be lost
     fn has_changes(&self) -> bool {
         match self {
-            UserOp::None => false,
-            UserOp::Selected(_) => false,
-            UserOp::New(_) => true,
-            UserOp::Edit(edit_user_info) => edit_user_info.has_changes(),
-            UserOp::PasswordReset(_) => true,
+            Self::None | Self::Selected(_) => false,
+            Self::New(_) | Self::PasswordReset(_) => true,
+            Self::Edit(edit_user_info) => edit_user_info.has_changes(),
         }
     }
 
@@ -84,8 +82,8 @@ impl UserOp {
 
     fn selected_user(&self) -> Option<&UserMetadata> {
         match self {
-            UserOp::Selected(user_metadata) => Some(user_metadata),
-            UserOp::Edit(edit_user_info) => Some(edit_user_info.original_user()),
+            Self::Selected(user_metadata) => Some(user_metadata),
+            Self::Edit(edit_user_info) => Some(edit_user_info.original_user()),
             _ => None,
         }
     }
@@ -116,7 +114,7 @@ impl DisplayablePage<DataShared, Permission, private::Token> for UiUAC {
                         == OpResult::ResetPage
                     {
                         self.should_refresh = true;
-                    };
+                    }
                 });
             });
 
@@ -259,7 +257,7 @@ fn ui_show_new_user(
             ui.password_edit(&mut new_user_info.password, "User's Password");
             if new_user_info.password.expose_secret().is_empty() {
                 has_errors = true;
-                ui.error_label("Required".to_string());
+                ui.error_label("Required".to_owned());
             }
             ui.end_row();
 
@@ -352,7 +350,7 @@ fn ui_show_edit_user(
             ui_user_failed_attempts_read_only(
                 ui,
                 Some(&org_user.failed_attempts),
-                &mut edit_user.failed_attempts,
+                edit_user.failed_attempts,
             );
             ui.end_row();
         });
@@ -400,11 +398,11 @@ fn poll_save_outcome(outcome: Option<SaveState>, ui: &mut egui::Ui) -> ControlFl
     }
 }
 
-fn ui_user_failed_attempts_read_only(ui: &mut egui::Ui, org: Option<&u8>, edit: &mut u8) {
+fn ui_user_failed_attempts_read_only(ui: &mut egui::Ui, org: Option<&u8>, edit: u8) {
     ui.horizontal(|ui| {
         ui.label("Failed Attempts");
         if let Some(org) = org {
-            ui_change_indicator(ui, org != edit);
+            ui_change_indicator(ui, org != &edit);
         }
     });
     ui.label(edit.to_string());
@@ -462,11 +460,11 @@ fn ui_user_role(
                     err_role_name()
                 })
             })
-            .unwrap_or(RoleName::no_role_set()),
+            .unwrap_or_else(|| RoleName::no_role_set()),
         )
         .show_ui(ui, |ui| {
             ui.selectable_value(edit, None, RoleName::no_role_set());
-            for x in data.roles.iter() {
+            for x in &data.roles {
                 ui.selectable_value(edit, Some(x.id), &x.name);
             }
         });
@@ -510,7 +508,8 @@ fn ui_user_display_name(ui: &mut egui::Ui, org: Option<&DisplayName>, edit: &mut
     }
 }
 
-fn ui_show_user_list(ui: &mut egui::Ui, data: &mut ListUsersRoles, user_op: &mut UserOp) {
+#[expect(clippy::too_many_lines, reason = "better to keep table together")]
+fn ui_show_user_list(ui: &mut egui::Ui, data: &ListUsersRoles, user_op: &mut UserOp) {
     let text_height = ui.text_height();
     let mut table_builder = TableBuilder::new(ui)
         .striped(true)
@@ -599,7 +598,7 @@ fn ui_show_user_list(ui: &mut egui::Ui, data: &mut ListUsersRoles, user_op: &mut
                                 err_role_name()
                             })
                         })
-                        .unwrap_or(RoleName::no_role_set()),
+                        .unwrap_or_else(|| RoleName::no_role_set()),
                 );
             });
             row.col(|ui| {

@@ -1,4 +1,4 @@
-use anyhow::Context;
+use anyhow::Context as _;
 use connected_users::ConnectedUsers;
 use egui::{
     Align, KeyboardShortcut, Layout, Modifiers, ScrollArea, scroll_area::ScrollBarVisibility,
@@ -66,9 +66,9 @@ impl FrontEnd {
             .max_size(half_height)
             .show(ui, |ui| {
                 if self.error_status.is_none() {
-                    self.ui_send_area(ui, connection)
+                    self.ui_send_area(ui, connection);
                 } else {
-                    self.ui_error_msg(ui)
+                    self.ui_error_msg(ui);
                 }
             });
 
@@ -79,7 +79,7 @@ impl FrontEnd {
         egui::CentralPanel::default().show(ui, |ui| self.ui_messages(ui, connection));
     }
 
-    fn check_for_server_msgs(&mut self, connection: &mut WsConnTxRx) {
+    fn check_for_server_msgs(&mut self, connection: &WsConnTxRx) {
         while let Some(event) = connection.try_recv() {
             info!(?event, "Event received");
             match event {
@@ -152,11 +152,11 @@ impl FrontEnd {
                 self.history.push(sys_msg);
                 if let Err(err) = self
                     .connected_users
-                    .user_left(user)
+                    .user_left(&user)
                     .context("removing user failed")
                 {
                     error!(?err);
-                    self.set_error_unrecoverable("error occurred trying to disconnect user")
+                    self.set_error_unrecoverable("error occurred trying to disconnect user");
                 }
             }
             ChatMsg::IM(im) => {
@@ -169,8 +169,8 @@ impl FrontEnd {
                     self.error_status = Some(ChatUiError {
                         err_msg: e.to_string(),
                         is_transient: true,
-                    })
-                };
+                    });
+                }
             }
             ChatMsg::ReqHistory(req_history_body) => {
                 error!("Received a request for history: {req_history_body:?}");
@@ -184,13 +184,17 @@ impl FrontEnd {
                     self.error_status = Some(ChatUiError {
                         err_msg: e.to_string(),
                         is_transient: true,
-                    })
-                };
+                    });
+                }
             }
         }
         Ok(())
     }
 
+    #[expect(
+        clippy::cast_possible_wrap,
+        reason = "number should be much smaller than max of i32"
+    )]
     fn ui_send_area(&mut self, ui: &mut egui::Ui, connection: &mut WsConnTxRx) {
         ui.with_layout(egui::Layout::right_to_left(egui::Align::BOTTOM), |ui| {
             let bytes_left = ChatImText::MAX_LENGTH as i32 - self.text_to_send.len() as i32;
@@ -329,7 +333,7 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
             });
     }
 
-    fn ui_connected_users(&mut self, ui: &mut egui::Ui) {
+    fn ui_connected_users(&self, ui: &mut egui::Ui) {
         ui.heading("Connected Users");
         for (user, qty) in self.connected_users.iter() {
             ui.label(format!("{user} ({qty})"));

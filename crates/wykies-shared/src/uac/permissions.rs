@@ -7,10 +7,19 @@ use std::{
     fmt::{Debug, Display},
     sync::OnceLock,
 };
-use strum::{EnumCount, IntoEnumIterator};
+use strum::{EnumCount as _, IntoEnumIterator as _};
 use tracing::instrument;
 
-use crate::{const_config::path::*, errors::PermissionConversionError};
+use crate::{
+    const_config::path::{
+        PATH_API_BRANCH_NEW, PATH_API_CHANGE_PASSWORD, PATH_API_HOSTBRANCH,
+        PATH_API_HOSTBRANCH_LIST, PATH_API_HOSTBRANCH_SET, PATH_API_LOGOUT, PATH_API_ROLE,
+        PATH_API_ROLE_NEW, PATH_API_USER, PATH_API_USER_NEW, PATH_API_USER_PASSWORD_RESET,
+        PATH_API_USER_ROLE_SET, PATH_API_USER_UPDATE, PATH_API_USERS_LIST_AND_ROLES,
+        PATH_WS_TOKEN_CHAT,
+    },
+    errors::PermissionConversionError,
+};
 
 use super::PermissionsError;
 
@@ -120,11 +129,15 @@ pub fn try_set_permissions(value: PermissionMap) -> Result<(), PermissionMap> {
     PERMISSION_MAP.set(value)
 }
 
+#[expect(
+    clippy::let_underscore_must_use,
+    reason = "we don't care about the error here"
+)]
 /// Initializes the permissions may be run more than once without issue (will
 /// only have an effect the first time)
 pub fn init_permissions_to_defaults() {
     // Set permissions and ignore if they were already set
-    let _ = try_set_permissions(default_permissions());
+    let _: Result<(), _> = try_set_permissions(default_permissions());
 }
 
 /// Takes a path and returns the permissions required for it if found
@@ -177,7 +190,7 @@ pub struct Permissions(pub BTreeSet<Permission>);
 impl From<Vec<Permission>> for Permissions {
     fn from(value: Vec<Permission>) -> Self {
         let mut result: Self = Default::default();
-        for permission in value.into_iter() {
+        for permission in value {
             result.0.insert(permission);
         }
         result
@@ -199,7 +212,7 @@ impl TryFrom<String> for Permissions {
                 value,
             });
         }
-        let mut result = Permissions::default();
+        let mut result = Self::default();
         for (c, p) in value.chars().zip(Permission::iter()) {
             match c {
                 '0' => (), // Do nothing this one is not included
@@ -229,7 +242,7 @@ impl From<&Permissions> for String {
     fn from(value: &Permissions) -> Self {
         let mut iter = value.0.iter();
         let mut next = iter.next();
-        let mut result = String::with_capacity(Permission::COUNT);
+        let mut result = Self::with_capacity(Permission::COUNT);
         for permission in Permission::iter() {
             let ch = match next.as_ref() {
                 Some(&x) if x == &permission => {
@@ -244,8 +257,12 @@ impl From<&Permissions> for String {
             };
             result.push(ch);
         }
-        debug_assert_eq!(result.len(), Permission::COUNT);
-        debug_assert!(next.is_none());
+        debug_assert_eq!(
+            result.len(),
+            Permission::COUNT,
+            "expected count and length to be equal"
+        );
+        debug_assert!(next.is_none(), "iterator should be exhausted now");
         result
     }
 }
@@ -259,41 +276,41 @@ impl From<Permissions> for String {
 impl Display for Permission {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let display_text = match self {
-            Permission::RecordManualTransaction => "Record Manual Transaction",
-            Permission::RecordDiscrepancy => "Record Discrepancy",
-            Permission::TransferRequest => "Transfers - Create Request",
-            Permission::TransferTo => "Transfers - Prepare Order",
-            Permission::TransferFrom => "Transfers - Receive Order",
-            Permission::TransferView => "Transfers - View",
-            Permission::TransferAny => "Transfers Set Any Location",
-            Permission::TransferRemove => "Delete Transfers",
-            Permission::CustomsEntries => "CustomsEntries",
-            Permission::ViewShipmentManifest => "View Shipment Manifest",
-            Permission::ChangePass => "Change Password",
-            Permission::ImportData => "Import Data",
-            Permission::ViewLog => "View Log",
-            Permission::ViewStockInfo => "View Stock Info",
-            Permission::RunReports => "Run Reports",
-            Permission::Settings => "Settings",
-            Permission::NonCurrentDate => "Record Transaction on Non-Current Date",
-            Permission::GrantOverrideLocal => "Grant Override Local",
-            Permission::GrantOverrideRemote => "Grant Override Remote",
-            Permission::ManBranches => "Manage Branches",
-            Permission::ManClasses => "Manage Classes",
-            Permission::ManHostBranchAssignment => "Manage Host Branch Assignment",
-            Permission::ManLines => "Manage Lines",
-            Permission::ManMenu => "Management Menu",
-            Permission::ManMinMax => "Manage Min/Max",
-            Permission::ManResetLocks => "Reset Locks",
-            Permission::ManRoles => "Manage Roles",
-            Permission::ManSpareParts => "Manage Spare Parts",
-            Permission::ManSuppliers => "Manage Suppliers",
-            Permission::ManSupplierInvoices => "Manage Supplier Invoices",
-            Permission::ManUAC => "Manage User Account Control",
-            Permission::ImportStockLevelCountBatch => "Import - Stock Level Count Batch",
-            Permission::ImportTamsSync => "Import - Tams Sync",
-            Permission::ImportSales => "Import - Sales",
-            Permission::ImportReceiving => "Import - Receiving",
+            Self::RecordManualTransaction => "Record Manual Transaction",
+            Self::RecordDiscrepancy => "Record Discrepancy",
+            Self::TransferRequest => "Transfers - Create Request",
+            Self::TransferTo => "Transfers - Prepare Order",
+            Self::TransferFrom => "Transfers - Receive Order",
+            Self::TransferView => "Transfers - View",
+            Self::TransferAny => "Transfers Set Any Location",
+            Self::TransferRemove => "Delete Transfers",
+            Self::CustomsEntries => "CustomsEntries",
+            Self::ViewShipmentManifest => "View Shipment Manifest",
+            Self::ChangePass => "Change Password",
+            Self::ImportData => "Import Data",
+            Self::ViewLog => "View Log",
+            Self::ViewStockInfo => "View Stock Info",
+            Self::RunReports => "Run Reports",
+            Self::Settings => "Settings",
+            Self::NonCurrentDate => "Record Transaction on Non-Current Date",
+            Self::GrantOverrideLocal => "Grant Override Local",
+            Self::GrantOverrideRemote => "Grant Override Remote",
+            Self::ManBranches => "Manage Branches",
+            Self::ManClasses => "Manage Classes",
+            Self::ManHostBranchAssignment => "Manage Host Branch Assignment",
+            Self::ManLines => "Manage Lines",
+            Self::ManMenu => "Management Menu",
+            Self::ManMinMax => "Manage Min/Max",
+            Self::ManResetLocks => "Reset Locks",
+            Self::ManRoles => "Manage Roles",
+            Self::ManSpareParts => "Manage Spare Parts",
+            Self::ManSuppliers => "Manage Suppliers",
+            Self::ManSupplierInvoices => "Manage Supplier Invoices",
+            Self::ManUAC => "Manage User Account Control",
+            Self::ImportStockLevelCountBatch => "Import - Stock Level Count Batch",
+            Self::ImportTamsSync => "Import - Tams Sync",
+            Self::ImportSales => "Import - Sales",
+            Self::ImportReceiving => "Import - Receiving",
         };
         write!(f, "{display_text}")
     }
@@ -309,8 +326,8 @@ impl Debug for Permissions {
 impl Display for PermissionCheckOutcome {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            PermissionCheckOutcome::HasRequiredPermissions => write!(f, "Has Required Permissions"),
-            PermissionCheckOutcome::MissingPermissions(vec) => {
+            Self::HasRequiredPermissions => write!(f, "Has Required Permissions"),
+            Self::MissingPermissions(vec) => {
                 write!(
                     f,
                     "Missing the following permissions: {}",
@@ -328,10 +345,8 @@ impl PermissionCheckOutcome {
     /// Converts an outcome of missing permissions into an error
     pub fn converting_missing_perms_to_error(self) -> Result<(), PermissionsError> {
         match self {
-            PermissionCheckOutcome::HasRequiredPermissions => Ok(()),
-            PermissionCheckOutcome::MissingPermissions(vec) => {
-                Err(PermissionsError::MissingPermissions(vec))
-            }
+            Self::HasRequiredPermissions => Ok(()),
+            Self::MissingPermissions(vec) => Err(PermissionsError::MissingPermissions(vec)),
         }
     }
 
@@ -347,6 +362,8 @@ impl PermissionCheckOutcome {
 
 #[cfg(test)]
 mod tests {
+    #![expect(clippy::unwrap_used, reason = "unwrap is ok in tests")]
+    #![expect(clippy::print_stdout, reason = "ok in tests")]
     use super::*;
     use Permission as p;
     use rstest::rstest;

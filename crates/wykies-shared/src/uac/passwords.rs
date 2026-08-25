@@ -1,5 +1,5 @@
 use super::Username;
-use secrecy::{ExposeSecret, SecretString};
+use secrecy::{ExposeSecret as _, SecretString};
 use std::fmt::Display;
 use thiserror::Error;
 use uuid::Uuid;
@@ -138,13 +138,14 @@ impl Display for PasswordComplexity {
 
 #[cfg(test)]
 mod tests {
+    #![expect(clippy::unwrap_used, reason = "acceptable in tests")]
     use super::*;
     use rstest::rstest;
 
     #[test]
     fn random_passwords_pass() {
         let password = PasswordComplexity::generate_random_password();
-        let username = Username::try_from("bob".to_string()).unwrap();
+        let username = Username::try_from("bob".to_owned()).unwrap();
         let actual = PasswordComplexity::new(&username, &password);
         assert!(actual.does_meet_requirements());
     }
@@ -160,7 +161,7 @@ mod tests {
     )]
     #[case::is_too_short("jUst2sh", PasswordComplexityError::IsTooShort)]
     fn constraints_work(#[case] password: String, #[case] expected: PasswordComplexityError) {
-        let username = Username::try_from("bob".to_string()).unwrap();
+        let username = Username::try_from("bob".to_owned()).unwrap();
         let password_complexity = PasswordComplexity::new(&username, &password.into());
         let actual = password_complexity.error_list();
         assert_eq!(actual, vec![expected]);

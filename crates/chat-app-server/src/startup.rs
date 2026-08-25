@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::websocket::WsServiceIds;
 use actix_web::web::{self, ServiceConfig};
 use plugin_chat::server_only::{
@@ -9,7 +11,7 @@ use tracked_cancellations::CancellationTracker;
 use ws_auth::ws_get_route_add_closures;
 use wykies_server::{
     ApiServerBuilder, ServerTask as _,
-    plugin::{ServerPlugin, ServerPluginArtifacts},
+    plugin::{ServerPlugin as _, ServerPluginArtifacts},
 };
 use wykies_shared::{
     const_config::web_socket::WS_INITIAL_MSG_TIMEOUT, uac::init_permissions_to_defaults,
@@ -20,6 +22,10 @@ pub struct CustomConfiguration {
     pub chat: ChatSettings,
 }
 
+#[expect(
+    clippy::print_stdout,
+    reason = "makes it easier to know when it's finished starting"
+)]
 pub async fn start_servers(
     api_server_builder: ApiServerBuilder<CustomConfiguration>,
     addr: std::net::SocketAddr,
@@ -59,7 +65,7 @@ pub async fn start_servers(
     );
     let open_resources = move |cfg: &mut ServiceConfig| {
         cfg.service(web::scope("/ws").configure(chat_open_add.clone()))
-            .app_data(web::Data::from(chat_server_handle.clone()));
+            .app_data(web::Data::from(Arc::clone(&chat_server_handle)));
     };
     let protected_resources = move |cfg: &mut ServiceConfig| {
         cfg.service(web::scope("/ws_token").configure(chat_protected_add.clone()));
@@ -103,6 +109,7 @@ pub async fn start_servers(
 pub struct AppService(pub ApiServerBuilder<CustomConfiguration>);
 
 impl AppService {
+    #[expect(clippy::todo)] // TODO 4: Setup bind to socket
     pub async fn bind(&self, _addr: std::net::SocketAddr) -> anyhow::Result<()> {
         todo!(
             "Need to setup to work without shuttle (note to dev, see internal version to match what we do there)"

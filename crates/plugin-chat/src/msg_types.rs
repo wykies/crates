@@ -1,4 +1,4 @@
-use anyhow::{Context, bail};
+use anyhow::{Context as _, bail};
 use std::fmt::Display;
 #[cfg(feature = "server_only")]
 use wykies_shared::db_types::Db;

@@ -1,3 +1,9 @@
+#![expect(
+    clippy::unwrap_used,
+    clippy::missing_assert_message,
+    reason = "ok in tests"
+)]
+
 //! IMPORTANT!!!
 //! A server must be started up on localhost separately (Will not work in CI due
 //! to IPv6). Only intended for local testing. Expects a "new" database (For
@@ -19,11 +25,8 @@ fn main() {
         // Arrange
         // ASSUMING SERVER HAS BEEN STARTED (See module docs comment)
         let client = Client::default();
-        let login_args = LoginReqArgs::new_with_branch(
-            "seed_admin".to_string(),
-            "f".to_string().into(),
-            1.into(),
-        );
+        let login_args =
+            LoginReqArgs::new_with_branch("seed_admin".to_owned(), "f".to_owned().into(), 1.into());
 
         // Assert - Ensure not logged in
         assert!(
@@ -32,7 +35,7 @@ fn main() {
         );
 
         // Act - Login
-        let login_outcome = client.login(login_args.clone()).await.unwrap();
+        let login_outcome = client.login(&login_args).await.unwrap();
 
         // Assert - Login successful and user info stored
         assert_eq!(

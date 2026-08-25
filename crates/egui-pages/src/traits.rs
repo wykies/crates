@@ -7,9 +7,9 @@ use tracing::info;
 /// It uses Default and serde Traits as super traits to ensure all these types
 /// implement these traits.
 ///
-/// The PrivateToken generic should be set to any type that only the pages have
-/// access to so that the methods it protects cannot be called from outside of
-/// the page itself. It needs to implement Default so that there is a
+/// The `PrivateToken` generic should be set to any type that only the pages
+/// have access to so that the methods it protects cannot be called from outside
+/// of the page itself. It needs to implement Default so that there is a
 /// predetermined way to create an instance even if it carries no data
 pub trait DisplayablePage<DataShared, Permission: 'static, PrivateToken: Default>:
     Default + serde::Serialize + serde::de::DeserializeOwned
@@ -50,7 +50,7 @@ pub trait DisplayablePage<DataShared, Permission: 'static, PrivateToken: Default
     /// Pages display title (includes page number if not first)
     fn title(&self) -> String {
         if self.page_unique_number() == 0 {
-            Self::title_base().to_string()
+            Self::title_base().to_owned()
         } else {
             format!("{} ({})", Self::title_base(), self.page_unique_number())
         }
@@ -190,7 +190,7 @@ pub trait PageContainer<
             let mut max_id_found = None;
             for page in active_pages.iter_mut() {
                 if page.title_base() == base_title {
-                    max_id_found = max_id_found.max(Some(page.page_unique_number()))
+                    max_id_found = max_id_found.max(Some(page.page_unique_number()));
                 }
             }
             let new_num = if let Some(val) = max_id_found {
@@ -237,11 +237,15 @@ pub trait PageContainer<
     }
 
     fn open_all_pages(active_pages: &mut Vec<Self>) {
-        active_pages.iter_mut().for_each(|page| page.open_page());
+        for page in active_pages.iter_mut() {
+            page.open_page();
+        }
     }
 
     fn close_all_pages(active_pages: &mut Vec<Self>) {
-        active_pages.iter_mut().for_each(|page| page.close_page());
+        for page in active_pages.iter_mut() {
+            page.close_page();
+        }
     }
 
     fn deactivate_all_pages(active_pages: &mut Vec<Self>) {

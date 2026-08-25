@@ -9,7 +9,7 @@ mod status;
 mod user;
 
 use actix_web::{HttpRequest, HttpResponse};
-use anyhow::Context;
+use anyhow::Context as _;
 pub use branch::{branch_list, branch_new};
 pub use health_check::health_check;
 pub use host_branch::{host_branch_pair_list, host_branch_pair_lookup, host_branch_pair_set};

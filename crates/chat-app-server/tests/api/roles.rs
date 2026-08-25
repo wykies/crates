@@ -11,8 +11,8 @@ async fn create_and_assign_role_to_user() {
     let app_normal = spawn_app().await;
     let app_admin = app_normal.create_admin_user().await;
     let role_draft = RoleDraft {
-        name: "Test Role".to_string().try_into().unwrap(),
-        description: "Test Description".to_string().try_into().unwrap(),
+        name: "Test Role".to_owned().try_into().unwrap(),
+        description: "Test Description".to_owned().try_into().unwrap(),
         permissions: vec![
             Permission::ManHostBranchAssignment,
             Permission::RecordDiscrepancy,

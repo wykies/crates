@@ -1,4 +1,4 @@
-use secrecy::{ExposeSecret, SecretString};
+use secrecy::{ExposeSecret as _, SecretString};
 use uuid::Uuid;
 use wykies_client_core::LoginOutcome;
 use wykies_server_test_helper::expect_ok;
@@ -54,10 +54,10 @@ async fn user() {
 #[tokio::test]
 async fn user_update_display_name() {
     common_update_user_test(|mut user| {
-        user.display_name = "Edited Name".to_string().try_into().unwrap();
+        user.display_name = "Edited Name".to_owned().try_into().unwrap();
         user
     })
-    .await
+    .await;
 }
 
 #[tokio::test]
@@ -66,7 +66,7 @@ async fn user_update_force_pass_change() {
         user.force_pass_change = false;
         user
     })
-    .await
+    .await;
 }
 
 #[tokio::test]
@@ -75,7 +75,7 @@ async fn user_update_assigned_role() {
         user.assigned_role = None;
         user
     })
-    .await
+    .await;
 }
 
 #[tokio::test]
@@ -84,7 +84,7 @@ async fn user_update_enabled() {
         user.enabled = false;
         user
     })
-    .await
+    .await;
 }
 
 #[tokio::test]
@@ -94,13 +94,13 @@ async fn user_update_locked_out() {
         user.failed_attempts = 10;
         user
     })
-    .await
+    .await;
 }
 
 #[tokio::test]
 async fn user_update_all() {
     common_update_user_test(|mut user| {
-        user.display_name = "All Changed".to_string().try_into().unwrap();
+        user.display_name = "All Changed".to_owned().try_into().unwrap();
         user.assigned_role = Some(1.into());
         user.enabled = false;
         user.force_pass_change = false;
@@ -108,7 +108,7 @@ async fn user_update_all() {
         user.failed_attempts = 10;
         user
     })
-    .await
+    .await;
 }
 
 async fn common_update_user_test(f: impl FnOnce(UserMetadata) -> UserMetadata) {
@@ -131,7 +131,7 @@ async fn common_update_user_test(f: impl FnOnce(UserMetadata) -> UserMetadata) {
         .expect("no difference found");
 
     // Act -- Push change
-    expect_ok!(app.core_client.update_user(diff));
+    expect_ok!(app.core_client.update_user(&diff));
 
     // Act -- Get updated user
     let actual = expect_ok!(
@@ -148,17 +148,17 @@ async fn new_user() {
     // Arrange
     let app = spawn_app().await.create_admin_user().await;
     app.login_assert().await;
-    let username: Username = "New User".to_string().try_into().unwrap();
-    let password: SecretString = "a test password".to_string().into();
+    let username: Username = "New User".to_owned().try_into().unwrap();
+    let password: SecretString = "a test password".to_owned().into();
     let req_args = NewUserReqArgs {
         username: username.clone(),
-        display_name: "Display New".to_string().try_into().unwrap(),
+        display_name: "Display New".to_owned().try_into().unwrap(),
         password: password.clone(),
         assigned_role: None,
     };
 
     // Act
-    expect_ok!(app.core_client.user_new(req_args.clone()));
+    expect_ok!(app.core_client.user_new(&req_args));
 
     let actual = expect_ok!(app.core_client.user_get(username.clone()));
 
@@ -180,7 +180,7 @@ async fn new_user() {
     let login_args = LoginReqArgs::new(username, password);
 
     // Act
-    let outcome = expect_ok!(app.core_client.login(login_args));
+    let outcome = expect_ok!(app.core_client.login(&login_args));
 
     // Assert
     assert_eq!(outcome, LoginOutcome::ForcePasswordChange);
@@ -202,11 +202,11 @@ async fn password_reset_normal() {
     expect_ok!(
         app_admin
             .core_client
-            .reset_password(password_reset_req_args)
+            .reset_password(&password_reset_req_args)
     );
 
     // Act - Login using the new password
-    app_normal.test_user.password = new_password.expose_secret().to_string();
+    app_normal.test_user.password = new_password.expose_secret().to_owned();
     let login_outcome = app_normal.login().await.unwrap();
 
     // Assert - Login succeeded
@@ -226,7 +226,7 @@ async fn password_reset_blocked_same_user() {
     // Act
     let actual = app
         .core_client
-        .reset_password(args)
+        .reset_password(&args)
         .await
         .expect("failed to receive on rx")
         .expect_err("failed to extract error");

@@ -156,6 +156,7 @@ impl UserMetadataDiff {
 
 #[cfg(test)]
 mod tests {
+    #![expect(clippy::unwrap_used, reason = "ok in tests")]
     // Actually test the macro so we only need one of these
     use rstest::rstest;
 

@@ -1,6 +1,6 @@
 use crate::{DataShared, pages::private};
 use egui::Button;
-use egui_helpers::{ResponseHelpers, UiHelpers as _};
+use egui_helpers::{ResponseHelpers as _, UiHelpers as _};
 use egui_pages::{DisplayablePage, displayable_page_common};
 use reqwest_cross::{Awaiting, DataState};
 use secrecy::{ExposeSecret as _, SecretString};
@@ -35,7 +35,7 @@ impl UiChangePassword {
             && !self.confirmation_password.expose_secret().is_empty()
     }
 
-    fn send_request(&mut self, data_shared: &mut crate::DataShared) {
+    fn send_request(&mut self, data_shared: &crate::DataShared) {
         let rx = data_shared.client.change_password(&ChangePasswordReqArgs {
             current_password: self.current_password.clone(),
             new_password: self.new_password.clone(),

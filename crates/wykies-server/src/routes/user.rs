@@ -2,12 +2,12 @@
 use crate::db_utils::db_int_to_bool;
 use crate::{authentication, db_utils::validate_one_row_affected};
 use actix_web::{HttpResponse, web};
-use anyhow::Context;
+use anyhow::Context as _;
 use argon2::{
-    PasswordHasher,
+    PasswordHasher as _,
     password_hash::{SaltString, rand_core},
 };
-use secrecy::ExposeSecret;
+use secrecy::ExposeSecret as _;
 use wykies_shared::{
     db_types::DbPool,
     e400, e500,
@@ -84,7 +84,7 @@ pub async fn user_new(
     let salt = SaltString::generate(&mut rand_core::OsRng);
     let password_hash = authentication::argon2_settings()
         .hash_password(args.password.expose_secret().as_bytes(), &salt)
-        .unwrap()
+        .expect("failed to generate argon2 settings")
         .to_string();
     #[cfg(feature = "mysql")]
     let query  = sqlx::query!(

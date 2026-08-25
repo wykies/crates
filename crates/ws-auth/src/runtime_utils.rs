@@ -1,5 +1,5 @@
-//! Houses code to make using WebSockets easier and extracts out the boilerplate
-//! related to authentication
+//! Houses code to make using `WebSockets` easier and extracts out the
+//! boilerplate related to authentication
 
 use std::{future::Future, sync::Arc};
 
@@ -49,6 +49,10 @@ pub fn pre_screen_incoming_ws_req(
 
 #[instrument(skip(session, msg_stream, ws_server_handle, ws_start_client_handler_loop))]
 #[expect(clippy::too_many_arguments)] // All arguments are well typed, no material benefit from creating a type
+#[expect(
+    unused_must_use,
+    reason = "we don't have anything we should do if it fails"
+)]
 pub async fn validate_connection_then_start_client_handler_loop<WsServerHandle, Output>(
     ws_server_handle: Arc<WsServerHandle>,
     session: actix_ws::Session,
@@ -66,7 +70,7 @@ pub async fn validate_connection_then_start_client_handler_loop<WsServerHandle, 
             Ok(value) => value,
             Err(e) => {
                 // Connection not validated exit
-                let _ = session.close(Some(CloseCode::Error.into())).await;
+                session.close(Some(CloseCode::Error.into())).await;
                 log_as_error!("failed to validate web socket connection with error: {e:?}");
                 return;
             }

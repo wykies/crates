@@ -9,7 +9,7 @@ use version_control_clean_check::CheckOptions;
 /// - Makes changes immediately so might result in partial switch
 /// - Splits the line based on the mark and comments out the line if the
 ///   following text does not start with the mode or uncomments if it does
-/// - Comments or Uncomment SQLX_OFFLINE depending on mode
+/// - Comments or Uncomment `SQLX_OFFLINE` depending on mode
 #[derive(Parser, Clone, Eq, PartialEq, Ord, PartialOrd, Debug, Default)]
 #[command(author, version, about)]
 pub struct Cli {

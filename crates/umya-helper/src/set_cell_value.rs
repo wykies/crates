@@ -24,9 +24,10 @@ pub fn set_cell_value_as_number(sheet: &mut Worksheet, row: u32, col: u32, value
 }
 
 /// This function exists as a convenience because just setting the style on
-/// large ranges increases the file size a lot. So this makes it easy to just
-/// keep apply the same formula as you write the values. See
-/// `set_range_format_to` for how to create a style
+/// large ranges increases the file size a lot.
+///
+/// So this makes it easy to just keep applying the same style as you write
+/// the values. See `set_range_format_to` for how to create a style
 #[inline]
 pub fn set_cell_value_as_number_with_style(
     sheet: &mut Worksheet,

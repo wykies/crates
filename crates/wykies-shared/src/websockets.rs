@@ -57,7 +57,7 @@ impl Debug for WsConnTxRx {
 
 impl WsConnTxRx {
     #[instrument(skip(wake_up))]
-    pub fn initiate_connection<F, S>(ws_url: S, wake_up: F) -> anyhow::Result<WsConnTxRx>
+    pub fn initiate_connection<F, S>(ws_url: S, wake_up: F) -> anyhow::Result<Self>
     where
         F: WakeFn,
         S: Into<String> + Debug,
@@ -65,7 +65,7 @@ impl WsConnTxRx {
         let (tx, rx) = ewebsock::connect_with_wakeup(ws_url, Default::default(), wake_up)
             .map_err(|e| anyhow::anyhow!("{e}"))
             .context("failed to connect web socket")?;
-        Ok(WsConnTxRx { tx, rx })
+        Ok(Self { tx, rx })
     }
 
     #[inline]
@@ -119,7 +119,7 @@ impl WsConnTxRx {
                 }
                 return Ok(msg);
             } else {
-                reqwest_cross::yield_now().await
+                reqwest_cross::yield_now().await;
             }
         }
         bail!("Receiving timed out after {timeout:?} seconds")
@@ -131,13 +131,13 @@ impl WsConnTxRx {
         ws_url: S,
         timeout: Seconds,
         wake_up: F,
-    ) -> anyhow::Result<WsConnTxRx>
+    ) -> anyhow::Result<Self>
     where
         F: WakeFn,
         S: Into<String> + Debug,
     {
         // Initiate connection
-        let mut result = WsConnTxRx::initiate_connection(ws_url, wake_up)?;
+        let mut result = Self::initiate_connection(ws_url, wake_up)?;
 
         // Wait for connection to open before sending token
         result
@@ -182,13 +182,13 @@ impl WsConnTxRx {
     }
 }
 
-impl AsRef<WsConnWithId> for WsConnWithId {
+impl AsRef<Self> for WsConnWithId {
     fn as_ref(&self) -> &Self {
         self
     }
 }
 
-impl AsMut<WsConnWithId> for WsConnWithId {
+impl AsMut<Self> for WsConnWithId {
     fn as_mut(&mut self) -> &mut Self {
         self
     }

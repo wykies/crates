@@ -176,7 +176,7 @@ impl UiHelpers for egui::Ui {
                     .middle_clicked()
                 {
                     to_deactivate.push(i); // Mark page for removal
-                };
+                }
                 if is_enabled != is_enabled_before {
                     item.set_enabled(is_enabled);
                 }

@@ -7,7 +7,6 @@ edition = "2024"
 workspace = true
 
 [dependencies]
-actix-web = { workspace = true, optional = true }
 actix-ws = { workspace = true, optional = true }
 anyhow.workspace = true
 egui.workspace = true
@@ -19,7 +18,6 @@ sqlx = { workspace = true, features = ["macros"], optional = true }
 tokio = { workspace = true, optional = true }
 tracing = { workspace = true, optional = true }
 tracked-cancellations = { workspace = true, optional = true }
-ws-auth = { workspace = true, optional = true }
 ws-helpers = { workspace = true, optional = true }
 wykies-server = { workspace = true, optional = true }
 wykies-shared.workspace = true
@@ -32,7 +30,6 @@ static_assertions.workspace = true
 default = []
 client_only = []
 server_only = [
-  "dep:actix-web",
   "dep:actix-ws",
   "dep:futures-util",
   "dep:ringbuffer",
@@ -41,7 +38,6 @@ server_only = [
   "dep:tokio",
   "dep:tracing",
   "dep:tracked-cancellations",
-  "dep:ws-auth",
   "dep:ws-helpers",
   "dep:wykies-server",
 ]

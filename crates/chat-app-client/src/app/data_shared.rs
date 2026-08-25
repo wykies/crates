@@ -50,11 +50,11 @@ impl DataShared {
     }
 
     pub fn unlock(&mut self) {
-        self.screen_lock_info.unlock()
+        self.screen_lock_info.unlock();
     }
 
     pub fn lock(&mut self) {
-        self.screen_lock_info.lock()
+        self.screen_lock_info.lock();
     }
 
     pub fn screen_lock_info_tick(&mut self) {

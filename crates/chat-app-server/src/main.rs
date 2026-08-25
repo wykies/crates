@@ -4,6 +4,10 @@ use chat_app_server::startup::CustomConfiguration;
 use wykies_server::initialize_tracing;
 use wykies_server::{ApiServerBuilder, ApiServerInitBundle};
 
+#[expect(
+    clippy::print_stdout,
+    reason = "makes debugging easier when you can find the trace file easily"
+)]
 #[cfg(feature = "standalone")]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -20,7 +24,6 @@ async fn main() -> anyhow::Result<()> {
         wykies_server::get_db_connection_pool(&api_server_init_bundle.configuration.database);
     let api_server_builder =
         ApiServerBuilder::new(api_server_init_bundle, db_pool, env!("CARGO_PKG_VERSION"))
-            .await
             .expect("failed to initialize API Server");
 
     let addr = wykies_server::get_socket_address(

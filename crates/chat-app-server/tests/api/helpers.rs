@@ -65,6 +65,10 @@ async fn do_migrations(connection_pool: &DbPool) {
         .expect("Failed to migrate the database");
 }
 
+#[expect(
+    clippy::mem_forget,
+    reason = "leaked intentionally to allow tests to complete"
+)]
 async fn start_server_in_background(
     configuration: Configuration<CustomConfiguration>,
     db_pool: DbPool,
@@ -80,7 +84,6 @@ async fn start_server_in_background(
 
     let api_server_builder =
         ApiServerBuilder::new(api_server_init_bundle, db_pool, env!("CARGO_PKG_VERSION"))
-            .await
             .expect("Failed to build application.");
     let addr = wykies_server::get_socket_address(
         &api_server_builder
@@ -96,7 +99,7 @@ async fn start_server_in_background(
 }
 
 impl TestApp {
-    /// Creates a clone of [`Self`] with an admin user and separate api_client
+    /// Creates a clone of [`Self`] with an admin user and separate `api_client`
     #[tracing::instrument]
     pub async fn create_admin_user(&self) -> Self {
         let admin_user = TestUser::generate("admin");
@@ -126,14 +129,14 @@ impl TestApp {
 
     pub async fn login(&self) -> anyhow::Result<LoginOutcome> {
         self.core_client
-            .login(self.test_user.login_args())
+            .login(&self.test_user.login_args())
             .await
             .unwrap()
     }
 
     /// Logs in the user and panics if the login is not successful
     pub async fn login_assert(&self) {
-        assert!(expect_ok!(self.core_client.login(self.test_user.login_args())).is_any_success());
+        assert!(expect_ok!(self.core_client.login(&self.test_user.login_args())).is_any_success());
     }
 
     /// Logs out the user and panics on errors

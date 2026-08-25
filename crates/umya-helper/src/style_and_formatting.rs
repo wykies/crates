@@ -74,8 +74,8 @@ pub fn set_frozen_pane(
     Ok(())
 }
 
-/// See the constants attached to umya-spreadsheet::NumberingFormat eg.
-/// umya_spreadsheet::NumberingFormat::FORMAT_CURRENCY_USD_SIMPLE
+/// See the constants attached to `umya-spreadsheet::NumberingFormat` eg.
+/// `umya_spreadsheet::NumberingFormat::FORMAT_CURRENCY_USD_SIMPLE`
 pub fn set_range_format_to<R: AsRef<str>, F: Into<String>>(
     sheet: &mut Worksheet,
     range: R,

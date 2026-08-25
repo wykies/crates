@@ -1,5 +1,5 @@
 #[cfg(not(feature = "disable-tls"))]
-/// Patterned on example from https://github.com/actix/examples/tree/master/https-tls/rustls
+/// Patterned on example from <https://github.com/actix/examples/tree/master/https-tls/rustls>
 #[tracing::instrument(ret, err(Debug))]
 pub fn load_rustls_config() -> anyhow::Result<rustls::ServerConfig> {
     use anyhow::Context as _;
@@ -27,7 +27,7 @@ pub fn load_rustls_config() -> anyhow::Result<rustls::ServerConfig> {
     let cert_chain = rustls_pki_types::pem::ReadIter::new(cert_file)
         .collect::<Result<Vec<_>, _>>()
         .with_context(|| format!("failed to extract certificate from: {cert_path:?}"))?;
-    use rustls_pki_types::pem::PemObject;
+    use rustls_pki_types::pem::PemObject as _;
     let key = rustls_pki_types::PrivateKeyDer::from_pem_file(&key_path)
         .with_context(|| format!("failed to extract keys from: {key_path:?}"))?;
 

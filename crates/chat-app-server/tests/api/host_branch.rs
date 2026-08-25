@@ -22,7 +22,7 @@ async fn set_host_branch_pair() {
     // Arrange - Create Branch
     let branch_id = expect_ok!(app_admin.core_client.branch_new(&branch_draft));
     let mut host_branch_pair = HostBranchPair {
-        host_id: "Host name or IP".to_string().try_into().unwrap(),
+        host_id: "Host name or IP".to_owned().try_into().unwrap(),
         branch_id,
     };
 
@@ -73,7 +73,7 @@ async fn host_branch_pair_lookup() {
     // Arrange - Create Branch
     let branch_id = expect_ok!(app_admin.core_client.branch_new(&branch_draft));
     let host_branch_pair = HostBranchPair {
-        host_id: "Host name or IP".to_string().try_into().unwrap(),
+        host_id: "Host name or IP".to_owned().try_into().unwrap(),
         branch_id,
     };
 
@@ -115,7 +115,7 @@ async fn ensure_branch_only_changes_if_not_set() {
 
     // Act - Login and request branch is changed
     let rx = app_admin.core_client.login(
-        app_admin
+        &app_admin
             .test_user
             .login_args()
             .branch_to_set(Some(new_branch_id)),
@@ -154,7 +154,7 @@ async fn ensure_branch_not_set_without_permissions() {
     let actual = app
         .core_client
         .login(
-            app.test_user
+            &app.test_user
                 .login_args()
                 .branch_to_set(Some(app.host_branch_pair.branch_id)),
         )
@@ -190,7 +190,7 @@ async fn ensure_branch_can_be_set_with_permissions() {
 
     // Act - Login again and set branch
     let rx = app_admin.core_client.login(
-        app_admin
+        &app_admin
             .test_user
             .login_args()
             .branch_to_set(Some(app_admin.host_branch_pair.branch_id)),

@@ -1,17 +1,18 @@
 //! This module stores the expected format of the arguments for the requests
+//!
 //! The structure of the module is supposed to match the path of the endpoints.
 //! For example `/api/change_password` would map to
 //! [`api::ChangePasswordReqArgs`] Some structs are not serializable but are
 //! still here to included here to know what needs to be sent
 
 use crate::branch::BranchId;
-use anyhow::Context;
-use secrecy::{ExposeSecret, SecretString};
+use anyhow::Context as _;
+use secrecy::{ExposeSecret as _, SecretString};
 use std::fmt::Debug;
 
 pub mod api;
 
-/// This struct exists because serde_json cannot round trip all types
+/// This struct exists because `serde_json` cannot round trip all types
 ///
 /// Specifically the problem the we ran into was not being able to do
 /// `Option<Option<T>>` <https://github.com/serde-rs/json/issues/1096>

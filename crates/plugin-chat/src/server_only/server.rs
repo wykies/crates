@@ -3,7 +3,7 @@ use crate::{
     ChatIM, ChatMsg, ChatMsgsHistory, ChatUser, InitialStateBody, ReqHistoryBody,
     consts::{CHAT_HISTORY_RECENT_CAPACITY, CHAT_MAX_IMS_BEFORE_SAVE, CHAT_MAX_TIME_BEFORE_SAVE},
 };
-use anyhow::{Context, anyhow, bail};
+use anyhow::{Context as _, anyhow, bail};
 use std::{collections::HashMap, fmt::Debug, sync::Arc};
 use tokio::{
     select,
@@ -110,6 +110,10 @@ impl ChatServer {
         )
     }
 
+    #[expect(
+        clippy::iter_over_hash_type,
+        reason = "order of iteration does not matter"
+    )]
     /// Send message to other users
     #[instrument]
     async fn send_msg_to_clients(&mut self, chat_msg: ChatMsg) -> anyhow::Result<()> {
@@ -123,7 +127,7 @@ impl ChatServer {
                 .context("failed to add IM to history")?;
         }
 
-        for (conn_id, (_, tx)) in self.connections.iter() {
+        for (conn_id, (_, tx)) in &self.connections {
             // errors if client disconnected abruptly and hasn't been timed-out yet
             let r = tx.send(Arc::clone(&msg)).await.with_context(|| {
                 format!("failed to send message to one of the clients. Connection id {conn_id:?}")

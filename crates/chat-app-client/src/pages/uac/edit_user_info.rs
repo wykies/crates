@@ -85,7 +85,7 @@ impl EditUserInfo {
         self.load_time = None;
         self.edit_user = DataState::None;
     }
-    pub fn time_before_auto_unload_user(&mut self) -> Option<Seconds> {
+    pub fn time_before_auto_unload_user(&self) -> Option<Seconds> {
         let timestamp = self.load_time?;
         let elapsed = timestamp.elapsed().unwrap_or_else(|| {
             debug_panic!("timestamp in future: {timestamp:?}");
@@ -112,20 +112,21 @@ impl EditUserInfo {
         };
 
         let diff = match UserMetadataDiff::from_diff(org_user, edit_user) {
-            Ok(opt) => match opt {
-                Some(diff) => diff,
-                None => {
+            Ok(opt) => {
+                if let Some(diff) = opt {
+                    diff
+                } else {
                     self.save_status =
                         DataState::Failed(anyhow!(internal_error_msg!("No changes found")).into());
                     return;
                 }
-            },
+            }
             Err(e) => {
                 self.save_status = DataState::Failed(internal_error_msg!("{e}").into());
                 return;
             }
         };
-        self.save_status = DataState::AwaitingResponse(Awaiting(client_core.update_user(diff)));
+        self.save_status = DataState::AwaitingResponse(Awaiting(client_core.update_user(&diff)));
     }
 
     /// Returns None if no save is ongoing

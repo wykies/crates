@@ -14,12 +14,12 @@ impl ConnectedUsers {
         *qty = qty.saturating_add(1);
     }
 
-    pub fn user_left(&mut self, user: ChatUser) -> anyhow::Result<()> {
-        match self.users.get_mut(&user) {
+    pub fn user_left(&mut self, user: &ChatUser) -> anyhow::Result<()> {
+        match self.users.get_mut(user) {
             Some(qty) => {
                 *qty = qty.saturating_sub(1);
                 if *qty == 0 {
-                    self.users.remove(&user);
+                    self.users.remove(user);
                 }
                 Ok(())
             }

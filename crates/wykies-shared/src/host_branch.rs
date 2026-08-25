@@ -26,6 +26,6 @@ impl TryFrom<actix_web::dev::ConnectionInfo> for HostId {
         } else {
             return Err(crate::errors::HostIdConversionError::NoPeerAddrFound);
         };
-        Ok(addr.to_string().try_into()?)
+        Ok(addr.to_owned().try_into()?)
     }
 }

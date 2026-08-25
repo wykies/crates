@@ -1,6 +1,12 @@
+#![expect(
+    clippy::print_stdout,
+    clippy::print_stderr,
+    reason = "this is a cli app"
+)]
+
 use clap::{Parser, ValueEnum};
 use std::io::Result;
-use tokio::io::{AsyncReadExt, AsyncWriteExt};
+use tokio::io::{AsyncReadExt as _, AsyncWriteExt as _};
 use tokio::net::{TcpListener, UdpSocket};
 
 #[derive(ValueEnum, Clone, Debug, PartialEq)]
@@ -39,7 +45,7 @@ async fn main() -> Result<()> {
 
 async fn run_udp_server(addr: &str) -> Result<()> {
     let socket = UdpSocket::bind(addr).await?;
-    println!("UDP Echo Server listening on {}", addr);
+    println!("UDP Echo Server listening on {addr}");
 
     let mut buf = [0u8; 1024];
 
@@ -54,7 +60,7 @@ async fn run_udp_server(addr: &str) -> Result<()> {
 
 async fn run_tcp_server(addr: &str) -> Result<()> {
     let listener = TcpListener::bind(addr).await?;
-    println!("TCP Echo Server listening on {}", addr);
+    println!("TCP Echo Server listening on {addr}");
 
     loop {
         let (mut socket, peer) = listener.accept().await?;

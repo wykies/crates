@@ -74,7 +74,7 @@ impl HeartbeatMonitor {
                 Err(_closed) => Some(CloseReason {
                     code: CloseCode::Normal,
                     description: Some(
-                        "Client disappeared suddenly, like when a tab is closed".to_string(),
+                        "Client disappeared suddenly, like when a tab is closed".to_owned(),
                     ),
                 }),
             }

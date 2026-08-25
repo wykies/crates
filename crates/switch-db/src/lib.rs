@@ -1,5 +1,5 @@
-use anyhow::{Context, bail};
-use clap::{Parser, ValueEnum};
+use anyhow::{Context as _, bail};
+use clap::{Parser as _, ValueEnum};
 use cli::Cli;
 use std::{
     borrow::Cow,
@@ -18,12 +18,16 @@ use version_control_clean_check::check_version_control;
 
 mod cli;
 
+#[expect(clippy::print_stdout, reason = "this code is used as part of cli")]
 pub fn run() -> anyhow::Result<()> {
     let mut cli = Cli::parse();
 
     tracing_subscriber::registry()
         .with(fmt::layer().with_span_events(FmtSpan::ACTIVE))
-        .with(EnvFilter::try_from_default_env().unwrap_or(EnvFilter::new("warn")))
+        .with(
+            EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_original_error| EnvFilter::new("warn")),
+        )
         .init();
 
     info!("Switching to {}", cli.mode);
@@ -52,8 +56,8 @@ enum FileType {
 impl FileType {
     fn to_comment_slice(&self) -> &'static str {
         match self {
-            FileType::Json => "//",
-            FileType::DotEnv => "#",
+            Self::Json => "//",
+            Self::DotEnv => "#",
         }
     }
 }
@@ -64,7 +68,7 @@ impl Display for Mode {
             f,
             "{}",
             match self {
-                Mode::Standalone => "Standalone",
+                Self::Standalone => "Standalone",
             }
         )
     }
@@ -109,7 +113,8 @@ fn switch_sqlx_prepared_queries(cli: &Cli) -> anyhow::Result<()> {
     let src_folder_name = format!("{dst_folder_name}_{mode}");
     let dst_path = path.join(dst_folder_name);
     if !dst_path.exists() {
-        fs::create_dir(&dst_path).context("failed to create target folder: {dst_folder_name:?}")?;
+        fs::create_dir(&dst_path)
+            .with_context(|| format!("failed to create target folder: {dst_folder_name:?}"))?;
     }
     let dst_path = dst_path.canonicalize().with_context(|| {
         format!("failed to canonicalize destination sqlx folder: {dst_folder_name:?}")
@@ -224,7 +229,7 @@ fn ensure_line_commenting<'a>(
         if line.trim().starts_with(comment) {
             *changed = true;
             debug!("Uncommented line: {line_number}");
-            Cow::Owned(line.trim()[comment.len()..].trim().to_string())
+            Cow::Owned(line.trim()[comment.len()..].trim().to_owned())
         } else {
             // Already uncommented
             Cow::Borrowed(line)

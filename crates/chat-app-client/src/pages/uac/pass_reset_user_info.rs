@@ -15,7 +15,7 @@ impl PassResetUserInfo {
         Self {
             data: PasswordResetReqArgs {
                 username: user.username.clone(),
-                new_password: "".to_string().into(),
+                new_password: String::new().into(),
             },
             save_status: Default::default(),
         }
@@ -28,6 +28,6 @@ impl PassResetUserInfo {
 
     pub fn save(&mut self, client_core: &Client) {
         self.save_status =
-            DataState::AwaitingResponse(Awaiting(client_core.reset_password(self.data.clone())))
+            DataState::AwaitingResponse(Awaiting(client_core.reset_password(&self.data)));
     }
 }

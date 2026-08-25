@@ -1,6 +1,6 @@
 use super::server::Command;
 use crate::{ChatMsg, ReqHistoryBody};
-use anyhow::Context;
+use anyhow::Context as _;
 use std::sync::Arc;
 use tokio::sync::{mpsc, oneshot};
 use tracing::instrument;

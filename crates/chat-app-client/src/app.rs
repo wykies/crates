@@ -55,7 +55,7 @@ impl ChatApp {
         // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
         if let Some(visuals) = cc
             .egui_ctx
-            .data_mut(|r| r.get_persisted::<egui::Visuals>(egui::Id::new(ChatApp::VISUALS_KEY)))
+            .data_mut(|r| r.get_persisted::<egui::Visuals>(egui::Id::new(Self::VISUALS_KEY)))
         {
             info!("Found saved Visuals. Loading...");
             cc.egui_ctx.set_visuals(visuals);
@@ -67,17 +67,14 @@ impl ChatApp {
         // Note that you must enable the `persistence` feature for this to work.
         if let Some(storage) = cc.storage {
             info!("Storage found. Loading App State...");
-            match eframe::get_value(storage, eframe::APP_KEY) {
-                Some(value) => {
-                    info!("App state loading succeeded");
-                    value
-                }
-                None => {
-                    warn!(
-                        "App state loading failed, no value saved or loading failed (see message a debug level from egui if failed)"
-                    );
-                    Default::default()
-                }
+            if let Some(value) = eframe::get_value(storage, eframe::APP_KEY) {
+                info!("App state loading succeeded");
+                value
+            } else {
+                warn!(
+                    "App state loading failed, no value saved or loading failed (see message a debug level from egui if failed)"
+                );
+                Default::default()
             }
         } else {
             info!("Unable to load app state, no storage found");
@@ -135,7 +132,7 @@ impl ChatApp {
         // Single instance of global panel thus unique
         egui::Panel::bottom("bottom_panel").show(ui, |ui| {
             ui.with_layout(egui::Layout::right_to_left(egui::Align::BOTTOM), |ui| {
-                ui.label(self.current_time());
+                ui.label(Self::current_time());
                 if self.is_logged_in() {
                     if ui.button("Logout").clicked() {
                         self.logout();
@@ -155,7 +152,7 @@ impl ChatApp {
     fn show_pages(&mut self, ui: &mut egui::Ui) {
         if !self.is_logged_in() || self.is_locked() {
             self.login_page
-                .get_or_insert(Default::default())
+                .get_or_insert_default()
                 .show(ui, &mut self.data_shared);
         } else {
             self.login_page = None; // Clear out login page once we are logged in
@@ -169,7 +166,7 @@ impl ChatApp {
         }
     }
 
-    fn current_time(&self) -> String {
+    fn current_time() -> String {
         Timestamp::now().display_as_utc_datetime_long()
     }
 
@@ -222,7 +219,7 @@ impl ChatApp {
         });
     }
 
-    fn process_shortcuts(&mut self, ui: &mut egui::Ui) {
+    fn process_shortcuts(&self, ui: &mut egui::Ui) {
         if ui.input_mut(|i| i.consume_shortcut(&self.shortcuts.organize_pages)) {
             do_organize_pages(ui);
         }

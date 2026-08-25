@@ -4232,7 +4232,6 @@ checksum = "b4596b6d070b27117e987119b4dac604f3c58cfb0b191112e24771b2faeac1a6"
 name = "plugin-chat"
 version = "0.1.0"
 dependencies = [
- "actix-web",
  "actix-ws",
  "anyhow",
  "egui",
@@ -4245,7 +4244,6 @@ dependencies = [
  "tokio",
  "tracing",
  "tracked-cancellations",
- "ws-auth",
  "ws-helpers",
  "wykies-server",
  "wykies-shared",

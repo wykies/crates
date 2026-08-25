@@ -1,9 +1,9 @@
 use super::change_password::UiChangePassword;
 use crate::DataShared;
-use egui_helpers::{ResponseHelpers, UiHelpers as _};
+use egui_helpers::{ResponseHelpers as _, UiHelpers as _};
 use egui_pages::DisplayablePage as _;
 use reqwest_cross::{Awaiting, DataState};
-use secrecy::{ExposeSecret, SecretString};
+use secrecy::{ExposeSecret as _, SecretString};
 use std::fmt::Debug;
 use tracing::info;
 use wykies_client_core::LoginOutcome;
@@ -27,8 +27,9 @@ impl UiLogin {
             | DataState::Failed(_)
             | DataState::Present(LoginOutcome::RetryWithBranchSet) => true,
             DataState::AwaitingResponse(_)
-            | DataState::Present(LoginOutcome::ForcePasswordChange)
-            | DataState::Present(LoginOutcome::Success) => false,
+            | DataState::Present(LoginOutcome::ForcePasswordChange | LoginOutcome::Success) => {
+                false
+            }
         }
     }
 
@@ -50,10 +51,11 @@ impl UiLogin {
             || was_enter_pressed;
 
         if was_enter_pressed && is_allowed_to_login(self, &data_shared.username) {
-            self.send_login_attempt(data_shared)
+            self.send_login_attempt(data_shared);
         }
     }
 
+    #[expect(clippy::match_same_arms, reason = "they have different comments")]
     fn check_login_attempt_status(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared) {
         match &mut self.login_attempt_status {
             DataState::None => {
@@ -64,7 +66,7 @@ impl UiLogin {
             }
             DataState::Present(LoginOutcome::Success) => {
                 if data_shared.is_logged_in() {
-                    debug_assert!(
+                    assert!(
                         data_shared.is_screen_locked(),
                         "expected to only get if the screen was locked"
                     );
@@ -132,7 +134,7 @@ impl UiLogin {
         });
     }
 
-    fn login_button(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared) {
+    fn login_button(&mut self, ui: &mut egui::Ui, data_shared: &DataShared) {
         if ui
             .add_enabled(
                 is_allowed_to_login(self, &data_shared.username),
@@ -144,14 +146,14 @@ impl UiLogin {
         }
     }
 
-    fn send_login_attempt(&mut self, data_shared: &mut DataShared) {
+    fn send_login_attempt(&mut self, data_shared: &DataShared) {
         let args = LoginReqArgs::new_with_branch(
             data_shared.username.clone(),
             self.password.clone(),
             1.into(), // Branches are not needed by the demo
         );
 
-        let rx = data_shared.client.login(args);
+        let rx = data_shared.client.login(&args);
         self.login_attempt_status = DataState::AwaitingResponse(Awaiting(rx));
     }
 }

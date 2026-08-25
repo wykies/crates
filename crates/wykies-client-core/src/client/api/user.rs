@@ -1,6 +1,6 @@
 use crate::{Client, client::DUMMY_ARGUMENT};
 use reqwest_cross::oneshot;
-use secrecy::ExposeSecret;
+use secrecy::ExposeSecret as _;
 use wykies_shared::{
     const_config::path::{
         PATH_API_USER, PATH_API_USER_NEW, PATH_API_USER_PASSWORD_RESET, PATH_API_USER_UPDATE,
@@ -21,7 +21,7 @@ impl Client {
     }
 
     #[tracing::instrument]
-    pub fn user_new(&self, user: NewUserReqArgs) -> oneshot::Receiver<anyhow::Result<()>> {
+    pub fn user_new(&self, user: &NewUserReqArgs) -> oneshot::Receiver<anyhow::Result<()>> {
         let args = serde_json::json!({
             "username": user.username,
             "display_name": user.display_name,
@@ -34,7 +34,7 @@ impl Client {
     #[tracing::instrument]
     pub fn reset_password(
         &self,
-        args: PasswordResetReqArgs,
+        args: &PasswordResetReqArgs,
     ) -> oneshot::Receiver<anyhow::Result<()>> {
         let args = serde_json::json!({
             "username": args.username,
@@ -44,7 +44,7 @@ impl Client {
     }
 
     #[tracing::instrument]
-    pub fn update_user(&self, diff: UserMetadataDiff) -> oneshot::Receiver<anyhow::Result<()>> {
+    pub fn update_user(&self, diff: &UserMetadataDiff) -> oneshot::Receiver<anyhow::Result<()>> {
         let wrapped = RonWrapper::new(&diff).expect("failed to create ron wrapper");
         self.send_request_expect_empty(PATH_API_USER_UPDATE, &wrapped)
     }

@@ -1,7 +1,7 @@
 use std::fmt::Debug;
 
-use anyhow::{Context, bail};
-use ringbuffer::{AllocRingBuffer, RingBuffer};
+use anyhow::{Context as _, bail};
+use ringbuffer::{AllocRingBuffer, RingBuffer as _};
 use sqlx::QueryBuilder;
 use tokio::{select, sync::mpsc, time::Sleep};
 use tracing::{debug, info, instrument};
@@ -138,26 +138,23 @@ impl ChatDbWriter {
 
     #[instrument(err(Debug))]
     async fn process_im(&mut self, im: Option<ChatIM>) -> anyhow::Result<()> {
-        match im {
-            Some(im) => {
-                if self.buffer.is_empty() {
-                    // Was empty no point saving right away
-                    self.last_save_time = Timestamp::now();
-                }
-                self.buffer.push(im);
-                if self.buffer.len() >= self.max_ims_before_save as usize {
-                    self.save("buffer full")
-                        .await
-                        .context("failed to save for buffer oversize")?;
-                }
-                Ok(())
+        if let Some(im) = im {
+            if self.buffer.is_empty() {
+                // Was empty no point saving right away
+                self.last_save_time = Timestamp::now();
             }
-            None => {
-                self.save("Closing None Received")
+            self.buffer.push(im);
+            if self.buffer.len() >= self.max_ims_before_save as usize {
+                self.save("buffer full")
                     .await
-                    .context("failed to save while server exiting")?;
-                bail!("Saved and exiting ChatDbWriter. Sender dropped, server was likely stopped")
+                    .context("failed to save for buffer oversize")?;
             }
+            Ok(())
+        } else {
+            self.save("Closing None Received")
+                .await
+                .context("failed to save while server exiting")?;
+            bail!("Saved and exiting ChatDbWriter. Sender dropped, server was likely stopped")
         }
     }
 
@@ -193,12 +190,12 @@ impl ChatDbWriter {
             .context("failed to save chat IMs to DB")
         {
             Ok(_) => {
-                info!("IMs save succeeded")
+                info!("IMs save succeeded");
             }
             Err(err) => {
                 log_as_error!("failed to save IMs: {err:?}");
             }
-        };
+        }
         self.last_save_time = Timestamp::now();
         Ok(())
     }

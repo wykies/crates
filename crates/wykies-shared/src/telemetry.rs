@@ -1,5 +1,5 @@
 use actix_web::rt::task::JoinHandle;
-use anyhow::Context;
+use anyhow::Context as _;
 use std::{fs::create_dir_all, path::PathBuf};
 use tracing::Subscriber;
 use tracing::subscriber::set_global_default;
@@ -7,7 +7,7 @@ use tracing_appender::non_blocking::{NonBlocking, WorkerGuard};
 use tracing_bunyan_formatter::{BunyanFormattingLayer, JsonStorageLayer};
 use tracing_log::LogTracer;
 use tracing_subscriber::fmt::MakeWriter;
-use tracing_subscriber::{EnvFilter, Registry, layer::SubscriberExt};
+use tracing_subscriber::{EnvFilter, Registry, layer::SubscriberExt as _};
 
 /// Compose multiple layers into a `tracing`'s subscriber.
 ///
@@ -56,8 +56,7 @@ where
 /// Returns a handle to the file created and the file path
 pub fn setup_tracing_writer(app_name: &str) -> anyhow::Result<(NonBlocking, PathBuf, WorkerGuard)> {
     // Create logging folder
-    let mut log_folder = PathBuf::from("traces");
-    log_folder.push(app_name);
+    let log_folder = PathBuf::from("traces").join(app_name);
     create_dir_all(&log_folder).context("Failed to create logging folder")?;
 
     // Start non blocking logger wrapping a rolling logger

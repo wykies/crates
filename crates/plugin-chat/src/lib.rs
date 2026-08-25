@@ -1,4 +1,5 @@
 //! Plugin to add chat functionality
+#![warn(unused_crate_dependencies)]
 
 pub mod consts;
 mod msg_types;

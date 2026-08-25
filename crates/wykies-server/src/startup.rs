@@ -26,7 +26,7 @@ use serde::de::DeserializeOwned;
 use std::{
     future::Future,
     net::{SocketAddr, TcpListener},
-    str::FromStr,
+    str::FromStr as _,
 };
 use tracing::{info, instrument};
 use tracing_actix_web::TracingLogger;
@@ -90,11 +90,11 @@ where
     T: Clone + DeserializeOwned,
 {
     /// Does the initial prep before starting to build the server
-    pub fn new() -> ApiServerInitBundle<T> {
+    pub fn new() -> Self {
         let (cancellation_token, cancellation_tracker) = TrackedCancellationToken::new();
         let configuration = get_configuration::<T>().expect("failed to read configuration.");
 
-        ApiServerInitBundle {
+        Self {
             cancellation_token,
             cancellation_tracker,
             configuration,
@@ -112,7 +112,7 @@ where
 }
 
 impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
-    pub async fn new(
+    pub fn new(
         api_server_init_bundle: ApiServerInitBundle<T>,
         db_pool: DbPool,
         pkg_version: &'static str,
@@ -124,6 +124,10 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
         })
     }
 
+    #[expect(
+        clippy::too_many_lines,
+        reason = "function is cohesive and isn't easily split"
+    )]
     #[instrument(err(Debug), skip_all)]
     pub async fn build_runnable_api_server<FOpen, FProtected>(
         self,
@@ -257,7 +261,7 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
                     // TODO 5: Use version endpoint in client to detect if compatible with server,
                     // at least give warning if not
                     "/version",
-                    web::get().to(|| async { HttpResponse::Ok().body(pkg_version.to_string()) }),
+                    web::get().to(|| async { HttpResponse::Ok().body(pkg_version.to_owned()) }),
                 )
                 .service(actix_files::Files::new("/", front_end_folder).index_file("index.html"))
                 .app_data(db_pool.clone())

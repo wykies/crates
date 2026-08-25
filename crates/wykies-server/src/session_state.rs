@@ -1,4 +1,4 @@
-use actix_session::{Session, SessionExt, SessionGetError, SessionInsertError};
+use actix_session::{Session, SessionExt as _, SessionGetError, SessionInsertError};
 use actix_web::{FromRequest, HttpRequest, dev::Payload};
 use std::future::{Ready, ready};
 use wykies_shared::uac::UserInfo;
@@ -21,15 +21,15 @@ impl TypedSession {
     }
 
     pub fn log_out(self) {
-        self.0.purge()
+        self.0.purge();
     }
 }
 
 impl FromRequest for TypedSession {
     type Error = <Session as FromRequest>::Error;
-    type Future = Ready<Result<TypedSession, Self::Error>>;
+    type Future = Ready<Result<Self, Self::Error>>;
 
     fn from_request(req: &HttpRequest, _payload: &mut Payload) -> Self::Future {
-        ready(Ok(TypedSession(req.get_session())))
+        ready(Ok(Self(req.get_session())))
     }
 }

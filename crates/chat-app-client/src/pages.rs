@@ -18,7 +18,7 @@ use egui_helpers::RemovableItem;
 use egui_pages::{DisplayablePage, PageContainer, show_page};
 use egui_settings::UiEguiSettings;
 pub use login::UiLogin;
-use strum::{EnumIter, IntoEnumIterator};
+use strum::{EnumIter, IntoEnumIterator as _};
 use uac::UiUAC;
 use wykies_shared::uac::Permission;
 
@@ -63,14 +63,14 @@ impl PageContainer<DataShared, Permission, private::Token> for UiPage {
     #[tracing::instrument(ret)]
     fn new_page_with_unique_number(&self, page_unique_number: usize) -> Self {
         match self {
-            UiPage::Chat(_) => Self::Chat(UiChat::new_page(page_unique_number).and_open_page()),
-            UiPage::ChangePassword(_) => {
+            Self::Chat(_) => Self::Chat(UiChat::new_page(page_unique_number).and_open_page()),
+            Self::ChangePassword(_) => {
                 Self::ChangePassword(UiChangePassword::new_page(page_unique_number).and_open_page())
             }
-            UiPage::EguiSetting(_) => {
+            Self::EguiSetting(_) => {
                 Self::EguiSetting(UiEguiSettings::new_page(page_unique_number).and_open_page())
             }
-            UiPage::Uac(_) => Self::Uac(UiUAC::new_page(page_unique_number).and_open_page()),
+            Self::Uac(_) => Self::Uac(UiUAC::new_page(page_unique_number).and_open_page()),
         }
     }
 
@@ -79,10 +79,10 @@ impl PageContainer<DataShared, Permission, private::Token> for UiPage {
         for page in Self::iter() {
             if page.title_base() == T::title_base() {
                 return Ok(match page {
-                    UiPage::Chat(_) => Self::Chat(UiChat::default()),
-                    UiPage::ChangePassword(_) => Self::ChangePassword(UiChangePassword::default()),
-                    UiPage::EguiSetting(_) => Self::EguiSetting(UiEguiSettings::default()),
-                    UiPage::Uac(_) => Self::Uac(UiUAC::default()),
+                    Self::Chat(_) => Self::Chat(UiChat::default()),
+                    Self::ChangePassword(_) => Self::ChangePassword(UiChangePassword::default()),
+                    Self::EguiSetting(_) => Self::EguiSetting(UiEguiSettings::default()),
+                    Self::Uac(_) => Self::Uac(UiUAC::default()),
                 });
             }
         }
@@ -109,7 +109,7 @@ impl PageContainer<DataShared, Permission, private::Token> for UiPage {
     }
 
     fn display_page(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared) {
-        do_on_ui_page!(self, page, { show_page(page, ui, data_shared) })
+        do_on_ui_page!(self, page, { show_page(page, ui, data_shared) });
     }
 
     fn title_base(&self) -> &'static str {
@@ -129,11 +129,11 @@ impl PageContainer<DataShared, Permission, private::Token> for UiPage {
     }
 
     fn open_page(&mut self) {
-        do_on_ui_page!(self, page, { page.open_page() })
+        do_on_ui_page!(self, page, { page.open_page() });
     }
 
     fn close_page(&mut self) {
-        do_on_ui_page!(self, page, { page.close_page() })
+        do_on_ui_page!(self, page, { page.close_page() });
     }
 }
 

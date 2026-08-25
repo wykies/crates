@@ -1,3 +1,9 @@
+#![expect(
+    clippy::print_stdout,
+    clippy::unwrap_used,
+    clippy::missing_assert_message,
+    reason = "fine for tests"
+)]
 mod branch;
 mod change_password;
 mod chat;

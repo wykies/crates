@@ -31,16 +31,19 @@ impl Client {
     ///
     /// # Panic
     ///
-    /// Panics if the server_address does not start with "http"
+    /// Panics if the `server_address` does not start with "http"
     #[tracing::instrument(ret)]
     fn ws_url_from(&self, path_spec: &PathSpec) -> String {
         assert_eq!(&path_spec.path[..PATH_WS_PREFIX.len()], PATH_WS_PREFIX);
         let suffix = &path_spec.path[PATH_WS_PREFIX.len()..];
-        let mut result = "ws".to_string();
+        let mut result = "ws".to_owned();
         {
             let guard = self.inner.lock().expect("client-core mutex poisoned");
             let server_address = &guard.server_address;
-            assert!(server_address.starts_with("http"));
+            assert!(
+                server_address.starts_with("http"),
+                "ensuring the part we are going to replace exists"
+            );
             result.push_str(&server_address[4..]);
         }
         result.push_str(WS_CONNECTION_PREFIX);

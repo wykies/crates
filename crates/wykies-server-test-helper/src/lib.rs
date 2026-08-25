@@ -1,15 +1,15 @@
+#![expect(clippy::unwrap_used, clippy::print_stdout, reason = "ok in tests")]
 #![warn(unused_crate_dependencies)]
 
-use anyhow::Context;
+use anyhow::Context as _;
 use argon2::{
-    PasswordHasher,
+    PasswordHasher as _,
     password_hash::{SaltString, rand_core},
 };
 use serde::de::DeserializeOwned;
-use sqlx::{Connection, Executor};
+use sqlx::{Connection as _, Executor as _};
 use std::fmt::Debug;
 use std::fs::{File, create_dir_all};
-use std::ops::Deref;
 use std::path::PathBuf;
 use std::sync::LazyLock;
 use uuid::Uuid;
@@ -34,8 +34,8 @@ pub const TEST_MSG_WAIT_TIMEOUT: Seconds = Seconds::new(2);
 
 // Ensure that the `tracing` stack is only initialised once
 pub static TRACING: LazyLock<String> = LazyLock::new(|| {
-    let default_filter_level = "info".to_string();
-    let subscriber_name = "test".to_string();
+    let default_filter_level = "info".to_owned();
+    let subscriber_name = "test".to_owned();
     if std::env::var("TEST_LOG").is_ok() {
         let log_file_name = format!(
             "{}_server_tests{}.log",
@@ -63,7 +63,7 @@ pub static TRACING: LazyLock<String> = LazyLock::new(|| {
     } else {
         let subscriber = get_subscriber(subscriber_name, default_filter_level, std::io::sink);
         init_subscriber(subscriber).unwrap();
-        "Traces set to std::io::sink".to_string()
+        "Traces set to std::io::sink".to_owned()
     }
 });
 
@@ -114,7 +114,7 @@ where
     let login_attempt_limit = configuration.user_auth.login_attempt_limit;
     let db_pool = get_db_connection_pool(&configuration.database);
     let host_branch_pair = HostBranchPair {
-        host_id: "127.0.0.1".to_string().try_into().unwrap(),
+        host_id: "127.0.0.1".to_owned().try_into().unwrap(),
         branch_id: get_seed_branch_from_db(&db_pool).await,
     };
     let core_client = build_client(address.clone());
@@ -145,7 +145,7 @@ where
     // Use root user to be able to create a new database
     #[cfg(feature = "mysql")]
     {
-        c.database.username = "root".to_string();
+        c.database.username = "root".to_owned();
     }
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
     {
@@ -156,7 +156,7 @@ where
 
 fn start_tracing() {
     // Accessing TRACING also forces the LazyLock to initialize
-    let logging_msg = TRACING.deref();
+    let logging_msg = &*TRACING;
     println!("{logging_msg}");
 }
 
@@ -245,7 +245,7 @@ impl TestUser {
     pub async fn set_locked_out_in_db<C>(&self, app: &TestApp<C>, value: bool) {
         #[cfg(feature = "mysql")]
         let query = {
-            let value = if value { 1 } else { 0 };
+            let value = i32::from(value);
             sqlx::query!(
                 "UPDATE `user` SET `LockedOut` = ? WHERE `user`.`UserName` = ?;",
                 value,

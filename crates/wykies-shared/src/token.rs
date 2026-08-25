@@ -17,6 +17,6 @@ impl From<String> for AuthToken {
 
 impl From<AuthToken> for ewebsock::WsMessage {
     fn from(value: AuthToken) -> Self {
-        ewebsock::WsMessage::Text(value.0)
+        Self::Text(value.0)
     }
 }

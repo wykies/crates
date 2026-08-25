@@ -39,8 +39,7 @@ pub async fn status(pool: web::Data<DbPool>) -> HttpResponse {
         <th>System</th>
         <th>Status</th>
         <th>Message</th>
-    </tr>"#
-        .to_string();
+    </tr>"#.to_owned();
 
     // Acquire a connection to the database to test it
     result += &format_status_row("Connect to Database", pool.acquire().await);
@@ -57,7 +56,7 @@ fn format_status_row<T, E: Error>(name: &str, result: Result<T, E>) -> String {
         error!("Error for {name:?} - {e}");
         ("<span class = red>Error</span>", e.to_string())
     } else {
-        ("Ok", "".to_string())
+        ("Ok", String::new())
     };
     format!("<tr><td>{name}</td><td>{stat}</td><td>{msg}</td></tr>")
 }

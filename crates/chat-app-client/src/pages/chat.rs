@@ -53,7 +53,7 @@ impl DisplayablePage<DataShared, Permission, private::Token> for UiChat {
         if let Some(connection) = self.data_state.egui_poll_mut(ui, Some("Reconnect")) {
             self.frontend
                 .get_or_insert_with(frontend_init)
-                .show(ui, connection)
+                .show(ui, connection);
         }
     }
 }

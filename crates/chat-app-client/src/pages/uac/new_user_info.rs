@@ -19,7 +19,7 @@ impl NewUserInfo {
         Self {
             username: Default::default(),
             display_name: Default::default(),
-            password: "".to_string().into(),
+            password: String::new().into(),
             assigned_role: Default::default(),
             save_status: Default::default(),
         }
@@ -48,7 +48,7 @@ impl NewUserInfo {
         match self.try_into_req_args() {
             Ok(req_args) => {
                 self.save_status =
-                    DataState::AwaitingResponse(Awaiting(client_core.user_new(req_args)))
+                    DataState::AwaitingResponse(Awaiting(client_core.user_new(&req_args)));
             }
             Err(e) => self.save_status = DataState::Failed(e.into()),
         }

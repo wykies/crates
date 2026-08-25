@@ -14,7 +14,7 @@ use wykies_time::Seconds;
 pub struct TrackedCancellationToken {
     token: CancellationToken,
     /// When all tasks complete they will drop the senders
-    #[allow(unused)]
+    #[expect(unused)]
     drop_tracker: mpsc::Sender<()>,
 }
 

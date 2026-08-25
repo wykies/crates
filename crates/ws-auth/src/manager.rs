@@ -58,8 +58,8 @@ impl AuthTokenManager {
             timestamp,
             host_id,
             user_info,
-            token,
             ws_id,
+            token,
         };
         self.auth_records
             .lock()
@@ -78,7 +78,7 @@ impl AuthTokenManager {
             .any(|rec| &rec.host_id == host_id && rec.ws_id == ws_id)
     }
 
-    /// Validates a token, if validated returns the associated user_info and
+    /// Validates a token, if validated returns the associated `user_info` and
     /// removes the token so it may not be reused
     #[tracing::instrument(ret)]
     pub fn validate_token(
@@ -161,6 +161,7 @@ pub async fn validate_ws_connection(
 
 #[cfg(test)]
 mod tests {
+    #![expect(clippy::unwrap_used, reason = "unwrap is ok in tests")]
     use std::time::Duration;
     use wykies_shared::{branch::BranchId, random_string, random_string_def_len, uac::Username};
 

@@ -5,7 +5,7 @@ use crate::{
     session_state::TypedSession,
 };
 use actix_web::{HttpResponse, dev::ConnectionInfo, web};
-use anyhow::{Context, anyhow};
+use anyhow::{Context as _, anyhow};
 use wykies_shared::{
     branch::BranchId,
     const_config::path::{PATH_API_HOSTBRANCH, PATH_API_HOSTBRANCH_SET},
@@ -51,9 +51,11 @@ pub async fn login(
     {
         // Special case return for when the request should be resent and include the
         // branch that should be set
-        return Ok(
-            HttpResponse::FailedDependency().body(set_user_branch_result.unwrap_err().to_string())
-        );
+        return Ok(HttpResponse::FailedDependency().body(
+            set_user_branch_result
+                .expect_err("checked that it is an error to enter this branch")
+                .to_string(),
+        ));
     }
     let login_response = set_user_branch_result?;
     session.renew();
@@ -91,9 +93,10 @@ async fn set_user_branch(
         },
     )?;
     let branch_id: BranchId = match lookup_result.await {
-        Ok(web::Json(looked_up_id)) => match looked_up_id {
-            Some(id) => id,
-            None => {
+        Ok(web::Json(looked_up_id)) => {
+            if let Some(id) = looked_up_id {
+                id
+            } else {
                 // No ID found in the DB for this client identifier
 
                 // Check if user has permissions to set branch and branch provided to be set
@@ -128,7 +131,7 @@ async fn set_user_branch(
                     }
                 }
             }
-        },
+        }
         Err(e) => {
             return Err(AuthError::UnexpectedError(anyhow!(
                 "host branch pair lookup failed with error: {e:?}"
