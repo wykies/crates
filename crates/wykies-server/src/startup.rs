@@ -194,6 +194,7 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
             #[cfg(all(debug_assertions, feature = "disable-cors"))]
             let app = app.wrap(cors);
             #[cfg(all(debug_assertions, feature = "disable-cors"))]
+            #[expect(clippy::print_stderr)]
             {
                 tracing::warn!("CORS set to permissive");
                 eprintln!("CORS set to permissive");
