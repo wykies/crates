@@ -39,7 +39,8 @@ pub async fn status(pool: web::Data<DbPool>) -> HttpResponse {
         <th>System</th>
         <th>Status</th>
         <th>Message</th>
-    </tr>"#.to_owned();
+    </tr>"#
+        .to_owned();
 
     // Acquire a connection to the database to test it
     result += &format_status_row("Connect to Database", pool.acquire().await);
