@@ -3,6 +3,9 @@ name = "switch-db"
 version = "0.1.0"
 edition = "2024"
 
+[lints]
+workspace = true
+
 [dependencies]
 anyhow.workspace = true
 clap = { workspace = true, features = ["derive", "wrap_help"] }

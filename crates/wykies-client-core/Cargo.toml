@@ -5,6 +5,9 @@ edition = "2024"
 publish = false
 description = "Stores the functionality common between Clients"
 
+[lints]
+workspace = true
+
 [dependencies]
 anyhow.workspace = true
 reqwest-cross = { workspace = true, features = ["yield_now"] }

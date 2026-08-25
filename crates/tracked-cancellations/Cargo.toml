@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2024"
 description = "Simple wrapper around cancellation tokens that lets you know if tasks have completed cancellation"
 
+[lints]
+workspace = true
+
 [dependencies]
 tokio = { workspace = true, features = ["time"] }
 tokio-util.workspace = true

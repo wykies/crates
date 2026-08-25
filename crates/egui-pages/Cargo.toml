@@ -3,6 +3,9 @@ name = "egui-pages"
 version = "0.4.0"
 edition = "2024"
 
+[lints]
+workspace = true
+
 [dependencies]
 anyhow.workspace = true
 egui.workspace = true

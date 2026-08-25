@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2024"
 description = "Simple time wrappers to make mistakes harder to make"
 
+[lints]
+workspace = true
+
 [dependencies]
 chrono.workspace = true
 db-types = { workspace = true, optional = true }

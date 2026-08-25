@@ -3,6 +3,9 @@ name = "egui-helpers"
 version = "0.5.0"
 edition = "2024"
 
+[lints]
+workspace = true
+
 [dependencies]
 egui.workspace = true
 egui_extras.workspace = true

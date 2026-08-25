@@ -4,6 +4,9 @@ version = "0.1.0"
 edition = "2024"
 description = "Reusable Server Functionality for an Actix-Web REST server that needs WebSocket Functionality"
 
+[lints]
+workspace = true
+
 [dependencies]
 actix-cors = { workspace = true, optional = true }
 actix-files.workspace = true

@@ -3,6 +3,9 @@ name = "ws-auth"
 version = "0.1.0"
 edition = "2024"
 
+[lints]
+workspace = true
+
 [dependencies]
 actix-web.workspace = true
 actix-ws.workspace = true

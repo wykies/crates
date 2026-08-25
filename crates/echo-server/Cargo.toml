@@ -3,6 +3,9 @@ name = "echo-server"
 version = "0.1.0"
 edition = "2024"
 
+[lints]
+workspace = true
+
 [dependencies]
 clap = { workspace = true, features = ["cargo", "env", "derive", "wrap_help"] }
 tokio = { workspace = true, features = ["full"] }

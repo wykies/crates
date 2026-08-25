@@ -3,6 +3,9 @@ name = "umya-helper"
 version = "0.2.3"
 edition = "2024"
 
+[lints]
+workspace = true
+
 [dependencies]
 anyhow.workspace = true
 jiff.workspace = true

@@ -5,6 +5,9 @@ edition = "2024"
 publish = false
 description = "egui Client for the Demo Chat App"
 
+[lints]
+workspace = true
+
 [dependencies]
 anyhow.workspace = true
 eframe = { workspace = true, features = [ # put all features on their own line
