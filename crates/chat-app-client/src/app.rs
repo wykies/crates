@@ -180,7 +180,6 @@ impl ChatApp {
             ron::from_str(&pages).expect("failed to convert back into pages from ron");
     }
 
-    #[cfg_attr(target_arch = "wasm32", allow(unused_variables))]
     fn ui_menu_file(&mut self, ui: &mut egui::Ui) {
         ui.menu_button("File", |ui| {
             UiPage::ui_menu_page_btn::<UiChangePassword>(
