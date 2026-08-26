@@ -31,6 +31,7 @@ pub enum SecondsConversionError {
 
 impl Timestamp {
     const LONG_DISPLAY_FORMAT: &str = "%c";
+    const DATE_ONLY_FORMAT: &str = "%F";
     const SHORT_DISPLAY_FORMAT: &str = "%F %H:%M";
 
     pub fn now() -> Self {
@@ -72,6 +73,14 @@ impl Timestamp {
     pub fn display_as_utc_datetime_short(&self) -> String {
         self.as_utc_datetime()
             .format(Self::SHORT_DISPLAY_FORMAT)
+            .to_string()
+    }
+
+    pub fn display_as_fixed_date<Tz: TimeZone>(&self, tz: &Tz) -> String {
+        self.as_utc_datetime()
+            .with_timezone(tz)
+            .naive_local()
+            .format(Self::DATE_ONLY_FORMAT)
             .to_string()
     }
 
