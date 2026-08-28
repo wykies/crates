@@ -22,10 +22,6 @@ use wykies_shared::{
 };
 use wykies_time::{Seconds, Timestamp};
 
-#[expect(
-    clippy::let_underscore_must_use,
-    reason = "we don't have anything we should do if it fails"
-)]
 #[instrument(skip(ws_session, msg_stream, chat_server_handle), fields(request_id))]
 pub async fn chat_ws_start_client_handler_loop(
     chat_server_handle: Arc<ChatServerHandle>,
@@ -98,7 +94,7 @@ pub async fn chat_ws_start_client_handler_loop(
     }
 
     // attempt to close connection gracefully
-    let _: Result<(), _> = ws_session.close(Some(close_reason)).await;
+    _ = ws_session.close(Some(close_reason)).await;
 }
 
 #[instrument]

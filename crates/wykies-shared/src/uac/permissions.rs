@@ -129,15 +129,11 @@ pub fn try_set_permissions(value: PermissionMap) -> Result<(), PermissionMap> {
     PERMISSION_MAP.set(value)
 }
 
-#[expect(
-    clippy::let_underscore_must_use,
-    reason = "we don't care about the error here"
-)]
 /// Initializes the permissions may be run more than once without issue (will
 /// only have an effect the first time)
 pub fn init_permissions_to_defaults() {
     // Set permissions and ignore if they were already set
-    let _: Result<(), _> = try_set_permissions(default_permissions());
+    _ = try_set_permissions(default_permissions());
 }
 
 /// Takes a path and returns the permissions required for it if found
