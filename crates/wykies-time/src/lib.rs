@@ -4,6 +4,8 @@
 
 use std::{fmt::Display, time::Duration};
 
+use jiff::Zoned;
+
 /// Intended to be similar to Duration but always clear that it is in Seconds
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize, PartialOrd, Ord,
@@ -26,6 +28,8 @@ pub struct Timestamp(u64);
 pub enum TimestampConversionError {
     #[error("Timestamps do not support negative numbers. Value: {0}")]
     NegativeI64(i64),
+    #[error("Timestamps do not support dates before the unix epoch. Value: {0}")]
+    UnsupportedDate(Zoned),
 }
 #[derive(Debug, thiserror::Error, PartialEq, Eq)]
 pub enum SecondsConversionError {
@@ -250,4 +254,15 @@ pub mod sql {
 
     impl_encode_for_newtype_around_u64!(Seconds, "mysql", "postgres");
     impl_encode_for_newtype_around_u64!(Timestamp, "mysql", "postgres");
+}
+
+impl TryFrom<Zoned> for Timestamp {
+    type Error = TimestampConversionError;
+
+    fn try_from(value: Zoned) -> Result<Self, Self::Error> {
+        match value.timestamp().as_second().try_into() {
+            Ok(x) => Ok(Self(x)),
+            Err(_) => Err(Self::Error::UnsupportedDate(value)),
+        }
+    }
 }
