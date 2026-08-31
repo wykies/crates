@@ -117,7 +117,8 @@ async fn process_msg_from_client(
         ChatMsg::IM(mut chat_im) => {
             validate_im_from_client(&mut chat_im, username).context("IM validation failed")?;
 
-            // Also send to original author so they receive the correct timestamp
+            // Also send to original author so they receive the correct
+            // timestamp
             chat_server.send_msg_to_clients(ChatMsg::IM(chat_im)).await;
         }
         ChatMsg::ReqHistory(req) => chat_server.process_history_request(conn_id, req).await,

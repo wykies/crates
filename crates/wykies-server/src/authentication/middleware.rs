@@ -27,16 +27,16 @@ pub async fn validate_user_access(
         TypedSession::from_request(http_request, payload).await
     }?;
 
-    // TODO 6: Might need to add a keep alive from the client to hold the connection
-    // open if the user is not communicating with the server but is using the
-    // program
+    // TODO 6: Might need to add a keep alive from the client to hold the
+    // connection open if the user is not communicating with the server but
+    // is using the program
 
     match session.get_user_info().map_err(e500)? {
         Some(user_info) => {
             check_permissions(&req, &user_info).await?;
             info!("Validated request for {:?}", user_info.username.as_ref());
-            // TODO 4: Add check that client identifier still matches what is saved
-            // otherwise log and reject connection
+            // TODO 4: Add check that client identifier still matches what is
+            // saved otherwise log and reject connection
             req.extensions_mut().insert(user_info);
             next.call(req).await
         }

@@ -121,7 +121,8 @@ async fn chat_initial_buffered_history() {
     // Act - Close connection
     conn.close();
 
-    // Act - Start a new connection to see if messages are included in the history
+    // Act - Start a new connection to see if messages are included in the
+    // history
     conn = expect_ok!(
         app.core_client
             .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb)
@@ -197,7 +198,8 @@ async fn chat_overflowing_server_history_buffer() {
     // Act - Close connection
     conn.close();
 
-    // Act - Start a new connection to see if messages are included in the history
+    // Act - Start a new connection to see if messages are included in the
+    // history
     conn = expect_ok!(
         app.core_client
             .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb)
@@ -222,8 +224,8 @@ async fn chat_overflowing_server_history_buffer() {
     };
 
     // Act - Get other history
-    // Works based on the assumption that each request might only contain half of
-    // the records that are new because they are sent so quickly
+    // Works based on the assumption that each request might only contain half
+    // of the records that are new because they are sent so quickly
     let request_count =
         ((MSGS_SENT as usize - history.len()) / CHAT_HISTORY_REQUEST_SIZE as usize) * 2 + 1;
     let qty = CHAT_HISTORY_REQUEST_SIZE;
@@ -253,8 +255,8 @@ async fn chat_overflowing_server_history_buffer() {
         history.prepend_other(more_history).unwrap();
         if is_empty {
             assert_ne!(i, 0, "No history was retrieved");
-            // Should be i and not (i-1) because it is 0 based so if it only got on the
-            // first one then i will be 1
+            // Should be i and not (i-1) because it is 0 based so if it only got
+            // on the first one then i will be 1
             println!("All history retrieved in {i} requests");
             break;
         }

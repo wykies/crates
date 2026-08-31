@@ -128,7 +128,8 @@ impl ChatServer {
         }
 
         for (conn_id, (_, tx)) in &self.connections {
-            // errors if client disconnected abruptly and hasn't been timed-out yet
+            // errors if client disconnected abruptly and hasn't been timed-out
+            // yet
             let r = tx.send(Arc::clone(&msg)).await.with_context(|| {
                 format!("failed to send message to one of the clients. Connection id {conn_id:?}")
             });
@@ -215,8 +216,8 @@ impl ChatServer {
             }
         };
 
-        // Sort result because it was sorted the wrong way for LIMIT to get right
-        // messages
+        // Sort result because it was sorted the wrong way for LIMIT to get
+        // right messages
         let mut result = ChatMsgsHistory { ims };
         result.sort_by_timestamp();
         self.send_to_client(conn_id, Arc::new(ChatMsg::RespHistory(result)))

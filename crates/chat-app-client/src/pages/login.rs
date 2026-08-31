@@ -34,9 +34,9 @@ impl UiLogin {
     }
 
     fn login_prompt(&mut self, ui: &mut egui::Ui, data_shared: &mut DataShared) {
-        // Being logged in implies that we are locked out because we shouldn't be on
-        // this screen unless we are locked out. (Except for the brief period of time we
-        // are doing the post login cleanup)
+        // Being logged in implies that we are locked out because we shouldn't
+        // be on this screen unless we are locked out. (Except for the
+        // brief period of time we are doing the post login cleanup)
         let is_effectively_locked_out = data_shared.is_logged_in();
         let username_widget =
             egui::TextEdit::singleline(&mut data_shared.username).hint_text("Username");

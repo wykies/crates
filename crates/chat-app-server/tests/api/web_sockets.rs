@@ -72,7 +72,7 @@ async fn fails_to_connect_without_correct_token() {
         .await
         .unwrap();
 
-    // Assert - Assert that `Closed` is received. Note anything but `Closed` is an
-    // error including `Ping`
+    // Assert - Assert that `Closed` is received. Note anything but `Closed` is
+    // an error including `Ping`
     assert_eq!(format!("{response:?}"), format!("{:?}", WsEvent::Closed));
 }

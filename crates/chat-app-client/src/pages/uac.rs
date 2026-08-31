@@ -109,7 +109,8 @@ impl DisplayablePage<DataShared, Permission, private::Token> for UiUAC {
         if let Some(data) = self.data_state.egui_poll_mut(ui, None) {
             egui::Panel::bottom(bottom_panel_id).show(ui, |ui| {
                 ui.vertical_centered(|ui| {
-                    // Centering only works on the label and button but the grid is not centered
+                    // Centering only works on the label and button but the grid
+                    // is not centered
                     if ui_show_user_op(ui, &data_shared.client, data, &mut self.user_op)
                         == OpResult::ResetPage
                     {

@@ -207,7 +207,8 @@ impl FrontEnd {
                 ui.colored_label(color, format!("{bytes_left: >3} left",))
                     .on_hover_text("Number of bytes left");
             } else {
-                // To prevent the edit from losing focus when the number of controls changes
+                // To prevent the edit from losing focus when the number of
+                // controls changes
                 ui.label("");
             }
 
@@ -257,8 +258,9 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
         let content = match ChatImText::try_from(std::mem::take(&mut self.text_to_send)) {
             Ok(x) => x,
             Err(err) => {
-                // We lose the users input in this case but we have a guard at the top that
-                // should cause this to never happen
+                // We lose the users input in this case but we have a guard at
+                // the top that should cause this to never
+                // happen
                 error!(?err);
                 self.set_error_transient(err.to_string());
                 return;

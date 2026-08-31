@@ -118,8 +118,8 @@ impl TestApp {
 
     #[tracing::instrument]
     pub async fn is_logged_in(&self) -> bool {
-        // Also tests if able to establish a websocket connection but this was the
-        // simplest alternative that didn't need any permissions
+        // Also tests if able to establish a websocket connection but this was
+        // the simplest alternative that didn't need any permissions
         self.core_client
             .ws_connect(PATH_WS_TOKEN_CHAT, TEST_MSG_WAIT_TIMEOUT, no_cb)
             .await

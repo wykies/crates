@@ -125,8 +125,8 @@ async fn ensure_user_gets_locked_out() {
         "should not be logged in before logging in"
     );
 
-    // Act - Repeat attempting login one less than the limit so they should still
-    // not be locked out
+    // Act - Repeat attempting login one less than the limit so they should
+    // still not be locked out
     let login_attempt_limit = app.login_attempt_limit;
     for _ in 1..login_attempt_limit {
         // Attempt login
@@ -173,8 +173,8 @@ async fn ensure_locked_out_is_reset() {
         "should not be logged in before logging in"
     );
 
-    // Act - Repeat attempting login one less than the limit so they should still
-    // not be locked out
+    // Act - Repeat attempting login one less than the limit so they should
+    // still not be locked out
     let login_attempt_limit = app.login_attempt_limit;
     for _ in 1..login_attempt_limit {
         // Attempt login
@@ -199,8 +199,8 @@ async fn ensure_locked_out_is_reset() {
     // Assert - user is logged out
     assert!(!app.is_logged_in().await);
 
-    // Act - Repeat attempting login one less than the limit so they should still
-    // not be locked out
+    // Act - Repeat attempting login one less than the limit so they should
+    // still not be locked out
     let login_attempt_limit = app.login_attempt_limit;
     for _ in 1..login_attempt_limit {
         // Attempt login

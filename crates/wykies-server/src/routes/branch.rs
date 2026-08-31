@@ -69,7 +69,8 @@ pub async fn branch_new(
     };
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
     let result = {
-        // TODO 5: Check why encode trait impl doesn't make converting not necessary
+        // TODO 5: Check why encode trait impl doesn't make converting not
+        // necessary
         sqlx::query!(
             "INSERT INTO branch
             (branch_name, short_name, branch_address) 

@@ -22,7 +22,8 @@ pub async fn process_stream_from_client(
     match stream_msg {
         // Message from remote client
         Some(Ok(msg)) => {
-            // TODO 4: See if this just duplicates the msg as it's one of the arguments
+            // TODO 4: See if this just duplicates the msg as it's one of the
+            // arguments
             debug!(?msg, "Message received from client");
 
             match msg {

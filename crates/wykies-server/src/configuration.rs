@@ -83,7 +83,8 @@ pub fn get_configuration<T: Clone + DeserializeOwned>()
     let base_path = base_path.join("crates/chat-app-server");
 
     // Note do not try to move configuration folder to root because it will make
-    // it tricky for tests as they start at the crate root not the workspace root
+    // it tricky for tests as they start at the crate root not the workspace
+    // root
     let configuration_directory = base_path.join("configuration");
 
     // Detect the running environment.

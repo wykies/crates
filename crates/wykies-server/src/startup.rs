@@ -186,9 +186,9 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
         let server = HttpServer::new(move || {
             let app = App::new();
 
-            // If both a debug build and disable-cors flag is set then set CORS to
-            // permissive. This code runs once per thread so several of this will be
-            // printed if cors is disabled
+            // If both a debug build and disable-cors flag is set then set CORS
+            // to permissive. This code runs once per thread so several of this
+            // will be printed if cors is disabled
             #[cfg(all(debug_assertions, feature = "disable-cors"))]
             let cors = actix_cors::Cors::permissive();
             #[cfg(all(debug_assertions, feature = "disable-cors"))]

@@ -178,11 +178,12 @@ impl ChatDbWriter {
         });
         debug!(query_builder.sql = ?query_builder.sql(), "Query Builder SQL");
 
-        // TODO 5: Optimizations left on the table are to try to have the size sent be
-        // more similar so caching would work and reusing the query_builder (see reset)
+        // TODO 5: Optimizations left on the table are to try to have the size
+        // sent be more similar so caching would work and reusing the
+        // query_builder (see reset)
 
-        // Persistent is set to false because the sizes changes and each would have to
-        // be cached separately
+        // Persistent is set to false because the sizes changes and each would
+        // have to be cached separately
         let query = query_builder.build().persistent(false);
         match query
             .execute(&self.pool)

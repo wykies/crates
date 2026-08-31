@@ -49,8 +49,8 @@ pub async fn login(
         .as_ref()
         .is_err_and(|x| x.is_branch_not_set_resend())
     {
-        // Special case return for when the request should be resent and include the
-        // branch that should be set
+        // Special case return for when the request should be resent and include
+        // the branch that should be set
         return Ok(HttpResponse::FailedDependency().body(
             set_user_branch_result
                 .expect_err("checked that it is an error to enter this branch")
@@ -99,7 +99,8 @@ async fn set_user_branch(
             } else {
                 // No ID found in the DB for this client identifier
 
-                // Check if user has permissions to set branch and branch provided to be set
+                // Check if user has permissions to set branch and branch
+                // provided to be set
                 let does_user_have_permission = auth_user_info
                     .permissions
                     .is_allowed_access(PATH_API_HOSTBRANCH_SET.path)

@@ -27,7 +27,8 @@ pub mod client {
     /// there is user activity
     pub const CLIENT_TICKS_PER_SECOND_FOR_ACTIVE: usize = 5;
     // TODO 5: Add a timeout for while awaiting a response. This happened a few
-    // times during remote testing. Didn't quite find a way to do timeout in WASM
+    // times during remote testing. Didn't quite find a way to do timeout in
+    // WASM
 
     // pub const AWAITING_RESPONSE_TIMEOUT: Seconds = Seconds::new(30);
 
@@ -99,6 +100,7 @@ mod tests {
 
     use super::web_socket::{WS_MAX_CONTINUATION_SIZE, WS_MAX_FRAME_SIZE};
 
-    // Seems reasonable to expect 2 fames to fit before continuation frame is full
+    // Seems reasonable to expect 2 fames to fit before continuation frame is
+    // full
     const_assert!(WS_MAX_FRAME_SIZE * 2 <= WS_MAX_CONTINUATION_SIZE);
 }

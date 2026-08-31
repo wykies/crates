@@ -59,7 +59,8 @@ impl Default for DbUser {
 
 #[tracing::instrument(skip(pool))]
 async fn get_user_from_db(username: &str, pool: &DbPool) -> anyhow::Result<Option<DbUser>> {
-    // TODO 5: Remove display name from the queries (already removed from struct)
+    // TODO 5: Remove display name from the queries (already removed from
+    // struct)
     #[cfg(feature = "mysql")]
     let query = sqlx::query!(
         "SELECT UserName, password_hash, ForcePassChange, DisplayName, Enabled, LockedOut, FailedAttempts, Permissions
@@ -147,8 +148,8 @@ pub async fn validate_credentials(
     let retrieved_user = match get_user_from_db(&credentials.username, pool).await {
         Ok(x) => x,
         Err(err_msg) => {
-            // Log error at a higher level as caller is usually the login which reports
-            // errors at info
+            // Log error at a higher level as caller is usually the login which
+            // reports errors at info
             error!(?err_msg);
             return Err(err_msg.into());
         }
@@ -167,8 +168,8 @@ pub async fn validate_credentials(
     .context("Failed to spawn blocking task.")?;
 
     // For timing attack reasons this must happen after checking the password
-    // because for the default user it would just always return disabled instead of
-    // wrong username/password
+    // because for the default user it would just always return disabled instead
+    // of wrong username/password
     if !db_user.enabled {
         // User is disabled
         return Err(AuthError::NotEnabled);

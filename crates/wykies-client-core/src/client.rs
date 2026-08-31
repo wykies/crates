@@ -115,8 +115,8 @@ impl Client {
     }
 
     #[tracing::instrument(skip(args))]
-    // WARNING: Must skip args as it my contain sensitive info and "safe" versions
-    // would usually already be logged by the caller
+    // WARNING: Must skip args as it my contain sensitive info and "safe"
+    // versions would usually already be logged by the caller
     fn create_request_builder<T>(&self, path_spec: PathSpec, args: &T) -> RequestBuilder
     where
         T: serde::Serialize + Debug,

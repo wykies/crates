@@ -24,8 +24,8 @@ impl ScreenLockInfo {
     }
 
     pub fn is_locked(&mut self) -> bool {
-        // Using this `if` statement allows us to implement latching. Will lock but not
-        // unlock on activity.
+        // Using this `if` statement allows us to implement latching. Will lock
+        // but not unlock on activity.
         if self.elapsed_time_since_user_activity() > self.client_idle_timeout {
             self.is_locked = true;
         }
