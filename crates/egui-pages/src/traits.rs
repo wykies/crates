@@ -216,7 +216,7 @@ pub trait PageContainer<
             Self::close_all_pages(pages);
             ui.close();
         }
-        if ui.button("Deactivate All Pages").clicked() {
+        if ui.button("Remove All Pages").clicked() {
             Self::deactivate_all_pages(pages);
             ui.close();
         }
