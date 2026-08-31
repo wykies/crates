@@ -80,7 +80,7 @@ impl From<ChatUser> for Username {
 
 impl Display for ChatIM {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let time = self.timestamp.as_local_datetime().format("%T");
+        let time = self.timestamp.as_zoned_in_system_tz().strftime("%T");
         let author = self.author.to_string();
         let msg = self.content.to_string();
         write!(f, "{time} {author}: {msg}")

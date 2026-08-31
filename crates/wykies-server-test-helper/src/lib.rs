@@ -26,7 +26,7 @@ use wykies_shared::{
     telemetry::{get_subscriber, init_subscriber},
     uac::Username,
 };
-use wykies_time::Seconds;
+use wykies_time::{Seconds, Timestamp};
 
 mod macros;
 
@@ -39,7 +39,9 @@ pub static TRACING: LazyLock<String> = LazyLock::new(|| {
     if std::env::var("TEST_LOG").is_ok() {
         let log_file_name = format!(
             "{}_server_tests{}.log",
-            chrono::Local::now().format("%Y-%m-%dT%H-%M-%S"),
+            Timestamp::now()
+                .as_zoned_in_system_tz()
+                .strftime("%Y-%m-%dT%H-%M-%S"),
             Uuid::new_v4()
         );
         let log_folder = PathBuf::from("traces");

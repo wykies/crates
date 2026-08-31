@@ -2,7 +2,6 @@
 
 #![warn(unused_crate_dependencies)]
 
-use chrono::TimeZone;
 use std::{fmt::Display, time::Duration};
 
 /// Intended to be similar to Duration but always clear that it is in Seconds
@@ -11,8 +10,13 @@ use std::{fmt::Display, time::Duration};
 )]
 pub struct Seconds(u64);
 
-/// Intended to be similar to Instant but keeps on ticking if the computer is
-/// sleeping, only works with data/time after the unix epoch
+/// This type stores the number of seconds since the Unix epoch. Thus it only
+/// provides second resolution.
+///
+/// Note: It only supports that are at or after the Unix epoch.
+///
+/// Originally it was intended to be similar to [`std::time::Instant`] but keeps
+/// on ticking if the computer is sleeping.
 #[derive(
     Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize, PartialOrd, Ord,
 )]
@@ -43,60 +47,39 @@ impl Timestamp {
         )
     }
 
-    pub fn as_local_datetime(&self) -> chrono::DateTime<chrono::Local> {
-        chrono::DateTime::from_timestamp(
-            self.0
-                .try_into()
-                .expect("conversion from u64 to i64 failed"),
-            0,
-        )
-        .expect("wow this program wasn't meant to last that long")
-        .into()
+    pub fn as_zoned_in_tz(&self, timezone: jiff::tz::TimeZone) -> jiff::Zoned {
+        // Cast u64 to i64 and fail explicitly if needed
+        let seconds_i64 = i64::try_from(self.0)
+            .expect("u64 conversion to i64 failed... This date is not valid for use with jiff");
+
+        jiff::Timestamp::from_second(seconds_i64)
+            .expect("number of seconds outside of range supported by jiff")
+            .to_zoned(timezone)
     }
 
-    pub fn as_utc_datetime(&self) -> chrono::DateTime<chrono::Utc> {
-        chrono::DateTime::from_timestamp(
-            self.0
-                .try_into()
-                .expect("conversion from u64 to i64 failed"),
-            0,
-        )
-        .expect("wow this program wasn't meant to last that long")
+    pub fn as_zoned_in_system_tz(&self) -> jiff::Zoned {
+        self.as_zoned_in_tz(jiff::tz::TimeZone::system())
     }
 
-    pub fn display_as_utc_datetime_long(&self) -> String {
-        self.as_utc_datetime()
-            .format(Self::LONG_DISPLAY_FORMAT)
+    pub fn as_zoned_in_utc(&self) -> jiff::Zoned {
+        self.as_zoned_in_tz(jiff::tz::TimeZone::UTC)
+    }
+
+    pub fn display_as_date(&self, timezone: jiff::tz::TimeZone) -> String {
+        self.as_zoned_in_tz(timezone)
+            .strftime(Self::DATE_ONLY_FORMAT)
             .to_string()
     }
 
-    pub fn display_as_utc_datetime_short(&self) -> String {
-        self.as_utc_datetime()
-            .format(Self::SHORT_DISPLAY_FORMAT)
+    pub fn display_as_datetime_long(&self, timezone: jiff::tz::TimeZone) -> String {
+        self.as_zoned_in_tz(timezone)
+            .strftime(Self::LONG_DISPLAY_FORMAT)
             .to_string()
     }
 
-    pub fn display_as_fixed_date<Tz: TimeZone>(&self, tz: &Tz) -> String {
-        self.as_utc_datetime()
-            .with_timezone(tz)
-            .naive_local()
-            .format(Self::DATE_ONLY_FORMAT)
-            .to_string()
-    }
-
-    pub fn display_as_fixed_datetime_long<Tz: TimeZone>(&self, tz: &Tz) -> String {
-        self.as_utc_datetime()
-            .with_timezone(tz)
-            .naive_local()
-            .format(Self::LONG_DISPLAY_FORMAT)
-            .to_string()
-    }
-
-    pub fn display_as_fixed_datetime_short<Tz: TimeZone>(&self, tz: &Tz) -> String {
-        self.as_utc_datetime()
-            .with_timezone(tz)
-            .naive_local()
-            .format(Self::SHORT_DISPLAY_FORMAT)
+    pub fn display_as_datetime_short(&self, timezone: jiff::tz::TimeZone) -> String {
+        self.as_zoned_in_tz(timezone)
+            .strftime(Self::SHORT_DISPLAY_FORMAT)
             .to_string()
     }
 

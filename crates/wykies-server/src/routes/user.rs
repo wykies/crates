@@ -7,6 +7,8 @@ use argon2::{
     PasswordHasher as _,
     password_hash::{SaltString, rand_core},
 };
+#[cfg(feature = "mysql")]
+use jiff_chrono_conversions::TryToJiff as _;
 use secrecy::ExposeSecret as _;
 use wykies_shared::{
     db_types::DbPool,
@@ -58,7 +60,11 @@ pub async fn user(
         enabled: db_int_to_bool(record.Enabled),
         locked_out: db_int_to_bool(record.LockedOut),
         failed_attempts: record.FailedAttempts.try_into().map_err(e500)?,
-        pass_change_date: record.PassChangeDate,
+        pass_change_date: record
+            .PassChangeDate
+            .try_to_jiff()
+            .context("failed to convert date to jiff")
+            .map_err(e500)?,
     };
     #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
     let result = UserMetadata {
@@ -265,7 +271,10 @@ async fn user_list(pool: &DbPool) -> actix_web::Result<Vec<UserMetadata>> {
                 enabled: db_int_to_bool(x.Enabled),
                 locked_out: db_int_to_bool(x.LockedOut),
                 failed_attempts: x.FailedAttempts.try_into()?,
-                pass_change_date: x.PassChangeDate,
+                pass_change_date: x
+                    .PassChangeDate
+                    .try_to_jiff()
+                    .context("failed to convert date to jiff")?,
             });
             #[cfg(all(not(feature = "mysql"), feature = "postgres"))]
             Ok(UserMetadata {

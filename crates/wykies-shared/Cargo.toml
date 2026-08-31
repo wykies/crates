@@ -10,10 +10,10 @@ workspace = true
 [dependencies]
 anyhow.workspace = true
 argon2.workspace = true
-chrono.workspace = true
 db-types = { workspace = true, optional = true }
 egui.workspace = true
 ewebsock.workspace = true
+jiff.workspace = true
 rand = { workspace = true, features = ["std_rng"] }
 reqwest-cross = { workspace = true, features = ["yield_now"] }
 ron.workspace = true

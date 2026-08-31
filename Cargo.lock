@@ -1047,6 +1047,7 @@ dependencies = [
  "egui-pages",
  "egui_extras",
  "ewebsock",
+ "jiff",
  "log",
  "plugin-chat",
  "reqwest-cross",
@@ -1071,7 +1072,6 @@ version = "0.1.5-dev"
 dependencies = [
  "actix-web",
  "anyhow",
- "chrono",
  "ewebsock",
  "insta",
  "plugin-chat",
@@ -1100,7 +1100,6 @@ checksum = "1aa79e62e7697b8e29b513a68abacf485adcd1fe8284a4316c5ae868e6633327"
 dependencies = [
  "iana-time-zone",
  "num-traits",
- "serde",
  "windows-link",
 ]
 
@@ -3066,6 +3065,17 @@ dependencies = [
  "serde_core",
  "wasm-bindgen",
  "windows-link",
+]
+
+[[package]]
+name = "jiff-chrono-conversions"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "13b31acd6581fc84411ed7442f57a0442015bcaa97fdfccf7da0753ed9b0ba59"
+dependencies = [
+ "chrono",
+ "jiff",
+ "thiserror 2.0.20",
 ]
 
 [[package]]
@@ -7343,6 +7353,7 @@ dependencies = [
  "anyhow",
  "argon2",
  "config",
+ "jiff-chrono-conversions",
  "rustls",
  "rustls-pki-types",
  "secrecy",
@@ -7365,7 +7376,6 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "argon2",
- "chrono",
  "serde",
  "sqlx",
  "uuid",
@@ -7381,10 +7391,10 @@ dependencies = [
  "actix-web",
  "anyhow",
  "argon2",
- "chrono",
  "db-types",
  "egui",
  "ewebsock",
+ "jiff",
  "rand 0.10.2",
  "reqwest-cross",
  "ron",
@@ -7407,10 +7417,10 @@ dependencies = [
 
 [[package]]
 name = "wykies-time"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
- "chrono",
  "db-types",
+ "jiff",
  "serde",
  "sqlx",
  "thiserror 2.0.20",

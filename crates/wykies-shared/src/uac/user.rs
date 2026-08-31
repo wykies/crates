@@ -3,7 +3,7 @@ use super::{Permissions, RoleIdAndName, RoleName};
 use crate::db_types::Db;
 use crate::{AlwaysCase, branch::BranchId, errors::ConversionError, string_wrapper, uac::RoleId};
 use anyhow::bail;
-use chrono::NaiveDate;
+use jiff::civil;
 
 string_wrapper!(Username, 16, AlwaysCase::Any);
 string_wrapper!(DisplayName, 30, AlwaysCase::Any);
@@ -26,7 +26,7 @@ pub struct UserMetadata {
     pub enabled: bool,
     pub locked_out: bool,
     pub failed_attempts: u8,
-    pub pass_change_date: NaiveDate,
+    pub pass_change_date: civil::Date,
 }
 // TODO 6: We elected to not use user locking which means there is the
 //          possibility of race conditions if multiple admins are editing the

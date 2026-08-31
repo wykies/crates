@@ -1,6 +1,6 @@
 [package]
 name = "wykies-time"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 description = "Simple time wrappers to make mistakes harder to make"
 
@@ -8,8 +8,8 @@ description = "Simple time wrappers to make mistakes harder to make"
 workspace = true
 
 [dependencies]
-chrono.workspace = true
 db-types = { workspace = true, optional = true }
+jiff.workspace = true
 serde.workspace = true
 sqlx = { workspace = true, optional = true }
 thiserror.workspace = true

@@ -311,8 +311,10 @@ NB: Number of bytes is not equal the number of characters, eg. emojis use multip
                                     }
                                     _ => ui.visuals().text_color(),
                                 };
-                                ui.colored_label(color, format!("{im}"))
-                                    .on_hover_text(im.timestamp.display_as_utc_datetime_long());
+                                ui.colored_label(color, format!("{im}")).on_hover_text(
+                                    im.timestamp
+                                        .display_as_datetime_long(jiff::tz::TimeZone::system()),
+                                );
                             },
                         );
                     }

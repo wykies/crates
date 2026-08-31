@@ -167,7 +167,7 @@ impl ChatApp {
     }
 
     fn current_time() -> String {
-        Timestamp::now().display_as_utc_datetime_long()
+        Timestamp::now().display_as_datetime_long(jiff::tz::TimeZone::system())
     }
 
     fn logout(&mut self) {

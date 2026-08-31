@@ -9,6 +9,7 @@ use wykies_shared::{
     },
     uac::{PasswordComplexity, ResetPasswordError, UserMetadata, UserMetadataDiff, Username},
 };
+use wykies_time::Timestamp;
 
 use crate::helpers::spawn_app;
 
@@ -171,7 +172,7 @@ async fn new_user() {
         enabled: true,
         locked_out: false,
         failed_attempts: 0,
-        pass_change_date: chrono::Utc::now().date_naive(),
+        pass_change_date: Timestamp::now().as_zoned_in_system_tz().date(),
     };
     assert_eq!(actual, expected);
 

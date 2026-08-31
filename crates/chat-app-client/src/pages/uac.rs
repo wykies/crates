@@ -615,7 +615,7 @@ fn ui_show_user_list(ui: &mut egui::Ui, data: &ListUsersRoles, user_op: &mut Use
                 ui.label(user.failed_attempts.to_string());
             });
             row.col(|ui| {
-                ui.label(user.pass_change_date.format("%F").to_string());
+                ui.label(user.pass_change_date.strftime("%F").to_string());
             });
 
             // Check for click of a row

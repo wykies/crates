@@ -41,7 +41,6 @@ mod warning_suppress {
 
 #[cfg(test)] // Included to prevent unused crate warning
 mod warning_suppress_test {
-    use chrono as _;
     use ewebsock as _;
     use insta as _;
     use pretty_assertions as _;
