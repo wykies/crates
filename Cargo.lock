@@ -3378,9 +3378,9 @@ checksum = "112b39cec0b298b6c1999fee3e31427f74f676e4cb9879ed1a121b43661a4154"
 
 [[package]]
 name = "main-loop-async"
-version = "0.3.0"
+version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0ff9b4b864c7504d3d028ccec8c7f4b1c5b7cc2dd1b82cf933ab8cd933660d4"
+checksum = "9884b9ad3db0534ed41c127eb2d1d055ff8e7ddcaf04fb601201aa107f643f4a"
 dependencies = [
  "anyhow",
  "document-features",
@@ -4778,9 +4778,9 @@ dependencies = [
 
 [[package]]
 name = "reqwest-cross"
-version = "0.13.0"
+version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7ba20487168845ebbfdf4afadeb8821c6cb4944e18b2c0c11c64d96f6ea92498"
+checksum = "c3cb1a91f33299486ce741d4edc2356ddfde1fba1a22ddb131eac95c3a0f060f"
 dependencies = [
  "document-features",
  "futures",
