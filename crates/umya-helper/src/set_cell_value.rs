@@ -1,6 +1,7 @@
 use jiff::civil;
 use umya_spreadsheet::{
-    Comment, RichText, Style, TextElement, Worksheet, helper::date::jiff_date_time_to_excel,
+    Comment, Hyperlink, RichText, Style, TextElement, Worksheet,
+    helper::date::jiff_date_time_to_excel,
 };
 
 #[inline]
@@ -72,4 +73,28 @@ pub fn set_cell_note<S: Into<String>>(sheet: &mut Worksheet, row: u32, col: u32,
     coordinate.set_col_num(col);
     coordinate.set_row_num(row);
     sheet.add_comments(note);
+}
+
+#[inline]
+pub fn set_cell_value_as_hyperlink<U: Into<String>, S: Into<String>>(
+    sheet: &mut Worksheet,
+    row: u32,
+    col: u32,
+    url: U,
+    display_text: Option<S>,
+) {
+    let url = url.into();
+    let value = if let Some(text) = display_text {
+        text.into()
+    } else {
+        url.clone()
+    };
+
+    let cell = sheet.cell_mut((col, row));
+    cell.set_value(value);
+
+    // Add a hyperlink to the cell
+    let mut hyperlink = Hyperlink::default();
+    hyperlink.set_url(url);
+    cell.set_hyperlink(hyperlink);
 }
