@@ -3572,8 +3572,9 @@ dependencies = [
 
 [[package]]
 name = "new_type_wrappers"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
+ "anyhow",
  "egui",
  "rust_decimal",
  "serde",

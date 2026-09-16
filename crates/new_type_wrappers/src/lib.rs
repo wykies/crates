@@ -7,6 +7,7 @@ use rust_decimal::Decimal;
 
 mod number;
 mod string;
+mod string_id;
 mod uuid;
 
 number_wrapper!(Money);
