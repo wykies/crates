@@ -9,6 +9,7 @@ members = [
   "crates/echo-server",
   "crates/egui-helpers",
   "crates/egui-pages",
+  "crates/new_type_wrappers",
   "crates/plugin-chat",
   "crates/switch-db",
   "crates/tracked-cancellations",
