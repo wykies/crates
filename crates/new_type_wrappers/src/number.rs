@@ -46,6 +46,10 @@ macro_rules! number_wrapper {
                 self.0.as_f64()
             }
 
+            pub fn to_inner(self) -> rust_decimal::Decimal {
+                self.0
+            }
+
             pub fn to_cents(self) -> anyhow::Result<i64> {
                 use anyhow::Context as _;
                 (self.0 * rust_decimal::dec!(100))
