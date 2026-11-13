@@ -1,32 +1,32 @@
 [workspace]
 resolver = "2"
 members = [
-    # "crates/bunyan_log_monitor", # TODO 2: restore to work on notification program
-    "crates/cache",
-    "crates/chat-app-client",
-    "crates/chat-app-server",
-    "crates/db-types",
-    "crates/echo-server",
-    "crates/egui-helpers",
-    "crates/egui-pages",
-    "crates/new_type_wrappers",
-    "crates/plugin-chat",
-    "crates/switch-db",
-    "crates/tracked-cancellations",
-    "crates/umya-helper",
-    "crates/ws-auth",
-    "crates/ws-helpers",
-    "crates/wykies-client-core",
-    "crates/wykies-server",
-    "crates/wykies-server-test-helper",
-    "crates/wykies-shared",
-    "crates/wykies-time",
+  # "crates/bunyan_log_monitor", # TODO 2: restore to work on notification program
+  "crates/cache",
+  "crates/chat-app-client",
+  "crates/chat-app-server",
+  "crates/db-types",
+  "crates/echo-server",
+  "crates/egui-helpers",
+  "crates/egui-pages",
+  "crates/new_type_wrappers",
+  "crates/plugin-chat",
+  "crates/switch-db",
+  "crates/tracked-cancellations",
+  "crates/umya-helper",
+  "crates/ws-auth",
+  "crates/ws-helpers",
+  "crates/wykies-client-core",
+  "crates/wykies-server",
+  "crates/wykies-server-test-helper",
+  "crates/wykies-shared",
+  "crates/wykies-time",
 ]
 
 [workspace.dependencies]
 # TODO 4: Write a program to check a workspace to see if all dependencies are needed by comparing to Cargo files in member crates
 actix-cors = "0.7.1"
-actix-files = "0.6.10"
+actix-files = "0.7.4"
 actix-session = "0.11.0"
 actix-web = { version = "4.14.0", features = ["rustls-0_23"] }
 actix-ws = "0.4.0"
@@ -52,20 +52,11 @@ plugin-chat = { version = "*", path = "crates/plugin-chat" }
 pretty_assertions = "1.4.1"
 rand = "0.10.2"
 regex = "1.13.0"
-reqwest-cross = { version = "0.14.0", default-features = false, features = [
-    "native-tokio",
-    "json",
-    "cookies",
-    "http2",
-    "rustls",
-    "query",
-] }
+reqwest-cross = { version = "0.14.0", default-features = false, features = ["native-tokio", "json", "cookies", "http2", "rustls", "query"] }
 ringbuffer = "0.16.0"
 ron = "0.12.2"
 rstest = "0.26.1"
-rust_decimal = { version = "1.42.1", default-features = false, features = [
-    "std",
-] }
+rust_decimal = { version = "1.42.1", default-features = false, features = ["std"] }
 rustls = "0.23.42"
 rustls-pki-types = "1.15.0"
 secrecy = { version = "0.10.3", features = ["serde"] }
@@ -77,9 +68,7 @@ static_assertions = "1.1.0"
 strum = { version = "0.28.0", features = ["derive"] }
 thiserror = "2.0.18"
 tokio = { version = "1.52.3", default-features = false }
-tokio-tungstenite = { version = "0.30.0", default-features = false, features = [
-    "rustls-tls-native-roots",
-] }
+tokio-tungstenite = { version = "0.30.0", default-features = false, features = ["rustls-tls-native-roots"] }
 tokio-util = "0.7.18"
 tracing = "0.1.44"
 tracing-actix-web = "0.7.22"
@@ -119,7 +108,7 @@ rust_2021_prelude_collisions = "warn"
 semicolon_in_expressions_from_macros = "warn"
 trivial_numeric_casts = "warn"
 unexpected_cfgs = "warn"
-unsafe_op_in_unsafe_fn = "warn"                         # `unsafe_op_in_unsafe_fn` may become the default in future Rust versions: https://github.com/rust-lang/rust/issues/71668
+unsafe_op_in_unsafe_fn = "warn" # `unsafe_op_in_unsafe_fn` may become the default in future Rust versions: https://github.com/rust-lang/rust/issues/71668
 unused_extern_crates = "warn"
 unused_import_braces = "warn"
 unused_lifetimes = "warn"
@@ -149,11 +138,11 @@ dbg_macro = "warn"
 debug_assert_with_mut_call = "warn"
 default_union_representation = "warn"
 derive_partial_eq_without_eq = "warn"
-disallowed_macros = "warn"                   # Rerun has included "See clippy.toml"
-disallowed_methods = "warn"                  # Rerun has included "See clippy.toml"
-disallowed_names = "warn"                    # Rerun has included "See clippy.toml"
-disallowed_script_idents = "warn"            # Rerun has included "See clippy.toml"
-disallowed_types = "warn"                    # Rerun has included "See clippy.toml"
+disallowed_macros = "warn" # Rerun has included "See clippy.toml"
+disallowed_methods = "warn" # Rerun has included "See clippy.toml"
+disallowed_names = "warn" # Rerun has included "See clippy.toml"
+disallowed_script_idents = "warn" # Rerun has included "See clippy.toml"
+disallowed_types = "warn" # Rerun has included "See clippy.toml"
 doc_broken_link = "warn"
 doc_comment_double_space_linebreaks = "warn"
 doc_include_without_cfg = "warn"
