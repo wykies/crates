@@ -52,6 +52,7 @@ macro_rules! number_wrapper {
             pub fn to_cents(self) -> anyhow::Result<i64> {
                 use anyhow::Context as _;
                 (self.0 * rust_decimal::dec!(100))
+                    .round()
                     .try_into()
                     .context("failed to convert cents into an i64")
             }
