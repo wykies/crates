@@ -29,7 +29,6 @@ macro_rules! number_wrapper {
 
             #[must_use = "method returns a new value and does not mutate the original value"]
             #[inline]
-
             pub fn round(self) -> Self {
                 Self(self.0.round())
             }

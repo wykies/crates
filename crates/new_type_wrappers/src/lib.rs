@@ -52,3 +52,30 @@ impl Div<Hours> for Money {
         Self(self.0 / rhs.0)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    #![expect(clippy::unwrap_used)]
+    use super::*;
+    use rstest::rstest;
+    use rust_decimal::dec;
+
+    #[rstest]
+    #[case::zero(Money::ZERO, 0)]
+    #[case::one(Money::from(dec!(1.00)), 100)]
+    #[case::neg_one(Money::from(dec!(-1)), -100)]
+    #[case::two_dec_places(Money::from(dec!(1.23)), 123)]
+    #[case::neg_two_dec_places(Money::from(dec!(-1.23)), -123)]
+    #[case::three_dec_places_round_down1(Money::from(dec!(1.231)), 123)]
+    #[case::three_dec_places_round_down2(Money::from(dec!(1.234)), 123)]
+    #[case::three_dec_places_round_up1(Money::from(dec!(1.235)), 124)]
+    #[case::three_dec_places_round_up2(Money::from(dec!(1.239)), 124)]
+    #[case::neg_three_dec_places_round_down1(Money::from(dec!(-1.231)), -123)]
+    #[case::neg_three_dec_places_round_down2(Money::from(dec!(-1.234)), -123)]
+    #[case::neg_three_dec_places_round_up1(Money::from(dec!(-1.235)), -124)]
+    #[case::neg_three_dec_places_round_up2(Money::from(dec!(-1.239)), -124)]
+    fn verify_cents_conversion(#[case] input: Money, #[case] expected: i64) {
+        let actual = input.to_cents().unwrap();
+        assert_eq!(actual, expected);
+    }
+}
