@@ -4,4 +4,5 @@
 [advisories]
 ignore = [
   { id = "RUSTSEC-2026-0258", reason = "Will look into it, doesn't seem to be a big issue for us" },
+  { id = "RUSTSEC-2026-0543", reason = "Still need chrono for now, might be able to remove the components that need it soon" },
 ]
