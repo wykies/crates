@@ -203,7 +203,8 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
             #[cfg(all(not(feature = "redis-session-rustls"), feature = "cookie-session"))]
             let session_store = {
                 info!(
-                    // This info is repeated for each thread but less bad than duplicating the cfg
+                    // This info is repeated for each thread but less bad than
+                    // duplicating the cfg
                     session_store = "CookieSessionStore",
                     "Using Cookie Only Session Storage"
                 );
@@ -259,8 +260,8 @@ impl<T: Clone + DeserializeOwned> ApiServerBuilder<T> {
                 .route("/login", web::post().to(login))
                 .route("/status", web::get().to(status))
                 .route(
-                    // TODO 5: Use version endpoint in client to detect if compatible with server,
-                    // at least give warning if not
+                    // TODO 5: Use version endpoint in client to detect if
+                    // compatible with server, at least give warning if not
                     "/version",
                     web::get().to(|| async { HttpResponse::Ok().body(pkg_version.to_owned()) }),
                 )

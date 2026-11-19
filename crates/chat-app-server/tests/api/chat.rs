@@ -190,7 +190,8 @@ async fn chat_overflowing_server_history_buffer() {
         }
     }
     tokio::time::sleep(std::time::Duration::from_millis(
-        // Wait 3 millis for each message sending before disconnect (expected to be way too much)
+        // Wait 3 millis for each message sending before disconnect (expected to
+        // be way too much)
         3 * MSGS_SENT,
     ))
     .await;

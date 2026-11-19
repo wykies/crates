@@ -18,10 +18,10 @@ use wykies_time::{Seconds, Timestamp};
 /// Tokens are only valid until the record lifetime elapses
 #[derive(Debug)]
 pub struct AuthTokenManager {
-    // ASSUMPTION: small enough scale that a vec is the most efficient implementation
-    // This implementation assumes that we only have one instance of the application as it depends
-    // on values stored in memory. Would need to be stored in redis if we want it to scale
-    // horizontally
+    // ASSUMPTION: small enough scale that a vec is the most efficient
+    // implementation This implementation assumes that we only have one instance
+    // of the application as it depends on values stored in memory. Would need
+    // to be stored in redis if we want it to scale horizontally
     record_lifetime: Seconds,
     auth_records: Mutex<Vec<AuthRecord>>,
 }

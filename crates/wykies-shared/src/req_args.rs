@@ -31,7 +31,8 @@ pub struct TopWrapper<T: Debug> {
 
 #[derive(serde::Deserialize, Clone)]
 pub struct LoginReqArgs {
-    // TODO 5: Is there a downside to making this a Username type instead of String
+    // TODO 5: Is there a downside to making this a Username type instead of
+    // String
     pub username: String,
     pub password: SecretString,
     /// Provides a way to choose what branch to set if no branch is already
