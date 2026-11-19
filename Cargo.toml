@@ -24,7 +24,6 @@ members = [
 ]
 
 [workspace.dependencies]
-# TODO 4: Write a program to check a workspace to see if all dependencies are needed by comparing to Cargo files in member crates
 actix-cors = "0.7.1"
 actix-files = "0.7.4"
 actix-session = "0.11.0"
@@ -46,12 +45,10 @@ futures-util = "0.3.32"
 insta = "1.48.0"
 jiff = { version = "0.2.32", features = ["logging", "serde"] }
 jiff-chrono-conversions = "0.1.1"
-lettre = "0.11.22"
 log = "0.4.33"
 plugin-chat = { version = "*", path = "crates/plugin-chat" }
 pretty_assertions = "1.4.1"
 rand = "0.10.2"
-regex = "1.13.0"
 reqwest-cross = { version = "0.14.0", default-features = false, features = ["native-tokio", "json", "cookies", "http2", "rustls", "query"] }
 ringbuffer = "0.16.0"
 ron = "0.12.2"
