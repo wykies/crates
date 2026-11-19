@@ -4,7 +4,6 @@ use crate::db_utils::validate_one_row_affected;
 use anyhow::Context as _;
 use argon2::{
     Algorithm, Argon2, Params, PasswordHash, PasswordHasher as _, PasswordVerifier as _, Version,
-    password_hash::{SaltString, rand_core},
 };
 use secrecy::{ExposeSecret as _, SecretString};
 use tracing::{error, info};
@@ -380,9 +379,8 @@ pub async fn change_password(
 }
 
 fn compute_password_hash(password: &SecretString) -> Result<SecretString, anyhow::Error> {
-    let salt = SaltString::generate(&mut rand_core::OsRng);
     let password_hash = argon2_settings()
-        .hash_password(password.expose_secret().as_bytes(), &salt)?
+        .hash_password(password.expose_secret().as_bytes())?
         .to_string();
     Ok(SecretString::from(password_hash))
 }

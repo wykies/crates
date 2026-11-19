@@ -2,10 +2,7 @@
 #![warn(unused_crate_dependencies)]
 
 use anyhow::Context as _;
-use argon2::{
-    PasswordHasher as _,
-    password_hash::{SaltString, rand_core},
-};
+use argon2::PasswordHasher as _;
 use serde::de::DeserializeOwned;
 use sqlx::{Connection as _, Executor as _};
 use std::fmt::Debug;
@@ -268,10 +265,9 @@ impl TestUser {
     }
 
     pub async fn store(&self, pool: &DbPool, is_admin: bool) {
-        let salt = SaltString::generate(&mut rand_core::OsRng);
         // Match production parameters
         let password_hash = wykies_server::authentication::argon2_settings()
-            .hash_password(self.password.as_bytes(), &salt)
+            .hash_password(self.password.as_bytes())
             .unwrap()
             .to_string();
 

@@ -13,7 +13,7 @@ actix-files.workspace = true
 actix-session = { workspace = true, features = [] }
 actix-web.workspace = true
 anyhow.workspace = true
-argon2 = { workspace = true, features = ["std"] }
+argon2 = { workspace = true, features = ["rand_core"] }
 config.workspace = true
 jiff-chrono-conversions.workspace = true
 rustls.workspace = true
