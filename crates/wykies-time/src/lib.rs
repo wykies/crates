@@ -4,7 +4,7 @@
 
 use std::{fmt::Display, time::Duration};
 
-use jiff::Zoned;
+use jiff::ZonedDateTime;
 
 /// Intended to be similar to Duration but always clear that it is in Seconds
 #[derive(
@@ -29,7 +29,7 @@ pub enum TimestampConversionError {
     #[error("Timestamps do not support negative numbers. Value: {0}")]
     NegativeI64(i64),
     #[error("Timestamps do not support dates before the unix epoch. Value: {0}")]
-    UnsupportedDate(Zoned),
+    UnsupportedDate(ZonedDateTime),
 }
 #[derive(Debug, thiserror::Error, PartialEq, Eq)]
 pub enum SecondsConversionError {
@@ -51,21 +51,21 @@ impl Timestamp {
         )
     }
 
-    pub fn as_zoned_in_tz(&self, timezone: jiff::tz::TimeZone) -> jiff::Zoned {
+    pub fn as_zoned_in_tz(&self, timezone: jiff::tz::TimeZone) -> jiff::ZonedDateTime {
         // Cast u64 to i64 and fail explicitly if needed
         let seconds_i64 = i64::try_from(self.0)
             .expect("u64 conversion to i64 failed... This date is not valid for use with jiff");
 
         jiff::Timestamp::from_second(seconds_i64)
             .expect("number of seconds outside of range supported by jiff")
-            .to_zoned(timezone)
+            .to_zoned_datetime(timezone)
     }
 
-    pub fn as_zoned_in_system_tz(&self) -> jiff::Zoned {
+    pub fn as_zoned_in_system_tz(&self) -> jiff::ZonedDateTime {
         self.as_zoned_in_tz(jiff::tz::TimeZone::system())
     }
 
-    pub fn as_zoned_in_utc(&self) -> jiff::Zoned {
+    pub fn as_zoned_in_utc(&self) -> jiff::ZonedDateTime {
         self.as_zoned_in_tz(jiff::tz::TimeZone::UTC)
     }
 
@@ -256,10 +256,10 @@ pub mod sql {
     impl_encode_for_newtype_around_u64!(Timestamp, "mysql", "postgres");
 }
 
-impl TryFrom<Zoned> for Timestamp {
+impl TryFrom<ZonedDateTime> for Timestamp {
     type Error = TimestampConversionError;
 
-    fn try_from(value: Zoned) -> Result<Self, Self::Error> {
+    fn try_from(value: ZonedDateTime) -> Result<Self, Self::Error> {
         match value.timestamp().as_second().try_into() {
             Ok(x) => Ok(Self(x)),
             Err(_) => Err(Self::Error::UnsupportedDate(value)),

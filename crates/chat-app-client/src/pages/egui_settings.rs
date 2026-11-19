@@ -16,7 +16,7 @@ impl UiEguiSettings {
         let current_ui_options = ui.options(|o| o.clone());
         self.prev_ui_options = Some(current_ui_options);
         let visuals = ui.global_style().visuals.clone();
-        ui.data_mut(|w| w.insert_persisted(egui::Id::new(ChatApp::VISUALS_KEY), visuals));
+        ui.data_mut(|w| w.insert_persisted(egui::Id::unique(ChatApp::VISUALS_KEY), visuals));
         info!("Saved UI Visuals");
     }
 }

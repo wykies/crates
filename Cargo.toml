@@ -35,21 +35,21 @@ bytestring = "1.5.1"
 clap = "4.6.1"
 config = { version = "0.15.25", default-features = false, features = ["toml"] }
 db-types = { version = "*", path = "crates/db-types", default-features = false }
-eframe = { version = "0.36.1", default-features = false }
-egui = { version = "0.36.1", default-features = false }
+eframe = { version = "0.37", default-features = false }
+egui = { version = "0.37", default-features = false }
 egui-helpers = { version = "*", path = "crates/egui-helpers" }
 egui-pages = { version = "*", path = "crates/egui-pages" }
-egui_extras = { version = "0.36.1", features = ["datepicker", "serde"] }
+egui_extras = { version = "0.37", features = ["datepicker", "serde"] }
 ewebsock = { version = "0.8.0", features = ["tls"] }
 futures-util = "0.3.32"
 insta = "1.48.0"
-jiff = { version = "0.2.32", features = ["logging", "serde"] }
-jiff-chrono-conversions = "0.1.1"
+jiff = { version = "1", features = ["logging", "serde"] }
+jiff-chrono-conversions = { version = "0.2" }
 log = "0.4.33"
 plugin-chat = { version = "*", path = "crates/plugin-chat" }
 pretty_assertions = "1.4.1"
 rand = "0.10.2"
-reqwest-cross = { version = "0.14.0", default-features = false, features = ["native-tokio", "json", "cookies", "http2", "rustls", "query"] }
+reqwest-cross = { version = "0.15.0", default-features = false, features = ["native-tokio", "json", "cookies", "http2", "rustls", "query"] }
 ringbuffer = "0.16.0"
 ron = "0.12.2"
 rstest = "0.26.1"
@@ -74,7 +74,7 @@ tracing-bunyan-formatter = "0.3.10"
 tracing-log = "0.2.0"
 tracing-subscriber = { version = "0.3.23", features = ["fmt", "json"] }
 tracked-cancellations = { version = "*", path = "crates/tracked-cancellations" }
-umya-spreadsheet = { version = "4", git = "https://github.com/MathNya/umya-spreadsheet", default-features = false }
+umya-spreadsheet = { version = "4", git = "https://github.com/c-git/umya-spreadsheet", default-features = false, features = ["jiff"], branch = "time-optional" }
 uuid = { version = "1.23.5", features = ["v4", "serde", "rng-getrandom"] }
 version-control-clean-check = "0.1.4"
 wasm-bindgen-test = "0.3.76"
@@ -93,6 +93,9 @@ opt-level = 2 # fast and small wasm
 
 # https://doc.rust-lang.org/cargo/reference/overriding-dependencies.html#testing-a-bugfix
 [patch.crates-io]
+egui_extras = { git = "https://github.com/c-git/egui", branch = "jiff-update" }
+egui = { git = "https://github.com/c-git/egui", branch = "jiff-update" }
+eframe = { git = "https://github.com/c-git/egui", branch = "jiff-update" }
 
 [workspace.lints.rust]
 unsafe_code = "deny"

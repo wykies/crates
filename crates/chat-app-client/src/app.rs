@@ -55,7 +55,7 @@ impl ChatApp {
         // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
         if let Some(visuals) = cc
             .egui_ctx
-            .data_mut(|r| r.get_persisted::<egui::Visuals>(egui::Id::new(Self::VISUALS_KEY)))
+            .data_mut(|r| r.get_persisted::<egui::Visuals>(egui::Id::unique(Self::VISUALS_KEY)))
         {
             info!("Found saved Visuals. Loading...");
             cc.egui_ctx.set_visuals(visuals);
@@ -118,7 +118,7 @@ impl ChatApp {
         // Single instance of global panel thus unique
         egui::Panel::top("top_panel").show(ui, |ui| {
             egui::MenuBar::new().ui(ui, |ui| {
-                egui::widgets::global_theme_preference_switch(ui);
+                egui::widgets::global_theme_preference_buttons(ui);
                 if self.is_logged_in() && !self.is_locked() {
                     ui.separator();
                     self.menu(ui);

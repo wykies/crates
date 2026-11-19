@@ -1,6 +1,6 @@
 [package]
 name = "wykies-time"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2024"
 description = "Simple time wrappers to make mistakes harder to make"
 
