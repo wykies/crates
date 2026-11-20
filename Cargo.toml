@@ -15,9 +15,9 @@ members = [
 [workspace.dependencies]
 anyhow = "1.0.103"
 clap = "4.6.1"
-db-types = { version = "*", path = "crates/db-types", default-features = false }
+db-types = { path = "crates/db-types", default-features = false }
 egui = { version = "0.37", default-features = false }
-egui-helpers = { version = "*", path = "crates/egui-helpers" }
+egui-helpers = { path = "crates/egui-helpers" }
 egui_extras = { version = "0.37", features = ["datepicker", "serde"] }
 jiff = { version = "1", features = ["logging", "serde"] }
 ron = "0.12.2"
@@ -33,7 +33,7 @@ tokio-util = "0.7.18"
 tracing = "0.1.44"
 umya-spreadsheet = { version = "4", git = "https://github.com/c-git/umya-spreadsheet", default-features = false, features = ["jiff"], branch = "time-optional" }
 web-time = "1.1.0"
-wykies-time = { version = "*", path = "crates/wykies-time" }
+wykies-time = { path = "crates/wykies-time" }
 
 [profile.release]
 opt-level = 2 # fast and small wasm
