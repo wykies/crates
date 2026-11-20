@@ -22,106 +22,16 @@ env:
   APP_DB_NAME: chat_demo
 
 jobs:
-  test_other_than_server:
-    name: Test (Other than server)
+  tests:
+    name: Tests
     runs-on: ubuntu-latest
     steps:
       - uses: wykies/checkout@main
         with:
           submodules: recursive
       - uses: wykies/setup-rust-toolchain@main
-      - name: Load sqlx query files for mysql # Required to compile code
-        run: cargo run --bin switch-db -- standalone
-      - name: Run tests without server
-        run: cargo test --workspace --exclude wykies-server-test-helper --exclude chat-app-server --exclude wykies-client-core
-  test_stand_alone_mysql:
-    # TODO 1: Disabling for now as we don't have time to debug what went wrong with the shuttle removal, remove "test_other_than_server" job once restored to not duplicate work (and bacon job test_other_than_server)
-    if: false
-    name: Test (Standalone MySQL)
-    runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: mysql
-        env:
-          MYSQL_USER: ${{ env.APP_USER }}
-          MYSQL_PASSWORD: ${{ env.APP_USER_PWD }}
-          MYSQL_DATABASE: ${{ env.APP_DB_NAME }}
-          MYSQL_ROOT_PASSWORD: password
-          MYSQL_ROOT_HOST: "%"
-        ports:
-          - 3306:3306
-      redis:
-        # Needed because all features are enabled (and redis is default)
-        image: redis:7
-        ports:
-          - 6379:6379
-    steps:
-      - uses: wykies/checkout@main
-        with:
-          submodules: recursive
-      - uses: wykies/setup-rust-toolchain@main
-      - name: Install sqlx-cli
-        run: cargo install sqlx-cli --version=${{ env.SQLX_VERSION }} --features
-          rustls,mysql --no-default-features --locked
-      - name: Migrate database
-        run: |
-          sudo apt-get install mysql-client -y
-          cd crates/chat-app-server && SKIP_DOCKER=true ./scripts/init_db_mysql.sh
-      - name: Load sqlx query files for mysql
-        run: cargo run --bin switch-db -- standalone
-      - name: Check sqlx prepared queries for mysql are is up-to-date
-        run: |
-          cargo sqlx prepare --check --workspace -- --bins --tests --all-features
       - name: Run tests
-        run: cargo test
-
-  test_stand_alone_postgres:
-    name: Test (Standalone Postgres)
-    # TODO 5: Debug issue with postgres support or remove it
-    # Disable until we have time to figure out if we want to continue to maintain postgres support. We are not currently using it.
-    if: false
-    runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: postgres
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: postgres
-        ports:
-          - 5432:5432
-      redis:
-        image: redis:7
-        ports:
-          - 6379:6379
-    steps:
-      - uses: wykies/checkout@main
-        with:
-          submodules: recursive
-      - uses: wykies/setup-rust-toolchain@main
-      - name: Install sqlx-cli
-        run: cargo install sqlx-cli --version=${{ env.SQLX_VERSION }} --features
-          rustls,postgres --no-default-features --locked
-      - name: Create app user in Postgres
-        run: |
-          sudo apt-get install postgresql-client
-
-          # Create the application user
-          CREATE_QUERY="CREATE USER ${APP_USER} WITH PASSWORD '${APP_USER_PWD}';"
-          PGPASSWORD="password" psql -U "postgres" -h "localhost" -c "${CREATE_QUERY}"
-
-          # Grant create db privileges to the app user
-          GRANT_QUERY="ALTER USER ${APP_USER} CREATEDB;"
-          PGPASSWORD="password" psql -U "postgres" -h "localhost" -c "${GRANT_QUERY}"
-      - name: Migrate database
-        run: |
-          cd crates/chat-app-server && SKIP_DOCKER=true ./scripts/init_db_pg.sh
-      - name: Check sqlx prepared queries for postgres are is up-to-date
-        run: |
-          cargo sqlx prepare --check --workspace -- --bins --tests --no-default-features --features postgres,standalone,cookie-session
-      - name: Run tests
-        run: cargo test --package chat-app-server --no-default-features --features
-          standalone,postgres,cookie-session
+        run: cargo test --workspace
 
   fmt:
     name: Rustfmt
@@ -166,7 +76,8 @@ jobs:
           target: wasm32-unknown-unknown
           components: clippy
       - name: Linting
-        run: cargo clippy --target="wasm32-unknown-unknown" --package chat-app-client --
+        run:
+          cargo clippy --target="wasm32-unknown-unknown" --package chat-app-client --
           -D warnings
 
   workspace_lint:
