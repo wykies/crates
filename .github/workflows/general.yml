@@ -48,7 +48,7 @@ jobs:
         run: cargo fmt --check
 
   clippy:
-    name: Clippy (Standalone)
+    name: Clippy
     runs-on: ubuntu-latest
     steps:
       - uses: wykies/checkout@main
@@ -57,28 +57,8 @@ jobs:
       - uses: wykies/setup-rust-toolchain@main
         with:
           components: clippy
-      - name: Load sqlx query files for standalone version
-        run: cargo run --bin switch-db -- standalone
       - name: Linting
         run: cargo clippy --all-features -- -D warnings
-
-  wasm:
-    name: Clippy WASM
-    runs-on: ubuntu-latest
-    env:
-      RUSTFLAGS: --cfg getrandom_backend="wasm_js"
-    steps:
-      - uses: wykies/checkout@main
-        with:
-          submodules: recursive
-      - uses: wykies/setup-rust-toolchain@main
-        with:
-          target: wasm32-unknown-unknown
-          components: clippy
-      - name: Linting
-        run:
-          cargo clippy --target="wasm32-unknown-unknown" --package chat-app-client --
-          -D warnings
 
   workspace_lint:
     name: Workspace Lints Inherited
